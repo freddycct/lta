@@ -226,6 +226,9 @@ end
 for dict_pair1 in bus_services
 	bus_service = dict_pair1[2]
 
+	# save to a file
+	fid = open(string(bus_service.svc_num, ".txt"), "w")
+
 	for direction=1:2
 		for dict_pair2 in bus_service.bus_stops[direction]
 
@@ -250,7 +253,19 @@ for dict_pair1 in bus_services
 				bus_service.routes[direction].tail = node
 			end
 		end
+
+		node = bus_service.routes[direction].head
+		write(fid, string("Direction ", direction, ": ", node.bus_stop.id))
+		current_node = node.next
+		while current_node != node
+			write(fid, string(", ", current_node.bus_stop.id))
+			node = current_node
+			current_node = current_node.next
+		end
+		write(fid, "\n")
 	end
+
+	close(fid)
 end
 
 # println("Printing route 1")
