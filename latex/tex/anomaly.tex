@@ -20,6 +20,13 @@ A basic method to detect the anomalous location is to divide the entire trip und
 
 Beyond the detection and localization of traffic anomalies, a more challenging task would be to understand the diffusion of anomalies within the transportation network. While several prior research has sought to understand the cause of anomalies \cite{Chawla2012,Liu2011}, we perform a more extensive study of understanding how traffic anomalies propagate throughout the transportation network, including prediction of when and where would the anomaly end, resulting in the return of smooth traffic flow to the transportation network. (A diffusion decay model could be used here.)
 
+\subsection{Task}
+
+The immediate task is to first reconstruct the full travel details of each bus carrying the passengers. The data set does not reveal the vehicle identification plate number but only provide the service number, location and time when the passenger board or alight. Although this problem can be overcome by having the bus operators record more information such as the GPS trajectory and vehicle plate number, we currently do not have access to this information. The purpose of addressing this issue is to have an inferred temporal information of when the bus arrive and depart from the bus-stop. Once we have such information, we would be able to determine whether each segment (between two bus-stops) of the route is anomalous by comparing against the average.
+
+Another immediate task is to infer the route of the entire bus trip for each bus service. I think this should be done first.
+
+
 \section{Literature Review}
 
 \subsection{Group Testing}
