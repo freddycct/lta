@@ -183,7 +183,12 @@ while !eof(STDIN)
  	# tokenize this line
  	fields = split(line, '\t')
 	
-	svc_num = convert(ASCIIString, fields[11])
+	svc_num = fields[11]
+	if svc_num == "?"
+		continue
+	else
+		svc_num = convert(ASCIIString, svc_num)
+	end
 	bus_service = get!(bus_services, svc_num, Bus_Service(svc_num))
 
  	boarding_loc = fields[9]
