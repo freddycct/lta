@@ -53,12 +53,12 @@ type Bus_Service
 		bs.svc_num = num
 
 		bs.routes = Array(List, 2)
-		bs.routes[1] = List()
-		bs.routes[2] = List()
+		#bs.routes[1] = List()
+		#bs.routes[2] = List()
 		
 		bs.bus_stops = Array(Dict, 2)
-		bs.bus_stops[1] = Dict{Bus_Stop, ListNode}()
-		bs.bus_stops[2] = Dict{Bus_Stop, ListNode}()
+		#bs.bus_stops[1] = Dict{Bus_Stop, ListNode}()
+		#bs.bus_stops[2] = Dict{Bus_Stop, ListNode}()
 		
 		bs
 	end
@@ -91,6 +91,7 @@ function insert_bus_stop(start_node::ListNode, end_node::ListNode, distance::Flo
 			insert_bus_stop(start_node, end_node, distance)
 		else
 			# end node should be placed after start_node.next
+			#println(start_node.next.bus_stop.id, "-", end_node.bus_stop.id, ":", distance - start_node.distance_to_next)
 			insert_bus_stop(start_node.next, end_node, distance - start_node.distance_to_next)
 		end
 	else
@@ -145,14 +146,18 @@ function count_node_backward(node::ListNode)
 end
 
 function print_node_forward(node::ListNode)
-	print(node.bus_stop.id, ":", node.num_next, ", ")
+	#print(node.bus_stop.id, ":", node.num_next, ", ")
+	#print(node.bus_stop.id, ", ")
+	@printf("%d:%.2f, ", node.bus_stop.id, node.distance_to_next)
 	if node.next != node
 		print_node_forward(node.next)
 	end
 end
 
 function print_node_backward(node::ListNode)
-	print(node.bus_stop.id, ":", node.num_prev, ", ")
+	#print(node.bus_stop.id, ":", node.num_prev, ", ")
+	#print(node.bus_stop.id, ", ")
+	@printf("%d:%.2f, ", node.bus_stop.id, node.distance_to_prev)
 	if node.prev != node
 		print_node_backward(node.prev)
 	end
@@ -162,11 +167,42 @@ function add_tuple(bus_service::Bus_Service,
 	boarding_bus_stop::Bus_Stop, alighting_bus_stop::Bus_Stop, 
 	direction::Int64, distance::Float64)
 
+	if isdefined(bus_service.bus_stops, direction)
+		bus_stops = bus_service.bus_stops[direction]
+	else
+		bus_stops = Dict{Bus_Stop, ListNode}()
+		bus_service.bus_stops[direction] = bus_stops
+	end
+
 	# retrieve node using direction
-	start_node = get!(bus_service.bus_stops[direction], boarding_bus_stop, ListNode(boarding_bus_stop))
-	end_node   = get!(bus_service.bus_stops[direction], alighting_bus_stop, ListNode(alighting_bus_stop))
+	start_node = get!(bus_stops, boarding_bus_stop, ListNode(boarding_bus_stop))
+	end_node   = get!(bus_stops, alighting_bus_stop, ListNode(alighting_bus_stop))
+
+	# if direction == 1
+	# 	println("Before adding")
+	# 	print("Forward: ")
+	# 	print_node_forward(start_node)
+	# 	println()
+
+	# 	print("Backward: ")
+	# 	print_node_backward(end_node)
+	# 	println()
+	# 	println()
+	# end
 
 	insert_bus_stop(start_node, end_node, distance)
+
+	# if direction == 1
+	# 	println("After adding")
+	# 	print("Forward: ")
+	# 	print_node_forward(start_node)
+	# 	println()
+
+	# 	print("Backward: ")
+	# 	print_node_backward(end_node)
+	# 	println()
+	# 	println()
+	# end
 end
 
 # Create the Hash Table to store the bus stops
@@ -235,6 +271,10 @@ for dict_pair1 in bus_services
 	fid = open(string(bus_service.svc_num, ".txt"), "w")
 
 	for direction=1:2
+		if !isdefined(bus_service.bus_stops, direction)
+			continue
+		end
+		bus_service.routes[direction] = List()
 		for dict_pair2 in bus_service.bus_stops[direction]
 
 			node = dict_pair2[2]
@@ -258,6 +298,7 @@ for dict_pair1 in bus_services
 				bus_service.routes[direction].tail = node
 			end
 		end
+		bus_service.routes[direction].num = count_node_forward(bus_service.routes[direction].head)
 
 		node = bus_service.routes[direction].head
 		write(fid, string("Direction ", direction, ": ", node.bus_stop.id))
