@@ -224,7 +224,7 @@ end
 # now count the next bus stops each bus stop has and select the head/tail
 
 for dict_pair1 in bus_services
-	bus_service = dict_pair[2]
+	bus_service = dict_pair1[2]
 
 	for direction=1:2
 		for dict_pair2 in bus_service.bus_stops[direction]
