@@ -105,7 +105,11 @@ function merge_nodes(node1::ListNode, node2::ListNode, bus_stops::Dict{Bus_Stop,
 		# sever the link between node2 and next
 		tmp = node2.next
 		tmp.prev = tmp
+		tmp.distance_to_prev = 0.0
+
 		node2.next = node2
+		node2.distance_to_next = 0.0
+
 		insert_bus_stop(node1, tmp, node2.distance_to_next, bus_stops)
 		# I wonder if it is necessary to put node2.next between node1 and node1.next
 	end
@@ -114,7 +118,11 @@ function merge_nodes(node1::ListNode, node2::ListNode, bus_stops::Dict{Bus_Stop,
 		# sever the link between node2 and prev
 		tmp = node2.prev
 		tmp.next = tmp
+		tmp.distance_to_next = 0.0
+
 		node2.prev = node2
+		node2.distance_to_prev = 0.0
+
 		insert_bus_stop(tmp, node1, node2.distance_to_prev, bus_stops)
 	end
 end
@@ -127,10 +135,11 @@ function insert_bus_stop(start_node::ListNode, end_node::ListNode,
 	elseif distance < 1e-10 && start_node != end_node
 		# the case of two bus stops at the same location
 		# try to merge them
-		println("Merging ", get_id(start_node), " and ", get_id(end_node))
+		#println("Merging ", get_id(start_node), " and ", get_id(end_node))
 		# check whether merge is in progress
-		merge_nodes(start_node, end_node, bus_stops)
-		return
+		#merge_nodes(start_node, end_node, bus_stops)
+		#return
+		println(get_id(start_node), " and ", get_id(end_node), " has to be merged.")
 	end
 
 	if start_node.next != start_node
@@ -141,10 +150,12 @@ function insert_bus_stop(start_node::ListNode, end_node::ListNode,
 			# end node should be placed between start_node and start_node.next
 			# break the edge between start_node and start_node.next
 			start_node.next.prev = start_node.next
+			start_node.next.distance_to_prev = 0.0
 			#println(get_id(end_node), " - ", get_id(start_node.next), " : ", start_node.distance_to_next - distance)
 			insert_bus_stop(end_node, start_node.next, start_node.distance_to_next - distance, bus_stops)
 
 			start_node.next = start_node
+			start_node.distance_to_next = 0.0
 			#println(get_id(start_node), " - ", get_id(end_node), " : ", distance)
 			insert_bus_stop(start_node, end_node, distance, bus_stops)
 		else
@@ -162,9 +173,13 @@ function insert_bus_stop(start_node::ListNode, end_node::ListNode,
 				#println("place start_node between end_node.prev and end_node")
 				# start_node should be placed between end_node.prev and end_node
 				end_node.prev.next = end_node.prev
+				end_node.prev.distance_to_next = 0.0
+
 				insert_bus_stop(end_node.prev, start_node, end_node.distance_to_prev - distance, bus_stops)
 
 				end_node.prev = end_node
+				end_node.distance_to_prev = 0.0
+
 				insert_bus_stop(start_node, end_node, distance, bus_stops)
 			else
 				# start_node should be placed before end_node.prev
@@ -238,7 +253,7 @@ function add_tuple(bus_service::Bus_Service,
 	start_node = get!(bus_stops, boarding_bus_stop, ListNode(boarding_bus_stop))
 	end_node   = get!(bus_stops, alighting_bus_stop, ListNode(alighting_bus_stop))
 
-	# if direction == 2
+	# if direction == 1
 	# 	println("Before adding")
 	# 	print("Forward: ")
 	# 	print_node_forward(start_node)
@@ -252,7 +267,7 @@ function add_tuple(bus_service::Bus_Service,
 
 	insert_bus_stop(start_node, end_node, distance, bus_stops)
 
-	# if direction == 2
+	# if direction == 1
 	# 	println("After adding")
 	# 	print("Forward: ")
 	# 	print_node_forward(start_node)
