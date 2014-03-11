@@ -39,15 +39,15 @@ while !eof(STDIN)
 	else
 		svc_num = convert(ASCIIString, svc_num)
 	end
-	fid = get!(fids, svc_num, open(string(svc_num, ".txt"), "w"))
-
+	#fid = get!(fids, svc_num, open(string(svc_num, ".txt"), "w"))
+	fid = open(string(svc_num, ".txt"), "a")
 	write(fid, line)
-
+	close(fid)
 	# if svc_num == extract_svc_num
 	# 	print(line)
 	# end
 end
 
-for fid in values(fids)
-	close(fid)
-end
+# for fid in values(fids)
+# 	close(fid)
+# end
