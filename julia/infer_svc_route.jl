@@ -450,6 +450,9 @@ for dict_pair1 in bus_services
 	write(fid, "===Start===\n")
 
 	for direction=1:2
+		if !isdefined(bus_service.bus_stops, direction)
+			continue
+		end
 		node = bus_service.routes[direction].head
 		write(fid, string("Direction ", direction, ": ", get_id(node)))
 		current_node = node.next
