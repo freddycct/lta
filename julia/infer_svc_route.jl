@@ -344,7 +344,7 @@ for dict_pair1 in bus_services
 
 	# save to a file
 	fid = open(string(bus_service.svc_num, ".txt"), "w")
-
+	write(fid, "===Start===\n")
 	for direction=1:2
 		if !isdefined(bus_service.bus_stops, direction)
 			continue
@@ -386,6 +386,7 @@ for dict_pair1 in bus_services
 		write(fid, "\n")
 	end
 
+	write(fid, "===End===\n")
 	close(fid)
 end
 
