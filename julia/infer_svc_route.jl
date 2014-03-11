@@ -339,8 +339,6 @@ end
 
 # now count the next bus stops each bus stop has and select the head/tail
 
-success = open("success.txt", "w")
-
 for dict_pair1 in bus_services
 	bus_service = dict_pair1[2]
 
@@ -389,10 +387,7 @@ for dict_pair1 in bus_services
 	end
 
 	close(fid)
-	write(success, string(bus_service.svc_num, "\n"))
 end
-
-close(success)
 
 # println("Printing route 1")
 # print_node_forward(bus_service.routes[1].head)
