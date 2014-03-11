@@ -135,11 +135,11 @@ function insert_bus_stop(start_node::ListNode, end_node::ListNode,
 	elseif distance < 1e-10 && start_node != end_node
 		# the case of two bus stops at the same location
 		# try to merge them
-		#println("Merging ", get_id(start_node), " and ", get_id(end_node))
+		println("Merging ", get_id(start_node), " and ", get_id(end_node))
 		# check whether merge is in progress
-		#merge_nodes(start_node, end_node, bus_stops)
-		#return
-		println(get_id(start_node), " and ", get_id(end_node), " has to be merged.")
+		merge_nodes(start_node, end_node, bus_stops)
+		return
+		#println(get_id(start_node), " and ", get_id(end_node), " has to be merged.")
 	end
 
 	if start_node.next != start_node
