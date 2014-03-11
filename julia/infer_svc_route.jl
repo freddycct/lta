@@ -108,9 +108,11 @@ function merge_nodes(node1::ListNode, node2::ListNode, bus_stops::Dict{Bus_Stop,
 		tmp.distance_to_prev = 0.0
 
 		node2.next = node2
+		tmp_distance = node2.distance_to_next
+
 		node2.distance_to_next = 0.0
 
-		insert_bus_stop(node1, tmp, node2.distance_to_next, bus_stops)
+		insert_bus_stop(node1, tmp, tmp_distance, bus_stops)
 		# I wonder if it is necessary to put node2.next between node1 and node1.next
 	end
 
@@ -121,10 +123,28 @@ function merge_nodes(node1::ListNode, node2::ListNode, bus_stops::Dict{Bus_Stop,
 		tmp.distance_to_next = 0.0
 
 		node2.prev = node2
+		tmp_distance = node2.distance_to_prev
+
 		node2.distance_to_prev = 0.0
 
-		insert_bus_stop(tmp, node1, node2.distance_to_prev, bus_stops)
+		insert_bus_stop(tmp, node1, tmp_distance, bus_stops)
 	end
+
+	# println("After merging")
+	# print("Forward: ")
+	# print_node_forward(node1)
+	# println()
+	# print("Backward: ")
+	# print_node_backward(node1)
+	# println()
+
+	# print("Backward: ")
+	# print_node_backward(end_node)
+	# println()
+	# print("Forward: ")
+	# print_node_forward(end_node)
+	# println()
+	# println()
 end
 
 function insert_bus_stop(start_node::ListNode, end_node::ListNode, 
@@ -193,29 +213,61 @@ function insert_bus_stop(start_node::ListNode, end_node::ListNode,
 	end
 end
 
-function count_node_forward(node::ListNode)
+function count_node_forward(node::ListNode, origin_node::ListNode)
 	if node.num_next == -1
-		#println(node.bus_stop.id, ", ", node.next.bus_stop.id)
-		if node.next != node
-			#println("recursion!")
-			node.num_next = count_node_forward(node.next)
+		if node == origin_node
+			# circular linked list detected
+			node.num_next = 0
+		elseif node.next != node
+			node.num_next = count_node_forward(node.next, origin_node)
 		else
 			node.num_next = 0
 		end
 	end
-	#println(node.num_next)
 	return 1 + node.num_next
 end
 
-function count_node_backward(node::ListNode)
+function count_node_forward(node::ListNode)
+	if node.num_next == -1
+		#if node.next != node
+		node.num_next = count_node_forward(node.next, node)
+		#else
+		#	node.num_next = 0
+		#end
+	end
+	return 1 + node.num_next
+end
+
+function count_node_backward(node::ListNode, origin_node::ListNode)
 	if node.num_prev == -1
-		if node.prev != node
-			node.num_prev = count_node_backward(node.prev)
+		if node == origin_node
+			# circular linked list detected
+			node.num_prev = 0
+		elseif node.prev != node
+			node.num_prev = count_node_backward(node.prev, origin_node)
 		else
 			node.num_prev = 0
 		end
 	end
 	return 1 + node.num_prev
+end
+
+function count_node_backward(node::ListNode)
+	if node.num_prev == -1
+		#if node.prev != node
+		node.num_prev = count_node_backward(node.prev, node)
+		#else
+		#	node.num_prev = 0
+		#end
+	end
+	return 1 + node.num_prev
+end
+
+function print_node_forward(node::ListNode, origin::ListNode)
+	@printf("%s:%.2f, ", get_id(node), node.distance_to_next)
+	if node != origin && node.next != node
+		print_node_forward(node.next, origin)
+	end
 end
 
 function print_node_forward(node::ListNode)
@@ -224,8 +276,15 @@ function print_node_forward(node::ListNode)
 	@printf("%s:%.2f, ", get_id(node), node.distance_to_next)
 	#println("!", get_id(node.next))
 	#println("@", get_id(node))
-	if node.next != node
-		print_node_forward(node.next)
+	#if node.next != node
+	print_node_forward(node.next, node)
+	#end
+end
+
+function print_node_backward(node::ListNode, origin::ListNode)
+	@printf("%s:%.2f, ", get_id(node), node.distance_to_prev)
+	if node != origin && node.prev != node
+		print_node_backward(node.prev, origin)
 	end
 end
 
@@ -233,9 +292,9 @@ function print_node_backward(node::ListNode)
 	#print(node.bus_stop.id, ":", node.num_prev, ", ")
 	#print(node.bus_stop.id, ", ")
 	@printf("%s:%.2f, ", get_id(node), node.distance_to_prev)
-	if node.prev != node
-		print_node_backward(node.prev)
-	end
+	#if node.prev != node
+	print_node_backward(node.prev, node)
+	#end
 end
 
 function add_tuple(bus_service::Bus_Service, 
@@ -258,9 +317,15 @@ function add_tuple(bus_service::Bus_Service,
 	# 	print("Forward: ")
 	# 	print_node_forward(start_node)
 	# 	println()
+	# 	print("Backward: ")
+	# 	print_node_backward(start_node)
+	# 	println()
 
 	# 	print("Backward: ")
 	# 	print_node_backward(end_node)
+	# 	println()
+	# 	print("Forward: ")
+	# 	print_node_forward(end_node)
 	# 	println()
 	# 	println()
 	# end
@@ -287,7 +352,11 @@ bus_stops = Dict{Int64, Bus_Stop}()
 bus_services = Dict{ASCIIString, Bus_Service}()
 
 # Start reading in the file
+line_no = 0
 while !eof(STDIN)
+	line_no = line_no + 1
+	#println(line_no)
+
  	line = readline(STDIN)
  	#print(line)
 
@@ -342,9 +411,6 @@ end
 for dict_pair1 in bus_services
 	bus_service = dict_pair1[2]
 
-	# save to a file
-	fid = open(string(bus_service.svc_num, ".txt"), "w")
-	write(fid, "===Start===\n")
 	for direction=1:2
 		if !isdefined(bus_service.bus_stops, direction)
 			continue
@@ -354,7 +420,9 @@ for dict_pair1 in bus_services
 
 			node = dict_pair2[2]
 
+			#println("counting forward")
 			count_node_forward(node)
+			#println("counting backward")
 			count_node_backward(node)
 
 			if isdefined(bus_service.routes[direction], :head)
@@ -375,10 +443,17 @@ for dict_pair1 in bus_services
 		end
 		bus_service.routes[direction].num = count_node_forward(bus_service.routes[direction].head)
 
+	end
+	
+	# save to a file
+	fid = open(string(bus_service.svc_num, ".txt"), "w")
+	write(fid, "===Start===\n")
+
+	for direction=1:2
 		node = bus_service.routes[direction].head
 		write(fid, string("Direction ", direction, ": ", get_id(node)))
 		current_node = node.next
-		while current_node != node
+		while current_node != node && current_node != bus_service.routes[direction].head
 			write(fid, string(", ", get_id(current_node)))
 			node = current_node
 			current_node = current_node.next
