@@ -455,9 +455,12 @@ for dict_pair1 in bus_services
 		end
 		node = bus_service.routes[direction].head
 		write(fid, string("Direction ", direction, ": ", get_id(node)))
+		num_stops = 1
 		current_node = node.next
-		while current_node != node && current_node != bus_service.routes[direction].head
+		while (current_node != node) && 
+			(current_node != bus_service.routes[direction].head) && (num_stops < 1000)
 			write(fid, string(", ", get_id(current_node)))
+			num_stops = num_stops + 1
 			node = current_node
 			current_node = current_node.next
 		end
