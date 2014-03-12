@@ -467,7 +467,9 @@ for dict_pair1 in bus_services
 		write(fid, "\n")
 	end
 
-	write(fid, "===End===\n")
+	if num_stops < 1000
+		write(fid, "===End===\n")
+	end
 	close(fid)
 end
 
