@@ -355,7 +355,7 @@ bus_services = Dict{ASCIIString, Bus_Service}()
 line_no = 0
 while !eof(STDIN)
 	line_no = line_no + 1
-	println(line_no)
+	#println(line_no)
 
  	line = readline(STDIN)
  	#print(line)
