@@ -1,4 +1,4 @@
-date = ""
+current_date = ""
 
 while !eof(STDIN)
 	line = readline(STDIN)
@@ -32,6 +32,22 @@ while !eof(STDIN)
 
 	date = fields[3]
 
-	datefields = split(date, '/')
-	println(datefields[3], datefields[2], datefields[1])
+	if date != current_date
+
+		datefields = split(date, '/')
+		year = datefields[3]
+		month = datefields[2]
+		day = datefields[1]
+
+		if isdefined(Main, :fid)
+			close(fid)
+		end
+
+		fid = open(string("date_sorted_", year, month, day), "w")
+	end
+	write(fid, line)
+end
+
+if isdefined(Main, :fid)
+	close(fid)
 end
