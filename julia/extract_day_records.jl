@@ -39,6 +39,8 @@ while !eof(STDIN)
 		month = datefields[2]
 		day = datefields[1]
 
+		current_date = date
+
 		if isdefined(Main, :fid)
 			close(fid)
 		end
