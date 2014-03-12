@@ -45,8 +45,8 @@ while !eof(STDIN)
 			close(fid)
 		end
 
-		print(line)
-		println(date)
+		#print(line)
+		#println(date)
 
 		mkdir(string("../data/", year, month, day), 0o755)
 		mkdir(string("../data/", year, month, day, "/bus_records/"), 0o755)
