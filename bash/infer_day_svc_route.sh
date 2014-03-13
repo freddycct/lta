@@ -14,5 +14,6 @@ for outer in `cat ../data/file_list`; do
 	done
 done
 
-head -n 10 files_to_process | parallel --no-notice --max-procs 6
+cat files_to_process | parallel --no-notice --max-procs 6
+rm -f files_to_process
 
