@@ -345,6 +345,12 @@ function add_tuple(bus_service::Bus_Service,
 	# end
 end
 
+if isdefined(ARGS, 1)
+	prefix = ARGS[1]
+else
+	prefix = "."
+end
+
 # Create the Hash Table to store the bus stops
 bus_stops = Dict{Int64, Bus_Stop}()
 
@@ -446,7 +452,7 @@ for dict_pair1 in bus_services
 	end
 	
 	# save to a file
-	fid = open(string(bus_service.svc_num, ".txt"), "w")
+	fid = open(string(prefix, "/", bus_service.svc_num, ".txt"), "w")
 	write(fid, "===Start===\n")
 
 	for direction=1:2
@@ -469,6 +475,10 @@ for dict_pair1 in bus_services
 
 	if num_stops < 1000
 		write(fid, "===End===\n")
+
+	else
+		#delete this file
+		rm(string(prefix, "/", bus_service.svc_num, ".txt"))
 	end
 	close(fid)
 end
