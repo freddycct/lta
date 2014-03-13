@@ -455,6 +455,8 @@ for dict_pair1 in bus_services
 	fid = open(string(prefix, "/", bus_service.svc_num, ".txt"), "w")
 	write(fid, "===Start===\n")
 
+	num_stops = 0
+
 	for direction=1:2
 		if !isdefined(bus_service.bus_stops, direction)
 			continue
@@ -475,7 +477,6 @@ for dict_pair1 in bus_services
 
 	if num_stops < 1000
 		write(fid, "===End===\n")
-
 	else
 		#delete this file
 		rm(string(prefix, "/", bus_service.svc_num, ".txt"))
