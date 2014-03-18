@@ -1,6 +1,6 @@
 FILE=anomaly
 OUTDIR=latex_output
-TEXDIR=tex
+TEXDIR=.
 BIBDIR=$(TEXDIR)
 
 pdf: $(OUTDIR)/$(FILE).pdf
