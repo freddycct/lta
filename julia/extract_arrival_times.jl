@@ -41,7 +41,6 @@ while !eof(STDIN)
 
 	alighting_tm = strptime("%d/%m/%Y %H:%M:%S", string(alighting_date, ' ', alighting_time))
 
-
 	boarding_sec = boarding_tm.hour * 3600 + boarding_tm.min * 60 + boarding_tm.sec
 	alighting_sec = alighting_tm.hour * 3600 + alighting_tm.min * 60 + alighting_tm.sec
 

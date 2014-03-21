@@ -83,15 +83,16 @@ function get_id(node::ListNode)
 	len = length(ids)
 
 	if len == 1
-		return string(ids[1])
+		str = ids[1]
 	else
 		str = string("(", ids[1])
 		for i=2:len-1
 			str = string(str, ",", ids[i])
 		end
 		str = string(str, ",", ids[len], ")")
-		return str
 	end
+	return str
+	#return string(str, ":", node.distance_to_next)
 end
 
 function merge_nodes(node1::ListNode, node2::ListNode, bus_stops::Dict{Bus_Stop, ListNode})
@@ -478,8 +479,8 @@ for dict_pair1 in bus_services
 	
 	# save to a file
 	fid = open(string(prefix, "/", bus_service.svc_num, ".txt"), "w")
-	write(fid, "===Start===\n")
-
+	#write(fid, "===Start===\n")
+	#write(fid, "{\n\t\"service_no\" :  ")
 	num_stops = 0
 
 	for direction=1:2
@@ -487,12 +488,12 @@ for dict_pair1 in bus_services
 			continue
 		end
 		node = bus_service.routes[direction].head
-		write(fid, string("Direction ", direction, ": ", get_id(node)))
+		@printf(fid, "Direction_%d: %s:%0.2f", direction, get_id(node), node.distance_to_next)
 		num_stops = 1
 		current_node = node.next
 		while (current_node != node) && 
 			(current_node != bus_service.routes[direction].head) && (num_stops < 1000)
-			write(fid, string(", ", get_id(current_node)))
+			@printf(fid, " %s:%0.2f", get_id(current_node), current_node.distance_to_next)
 			num_stops = num_stops + 1
 			node = current_node
 			current_node = current_node.next
@@ -500,10 +501,7 @@ for dict_pair1 in bus_services
 		write(fid, "\n")
 	end
 
-	if num_stops < 1000
-		write(fid, "===End===\n")
-	else
-		#delete this file
+	if num_stops >= 1000
 		rm(string(prefix, "/", bus_service.svc_num, ".txt"))
 	end
 	close(fid)
