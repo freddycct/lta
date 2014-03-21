@@ -11,9 +11,10 @@ max_job=6
 rm -f files_to_process
 
 for outer in `cat ../data/file_list`; do
+	rm -rf ../data/${outer}/arrival_times/
 	mkdir ../data/${outer}/arrival_times/
 	for inner in `cat ../data/${outer}/success`; do
-		echo "cat ../data/${outer}/bus_records/${inner}.txt | julia ../julia/extract_arrival_times.jl | sort -n -t $'\t' -k1,1 -k2,2 > ../data/${outer}/arrival_times/${inner}" >> files_to_process
+		echo "cat ../data/${outer}/bus_records/${inner}.txt | julia ../julia/extract_arrival_times.jl | sort -n -t $'\t' -k1,1 -k2,2 > ../data/${outer}/arrival_times/${inner}.txt" >> files_to_process
 	done
 done
 
