@@ -11,7 +11,7 @@ while !eof(STDIN)
 	#print(line)
 
 	# tokenize this line
-	fields = split(line, '\t')
+	fields = split(line, ['\t', '\n'], false)
 	
  	boarding_loc = fields[9]
  	if boarding_loc == "?"

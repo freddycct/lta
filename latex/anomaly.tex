@@ -23,7 +23,7 @@ Our main objective is to detect occurence of anomalies in the PTS in space and t
 
 A basic method to detect the anomalous location is to divide the entire trip undertaken by a passenger into $N$ segments and sequentially test whether each segment is anomalous. In the worst case, such procedure would take $N$ number of tests if the last (first) segment is anomalous and the sequential test begins at the first (last) segment. A better way of testing would be to take a partitioning approach that is similar to binary search, which results in $\log N$ number of tests in the worst case. A possible way of improving beyond $\log N$ number of tests is to predict where the anomaly would most likely occur and partition the tests according to their order of probability.
 
-Beyond the detection and localization of traffic anomalies, a more challenging task would be to understand the diffusion of anomalies within the transportation network. While several prior research has sought to understand the cause of anomalies \cite{Chawla2012,Liu2011}, we perform a more extensive study of understanding how traffic anomalies propagate throughout the transportation network, including prediction of when and where would the anomaly end, resulting in the return of smooth traffic flow to the transportation network. (A diffusion decay model could be used here.)
+Beyond the detection and localization of traffic anomalies, a more challenging task would be to understand the diffusion of anomalies within the transportation network. While several prior research has sought to understand the cause of anomalies \cite{Chawla2012,Liu2011}, we perform a more extensive study of understanding how traffic anomalies propagate throughout the transportation network, including prediction of when and where would the anomaly end, resulting in the return of smooth traffic flow to the transportation network. %(A diffusion decay model could be used here.)
 
 %\subsection{Task}
 
@@ -32,6 +32,8 @@ Beyond the detection and localization of traffic anomalies, a more challenging t
 %Another immediate task is to infer the route of the entire bus trip for each bus service. I think this should be done first.
 
 \section{Data Set}
+
+\subsection{Basic Processing}
 
 Figure \ref{fig:trip_example} shows an example of what the data set looks like. We have the time and location of the passenger boarding and alighting from the bus for each of their travel trips. The nodes in Figure \ref{fig:trip_example} represent the bus stops while the number in the connecting edges represent the distance between two bus stops. By using the trips of various passengers in the data set, we are able to construct the route that the bus service takes, as shown in Figure \ref{fig:trip_example}. For example, from Figure \ref{fig:trip_example}, we can infer that $b$ should be between $a$ and $c$ because $b$ is nearer to $c$ compared to $a$, and $c$ is nearer to $b$ than $d$ so $d$ should come after $c$.
 
@@ -51,28 +53,46 @@ Then by combining the inferred routes of various bus services, we would be able 
 	\label{fig:travel_graph}
 \end{figure}
 
-I am trying to get some visualization of these routes on Google maps. I will put it here when it is available.
+\subsection{Empirical Observations}
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=4.0in]{clementi_7_boarding}
+	\caption{Histogram of Passengers Boarding at the First Bus Terminal}
+	\label{fig:travel_graph}
+\end{figure}
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=4.0in]{bedok_7_alighting}
+	\caption{Histogram of Passengers Alighting at the Last Bus Terminal}
+	\label{fig:travel_graph}
+\end{figure}
 
 \section{Research Problems}
 
-I would suggest the following few directions to take. The area of research could take us a few research papers to fully address them depending on their difficulty. It would only be clearer when I start working on them.
+I would suggest the following few directions to take. The area of research could take us a few research papers to fully address them depending on their difficulty.
+
+%It would only be clearer when I start working on them.
 
 \begin{enumerate}
-	\item Detecting the anomaly. Unlike other data sets such as virus propagation or spread of diseases, the anomaly in traffic data is not absolute, that is, we could only conclude with a certain degree of confidence whether there is an anomaly. What is necessary here for the traffic data set, are models that would predict the timing of bus arrival at bus stops. We would need two models here, a baseline model that ignores peak hours (the mornings' and evenings' rush hours), and a model that includes off-peak and peak traveling hours. Any bus arrival that falls out of the predicted schedule using the more sophisticated model would be flagged as an anomaly. I would be addressing this problem first before anything else.
+	\item Detecting the anomaly. Unlike other data sets such as virus propagation or spread of diseases, the anomaly in traffic data is not absolute, that is, we could only conclude with a certain degree of confidence whether there is an anomaly. What is necessary here for the traffic data set, are models that would predict the timing of bus arrival at bus stops. We would need several models here, a baseline model that ignores peak hours (the mornings' and evenings' rush hours), a model that includes off-peak and peak traveling hours, as well as models that factor in the fine grain trajectory of the bus services. Any bus arrival that falls out of the predicted schedule using the more sophisticated model would be flagged as an anomaly. I would be addressing this problem first before anything else.
 
-	\item Finding the root cause of anomalies. This is where the problem gets more challenging from both engineering and analytical viewpoints. From the engineering perspective, it would be relatively easy to know which trip is an anomaly but difficult to pinpoint which segment of the entire trip contains the anomaly. Recall that each trip goes through a sequence of bus stops and we would like to know which road between two bus stops is an anomaly which causes the entire trip to arrive later than predicted. I would use Figure \ref{fig:group_testing_example} to illustrate how group testing might be applicable. This is also where group testing is more likely to be applicable.
+	\item Finding the root cause of anomalies. This is where the problem gets more challenging from both engineering and analytical viewpoints. From the engineering perspective, it would be relatively easy to know which trip is an anomaly but difficult to pinpoint which segment of the entire trip contains the anomaly. Recall that each trip goes through a sequence of bus stops and we would like to know which road between two bus stops is an anomaly which causes the entire trip to arrive later than predicted. I would use Figure \ref{fig:group_testing_example} to illustrate how group testing might be applicable. %This is also where group testing is more likely to be applicable.
 
-	\item Suppose we observe two anomalies happening at the same time on seemingly independent bus routes, how do we prove that these two anomalies are related, or one is the cause of the other. I would propose that we have to use quasi-experiments to separate correlation from causality. Quasi-experiments are methods in which we simulate control experiments using the data sets only, without additional real life experiments. I am still new to this, I have read about it several years back but have not done much about it.
+	\item Suppose we observe two anomalies happening at the same time on seemingly independent bus routes, how do we prove that these two anomalies are related, or one is the cause of the other. I would propose that we have to use quasi-experiments to separate correlation from causality. Quasi-experiments are methods in which we simulate control experiments using the data sets only, without additional real life experiments. 
+
+	%I am still new to this, I have read about it several years back but have not done much about it.
 
 	\item Another aspect of research is to see how traffic anomalies diffuse throughout the network. But there are already alot of work on this, and we would need to find whether traffic anomalies has any additional properties.
 \end{enumerate}
 
 \section{Regarding the Necessary Conditions of using Group Testing}
 
-I earlier mentioned the following two conditions in the email, let me elaborate point 1 in more detail using Figure \ref{fig:group_testing_example}.
+%I earlier mentioned the following two conditions in the email, let me elaborate point 1 in more detail using Figure \ref{fig:group_testing_example}.
 
 \begin{enumerate}
-\item The data set to be partitioned into groups must be non-sequential or unordered, so that the subset of the data has the flexibility of belonging to any group for testing. In this case, the transportation data set involves time, so that makes it inherently sequential and ordered.
+\item The data set to be partitioned into groups, ideally should be non-sequential or unordered, so that the subset of the data has the flexibility of belonging to any group for testing. In this case, the transportation data set involves time, so that makes it inherently sequential and ordered. Group testing can still be used but the way of grouping the segments is restricted according to their sequence.
 
 For example by using Figure \ref{fig:group_testing_example}, suppose we have determined that the trip from $a$ to $g$ contains an anomaly. From the data set, we do not have direct information of where the anomaly occurred. We would need to detect that the anomaly exists at the edge connecting $b$ and $c$. We could narrow the search by sequentially testing the segments $\{a, e\}, \{a, d\}, \{a, c\}, \{b, d\}$ and $\{b, c\}$. But we would not be able to group the disconnected segments $\{a, b\}$ and $\{c, d\}$ into a single test.
 

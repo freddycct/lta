@@ -3,7 +3,7 @@ current_date = ""
 while !eof(STDIN)
 	line = readline(STDIN)
 
-	fields = split(line, '\t')
+	fields = split(line, ['\t', '\n'], false)
 	
  	boarding_loc = fields[9]
  	if boarding_loc == "?"
