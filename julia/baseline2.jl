@@ -1,4 +1,4 @@
-# This baseline assumes single constant speed for all buses at all times
+# This baseline assumes constant speed for each bus at all times
 
 if isdefined(ARGS, 1)
 	prefix = ARGS[1]
@@ -12,24 +12,27 @@ else
 	date = "20111101"
 end
 
-#go to directory, open the success file
+# Go to directory, open the success file
 
 fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
 
 num_records   = 0
-sum_time      = 0.0
-sum_distances = 0.0
+
+speed_dict = Dict{ASCIIString, Float64}()
 
 while !eof(fid_success)
 	bus_no = strip(readline(fid_success))
+
+	sum_time      = 0.0
+	sum_distances = 0.0
 
 	fid_bus = open(@sprintf("%s/%s/bus_records/%s.txt", prefix, date, bus_no), "r")
 	while !eof(fid_bus)
     	line = readline(fid_bus)
     
-    	#assume that file does not contain transactions with missing entries
+    	# Assume that file does not contain transactions with missing entries
     
-    	#obtain the distance traveled and the time taken
+    	# Obtain the distance traveled and the time taken
     	fields = split(line, ['\t', '\n'], false)
     
 	    distance_traveled = parsefloat(fields[14]) * 1000 #store it in meters
@@ -41,13 +44,14 @@ while !eof(fid_success)
     	num_records += 1
 	end
 	close(fid_bus)
+
+	# Now estimate the average speed for every bus
+	c = sum_distances / sum_time
+	speed_dict[bus_no] = c
 end
 
-# now estimate the average speed for every trip.
-c = sum_distances / sum_time
-
-@printf("N: %d\n", num_records)
-@printf("c: %f\n", c)
+# @printf("N: %d\n", num_records)
+# @printf("c: %f\n", c)
 
 # now estimate the sum of squares error
 
@@ -68,6 +72,7 @@ while !eof(fid_success)
     	distance_traveled = parsefloat(fields[14]) * 1000 #store it in meters
     	time_taken = parsefloat(fields[15]) * 60 #store it in seconds
     
+    	c = get(speed_dict , bus_no, nan(Float64))
     	sum_of_squares_error += (time_taken - (distance_traveled / c))^2
 	end
 	close(fid_bus)
@@ -75,7 +80,6 @@ end
 
 sigma2 = sum_of_squares_error / num_records
 sigma = sqrt(sigma2)
-@printf("sigma: %f\n", sigma)
 @printf("rmse: %f\n", sigma)
 
 close(fid_success)
