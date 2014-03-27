@@ -80,6 +80,15 @@ end
 
 sigma2 = sum_of_squares_error / num_records
 sigma = sqrt(sigma2)
-@printf("rmse: %f\n", sigma)
+
+for tuple in speed_dict
+	if tuple == first(speed_dict)
+		@printf("%s:%f", tuple[1], tuple[2])
+	else
+		@printf(" %s:%f", tuple[1], tuple[2])
+	end
+end
+
+@printf("\nrmse: %f\n", sigma)
 
 close(fid_success)
