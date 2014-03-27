@@ -58,11 +58,15 @@ end
 sum_of_squares_error = 0.0
 
 seekstart(fid_success)
-
 while !eof(fid_success)
 	bus_no = strip(readline(fid_success))
 
 	fid_bus = open(@sprintf("../data/%s/bus_records/%s.txt", date, bus_no), "r")
+
+	num_records_bus = 0
+	sum_of_squares_error_bus = 0.0
+
+	c = get(speed_dict , bus_no, nan(Float64))
 	while !eof(fid_bus)
 		line = readline(fid_bus)
 
@@ -72,14 +76,20 @@ while !eof(fid_success)
     	distance_traveled = parsefloat(fields[14]) * 1000 #store it in meters
     	time_taken = parsefloat(fields[15]) * 60 #store it in seconds
     
-    	c = get(speed_dict , bus_no, nan(Float64))
-    	sum_of_squares_error += (time_taken - (distance_traveled / c))^2
+		sum_of_squares_error_bus += (time_taken - (distance_traveled / c))^2
+    	num_records_bus += 1
 	end
 	close(fid_bus)
+	sum_of_squares_error += sum_of_squares_error_bus
+
+	sigma = sqrt(sum_of_squares_error_bus / num_records_bus)
+	@printf("%s: N:%d c:%f sigma:%f\n", bus_no, num_records_bus, c, sigma)
 end
+close(fid_success)
 
 sigma2 = sum_of_squares_error / num_records
 sigma = sqrt(sigma2)
-@printf("rmse: %f\n", sigma)
 
-close(fid_success)
+@printf("\nrmse: %f\n", sigma)
+
+
