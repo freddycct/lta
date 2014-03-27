@@ -5,16 +5,33 @@ type Bus_Stop
 	latitude::Float64
 	longitude::Float64
 
+	edges::Dict{Bus_Stop, Edge}
+
 	Bus_Stop(id::Int64) = (bs = new(); bs.id = id; bs)
 end
 
+type Edge
+	
+	src::Bus_Stop
+	tar::Bus_Stop
+	speed::Float64
+
+	function Edge(src::Bus_Stop, tar::Bus_Stop, speed::Float64)
+		edge = new()
+		edge.src = src
+		edge.tar = tar
+		edge.speed = speed
+		edge
+	end
+end
+
 # Define the doubly linked list to store the routes
-type List_node
+type List_Node
 	#bus_stop::Bus_Stop
 	bus_stops::Dict{Int64, Bus_Stop}
 
-	next::List_node
-	prev::List_node
+	next::List_Node
+	prev::List_Node
 
 	num_next::Int64
 	num_prev::Int64
@@ -22,7 +39,7 @@ type List_node
 	distance_to_next::Float64
 	distance_to_prev::Float64
 
-	function List_node(bus_stop::Bus_Stop)
+	function List_Node(bus_stop::Bus_Stop)
 		list_node = new()
 		#list_node.bus_stop = bus_stop
 		list_node.bus_stops = Dict{Int64, Bus_Stop}()
@@ -39,8 +56,8 @@ end
 
 type List
 	num::Int64
-	head::List_node
-	tail::List_node
+	head::List_Node
+	tail::List_Node
 
 	List() = (list = new(); list.num = 0; list)
 end
@@ -60,14 +77,14 @@ type Bus_Service
 		#bs.routes[2] = List()
 		
 		bs.bus_stops = Array(Dict, 2)
-		#bs.bus_stops[1] = Dict{Bus_Stop, List_node}()
-		#bs.bus_stops[2] = Dict{Bus_Stop, List_node}()
+		#bs.bus_stops[1] = Dict{Bus_Stop, List_Node}()
+		#bs.bus_stops[2] = Dict{Bus_Stop, List_Node}()
 		
 		bs
 	end
 end
 
-function place_after_bus_stop(start_node::List_node, end_node::List_node, distance::Float64)
+function place_after_bus_stop(start_node::List_Node, end_node::List_Node, distance::Float64)
 	start_node.next = end_node
 	end_node.prev = start_node
 
@@ -75,7 +92,7 @@ function place_after_bus_stop(start_node::List_node, end_node::List_node, distan
 	end_node.distance_to_prev = distance
 end
 
-function get_id(node::List_node)
+function get_id(node::List_Node)
 	ids = collect(keys(node.bus_stops))
 
 	len = length(ids)
@@ -93,7 +110,7 @@ function get_id(node::List_node)
 	#return string(str, ":", node.distance_to_next)
 end
 
-function merge_nodes(node1::List_node, node2::List_node, bus_stops::Dict{Bus_Stop, List_node})
+function merge_nodes(node1::List_Node, node2::List_Node, bus_stops::Dict{Bus_Stop, List_Node})
 	# add node2 bus stops to node1
 	for dict_pair in node2.bus_stops
 		node1.bus_stops[ dict_pair[1] ] = dict_pair[2]
@@ -156,8 +173,8 @@ function merge_nodes(node1::List_node, node2::List_node, bus_stops::Dict{Bus_Sto
 	# println()
 end
 
-function insert_bus_stop(start_node::List_node, end_node::List_node, 
-	distance::Float64, bus_stops::Dict{Bus_Stop, List_node})
+function insert_bus_stop(start_node::List_Node, end_node::List_Node, 
+	distance::Float64, bus_stops::Dict{Bus_Stop, List_Node})
 
 	if start_node == end_node
 		return false
@@ -231,7 +248,7 @@ function insert_bus_stop(start_node::List_node, end_node::List_node,
 	end
 end
 
-function count_node_forward(node::List_node, origin_node::List_node)
+function count_node_forward(node::List_Node, origin_node::List_Node)
 	if node.num_next == -1
 		if node == origin_node
 			# circular linked list detected
@@ -245,7 +262,7 @@ function count_node_forward(node::List_node, origin_node::List_node)
 	return 1 + node.num_next
 end
 
-function count_node_forward(node::List_node)
+function count_node_forward(node::List_Node)
 	if node.num_next == -1
 		#if node.next != node
 		node.num_next = count_node_forward(node.next, node)
@@ -256,7 +273,7 @@ function count_node_forward(node::List_node)
 	return 1 + node.num_next
 end
 
-function count_node_backward(node::List_node, origin_node::List_node)
+function count_node_backward(node::List_Node, origin_node::List_Node)
 	if node.num_prev == -1
 		if node == origin_node
 			# circular linked list detected
@@ -270,7 +287,7 @@ function count_node_backward(node::List_node, origin_node::List_node)
 	return 1 + node.num_prev
 end
 
-function count_node_backward(node::List_node)
+function count_node_backward(node::List_Node)
 	if node.num_prev == -1
 		#if node.prev != node
 		node.num_prev = count_node_backward(node.prev, node)
@@ -281,14 +298,14 @@ function count_node_backward(node::List_node)
 	return 1 + node.num_prev
 end
 
-function print_node_forward(node::List_node, origin::List_node)
+function print_node_forward(node::List_Node, origin::List_Node)
 	@printf("%s:%.2f, ", get_id(node), node.distance_to_next)
 	if node != origin && node.next != node
 		print_node_forward(node.next, origin)
 	end
 end
 
-function print_node_forward(node::List_node)
+function print_node_forward(node::List_Node)
 	#print(node.bus_stop.id, ":", node.num_next, ", ")
 	#print(node.bus_stop.id, ", ")
 	@printf("%s:%.2f, ", get_id(node), node.distance_to_next)
@@ -299,14 +316,14 @@ function print_node_forward(node::List_node)
 	end
 end
 
-function print_node_backward(node::List_node, origin::List_node)
+function print_node_backward(node::List_Node, origin::List_Node)
 	@printf("%s:%.2f, ", get_id(node), node.distance_to_prev)
 	if node != origin && node.prev != node
 		print_node_backward(node.prev, origin)
 	end
 end
 
-function print_node_backward(node::List_node)
+function print_node_backward(node::List_Node)
 	#print(node.bus_stop.id, ":", node.num_prev, ", ")
 	#print(node.bus_stop.id, ", ")
 	@printf("%s:%.2f, ", get_id(node), node.distance_to_prev)
@@ -322,13 +339,13 @@ function add_tuple(bus_service::Bus_Service,
 	if isdefined(bus_service.bus_stops, direction)
 		bus_stops = bus_service.bus_stops[direction]
 	else
-		bus_stops = Dict{Bus_Stop, List_node}()
+		bus_stops = Dict{Bus_Stop, List_Node}()
 		bus_service.bus_stops[direction] = bus_stops
 	end
 
 	# retrieve node using direction
-	start_node = get!(bus_stops, boarding_bus_stop, List_node(boarding_bus_stop))
-	end_node   = get!(bus_stops, alighting_bus_stop, List_node(alighting_bus_stop))
+	start_node = get!(bus_stops, boarding_bus_stop, List_Node(boarding_bus_stop))
+	end_node   = get!(bus_stops, alighting_bus_stop, List_Node(alighting_bus_stop))
 
 	# if direction == 1
 	# 	println("Before adding")
