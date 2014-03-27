@@ -74,5 +74,6 @@ end
 sigma2 = sum_of_squares_error / num_records
 sigma = sqrt(sigma2)
 @printf("sigma: %f\n", sigma)
+@printf("rmse: %f\n", sigma)
 
 close(fid_success)
