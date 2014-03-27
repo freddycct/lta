@@ -12,14 +12,12 @@ else
 	date = "20111101"
 end
 
-#go to directory, open the success file
-
-fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
-
 num_records   = 0
 sum_time      = 0.0
 sum_distances = 0.0
 
+#go to directory, open the success file
+fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
 while !eof(fid_success)
 	bus_no = strip(readline(fid_success))
 
@@ -46,15 +44,10 @@ end
 # now estimate the average speed for every trip.
 c = sum_distances / sum_time
 
-@printf("N: %d\n", num_records)
-@printf("c: %f\n", c)
-
 # now estimate the sum of squares error
-
 sum_of_squares_error = 0.0
 
 seekstart(fid_success)
-
 while !eof(fid_success)
 	bus_no = strip(readline(fid_success))
 
@@ -72,10 +65,13 @@ while !eof(fid_success)
 	end
 	close(fid_bus)
 end
+close(fid_success)
 
 sigma2 = sum_of_squares_error / num_records
 sigma = sqrt(sigma2)
-@printf("sigma: %f\n", sigma)
+
+@printf("All: N:%d c:%f sigma:%f\n", num_records, c, sigma)
+println()
 @printf("rmse: %f\n", sigma)
 
-close(fid_success)
+
