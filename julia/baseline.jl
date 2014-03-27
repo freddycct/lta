@@ -14,9 +14,9 @@ end
 
 fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
 
-num_records::Int64     = 0
-sum_time::Float64      = 0.0
-sum_distances::Float64 = 0.0
+num_records   = 0
+sum_time      = 0.0
+sum_distances = 0.0
 
 while !eof(fid_success)
 	bus_no = strip(readline(fid_success))
@@ -42,14 +42,14 @@ while !eof(fid_success)
 end
 
 # now estimate the average speed for every trip.
-c::Float64 = sum_distances / sum_time
+c = sum_distances / sum_time
 
 @printf("N: %d\n", num_records)
 @printf("c: %f\n", c)
 
 # now estimate the sum of squares error
 
-sum_of_squares_error::Float64 = 0.0
+sum_of_squares_error = 0.0
 
 seekstart(fid_success)
 
