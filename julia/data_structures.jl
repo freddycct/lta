@@ -1,16 +1,19 @@
 # Define the bus stop composite type
+abstract EdgeAbstract
+
 type Bus_Stop
+
 	id::Int64
 	name::ASCIIString
 	latitude::Float64
 	longitude::Float64
 
-	edges::Dict{Bus_Stop, Edge}
+	edges::Dict{Bus_Stop, EdgeAbstract}
 
 	Bus_Stop(id::Int64) = (bs = new(); bs.id = id; bs)
 end
 
-type Edge
+type Edge <: EdgeAbstract
 	
 	src::Bus_Stop
 	tar::Bus_Stop
@@ -65,21 +68,15 @@ end
 # Define the bus route
 type Bus_Service
 	svc_num::ASCIIString
-	routes::Array
-	bus_stops::Array
+	routes::Array{List}
+	bus_stops::Array{Dict{Bus_Stop, List_Node}}
 
 	function Bus_Service(num::ASCIIString)
 		bs = new()
 		bs.svc_num = num
 
 		bs.routes = Array(List, 2)
-		#bs.routes[1] = List()
-		#bs.routes[2] = List()
-		
 		bs.bus_stops = Array(Dict, 2)
-		#bs.bus_stops[1] = Dict{Bus_Stop, List_Node}()
-		#bs.bus_stops[2] = Dict{Bus_Stop, List_Node}()
-		
 		bs
 	end
 end
@@ -107,7 +104,6 @@ function get_id(node::List_Node)
 		str = string(str, ",", ids[len], ")")
 	end
 	return str
-	#return string(str, ":", node.distance_to_next)
 end
 
 function merge_nodes(node1::List_Node, node2::List_Node, bus_stops::Dict{Bus_Stop, List_Node})
