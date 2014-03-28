@@ -1,4 +1,4 @@
-require("data_structures.jl")
+include("data_structures.jl")
 
 if isdefined(ARGS, 1)
 	prefix = ARGS[1]
