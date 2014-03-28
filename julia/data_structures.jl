@@ -76,7 +76,7 @@ type Bus_Service
 		bs.svc_num = num
 
 		bs.routes = Array(List, 2)
-		bs.bus_stops = Array(Dict, 2)
+		bs.bus_stops = Array(Dict{Bus_Stop, List_Node}, 2)
 		bs
 	end
 end
