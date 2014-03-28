@@ -2,7 +2,6 @@
 abstract EdgeAbstract
 
 type Bus_Stop
-
 	id::Int64
 	name::ASCIIString
 	latitude::Float64
@@ -68,6 +67,7 @@ end
 # Define the bus route
 type Bus_Service
 	svc_num::ASCIIString
+	
 	routes::Array{List}
 	bus_stops::Array{Dict{Bus_Stop, List_Node}}
 
@@ -104,6 +104,26 @@ function get_id(node::List_Node)
 		str = string(str, ",", ids[len], ")")
 	end
 	return str
+end
+
+function append(bus_service::Bus_Service, direction::Int64, 
+	bus_stop::Bus_Stop, distance_to_next::Float64)
+
+	list = bus_service.routes[direction]
+	dict = bus_service.bus_stops[direction]
+
+	node = get!(dict, bus_stop, List_Node(bus_stop))
+	node.distance_to_next = distance_to_next
+
+	if list.num == 0
+		list.head = node
+	else
+		list.tail.next = node
+		node.prev = list.tail
+		node.distance_to_prev = list.tail.distance_to_next
+	end
+	list.tail = node
+	list.num += 1
 end
 
 function merge_nodes(node1::List_Node, node2::List_Node, bus_stops::Dict{Bus_Stop, List_Node})
