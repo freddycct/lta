@@ -248,7 +248,7 @@ function count_node_forward(node::List_Node, origin_node::List_Node)
 	if node.num_next == -1
 		if node == origin_node
 			# circular linked list detected
-			println("Loop detected")
+			# println("Loop detected")
 			node.num_next = 0
 		elseif node.next != node
 			node.num_next = count_node_forward(node.next, origin_node)
@@ -274,7 +274,7 @@ function count_node_backward(node::List_Node, origin_node::List_Node)
 	if node.num_prev == -1
 		if node == origin_node
 			# circular linked list detected
-			println("Loop detected")
+			# println("Loop detected")
 			node.num_prev = 0
 		elseif node.prev != node
 			node.num_prev = count_node_backward(node.prev, origin_node)
