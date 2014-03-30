@@ -17,11 +17,13 @@ type Edge <: EdgeAbstract
 	src::Bus_Stop
 	tar::Bus_Stop
 	speed::Float64
+	distance::Float64
 
-	function Edge(src::Bus_Stop, tar::Bus_Stop, speed::Float64)
+	function Edge(src::Bus_Stop, tar::Bus_Stop, distance::Float64, speed::Float64)
 		edge = new()
 		edge.src = src
 		edge.tar = tar
+		edge.distance = distance
 		edge.speed = speed
 		edge
 	end
@@ -106,13 +108,39 @@ function get_id(node::List_Node)
 	return str
 end
 
+function create_node(ids_string::SubString, bus_stops_1::Dict{Int64, Bus_Stop}, 
+	bus_stops_2::Dict{Bus_Stop, List_Node})
+	#handle the case of multiple bus stops in one node
+	bus_stop_ids = split(strip(ids_string, ['(', ')']), ',')
+	bus_stop_id = parseint(bus_stop_ids[1])
+
+	bus_stop = get!(bus_stops_1, bus_stop_id, Bus_Stop(bus_stop_id))
+
+	if haskey(bus_stops_2, bus_stop)
+		node = get(bus_stops_2, bus_stop)
+		return node
+	else
+		#create the linked list node here
+		node = List_Node(bus_stop)
+		bus_stops_2[bus_stop] = node
+
+		for i=2:length(bus_stop_ids)
+			bus_stop_id = parseint(bus_stop_ids[i])
+			bus_stop = get!(bus_stops_1, bus_stop_id, Bus_Stop(bus_stop_id))
+
+			node.bus_stops[bus_stop_id] = bus_stop
+			bus_stops_2[bus_stop] = node
+		end
+		return node
+	end
+end
+
 function append(bus_service::Bus_Service, direction::Int64, 
-	bus_stop::Bus_Stop, distance_to_next::Float64)
+	node::List_Node, distance_to_next::Float64)
 
 	list = bus_service.routes[direction]
 	dict = bus_service.bus_stops[direction]
 
-	node = get!(dict, bus_stop, List_Node(bus_stop))
 	node.distance_to_next = distance_to_next
 
 	if list.num == 0
