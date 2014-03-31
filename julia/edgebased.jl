@@ -114,8 +114,8 @@ end
 function read_all_records(prefix::ASCIIString, date::ASCIIString)
     records = Array(Record, 0)
     fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
-    #while !eof(fid_success)
-    for i=1:10
+    while !eof(fid_success)
+    #for i=1:10
         line = readline(fid_success)
         bus_no = strip(line)
         #bus_no = "7"
@@ -242,28 +242,28 @@ function speed_estimation(iterations::Int64, records::Array{Record},
             current_node = origin_node
             while current_node != destination_node
                 #get bus stop of node
-                src_bus_stop = first(values(current_node.bus_stops))
-                tar_bus_stop = first(values(current_node.next.bus_stops))
+                #src_bus_stop = first(values(current_node.bus_stops))
+                #tar_bus_stop = first(values(current_node.next.bus_stops))
 
-                edge = src_bus_stop.edges[tar_bus_stop]                
+                #edge = src_bus_stop.edges[tar_bus_stop]                
 
                 # deduct from tmp
-                tmp2 = tmp - edge.distance / edge.speed
+                #tmp2 = tmp - edge.distance / edge.speed
 
                 # this is the stochastic gradient descent !!!
-                edge.speed = edge.speed - eta * ( 2.0 * ( record.time_taken - tmp ) 
-                    * ( edge.distance / ( edge.speed * edge.speed ) ) - (tau / edge.speed) )
+                #edge.speed = edge.speed - eta * ( 2.0 * ( record.time_taken - tmp ) 
+                #    * ( edge.distance / ( edge.speed * edge.speed ) ) - (tau / edge.speed) )
                 
-                if edge.speed < 0
-                    println("Violate constraints!")
-                    edge.speed = 1.0
+                #if edge.speed < 0
+                #    println("Violate constraints!")
+                #    edge.speed = 1.0
                     #break
-                else
+                #else
                     #println(edge.speed)
-                end
+                #end
 
                 # add it back to tmp
-                tmp = tmp2 + edge.distance / edge.speed
+                #tmp = tmp2 + edge.distance / edge.speed
 
                 current_node = current_node.next
             end # end while loop
