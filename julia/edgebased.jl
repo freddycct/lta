@@ -45,10 +45,12 @@ end
 # read the initial speed from the baseline model
 function get_initial_speed(prefix::ASCIIString, date::ASCIIString)
     fid_baseline = open(@sprintf("%s/%s/baseline_params.txt", prefix, date), "r")
-    readline(fid_baseline)
     line = readline(fid_baseline)
-    fields = split(line)
     close(fid_baseline)
+
+    fields = split(line)
+    fields = split(fields[3], ':')
+
     return parsefloat(fields[2])
 end
 
