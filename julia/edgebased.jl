@@ -298,6 +298,12 @@ else
     tau = 0.0
 end
 
+if isdefined(ARGS, 5)
+    iterations = parseint(ARGS[5])
+else
+    iterations = 5
+end
+
 # first step would be to read in success and store the routes of each bus service in memory
 bus_stops, bus_services = read_bus_routes(prefix, date)
 
