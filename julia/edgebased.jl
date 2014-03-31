@@ -275,13 +275,13 @@ function speed_estimation(iterations::Int64, records::Array{Record},
 end
 
 if isdefined(ARGS, 1)
-    prefix = ARGS[1]
+    prefix = convert(ASCIIString, ARGS[1])
 else
     prefix = "../data"
 end
 
 if isdefined(ARGS, 2)
-    date = ARGS[2]
+    date = convert(ASCIIString, ARGS[2])
 else
     date = "20111101"
 end
