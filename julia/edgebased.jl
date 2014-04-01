@@ -166,7 +166,7 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString,
         line = readline(fid_success)
         bus_no = strip(line)
         #bus_no = "573"
-        println("Reading ", bus_no)
+        #println("Reading ", bus_no)
 
         fid_bus = open(@sprintf("%s/%s/bus_records/%s.txt", prefix, date, bus_no), "r")
         while !eof(fid_bus)
