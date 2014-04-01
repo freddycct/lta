@@ -70,10 +70,11 @@ function create_bus_routes_topology(bus_services::Dict{ASCIIString, Bus_Service}
                 #now create the edges and add it to previous
                 #just simply assume that the nodes only have 1 bus stop
                 
-                bus_stop_prev = first(values(node.bus_stops))
-                bus_stop_next = first(values(current_node.bus_stops))
+                bus_stop_prev = node.bus_stop
+                bus_stop_next = current_node.bus_stop
                 
                 if !isdefined(bus_stop_prev, :edges)
+                    #bus_stop_prev.edges = ObjectIdDict()
                     bus_stop_prev.edges = Dict{Bus_Stop, EdgeAbstract}()
                 end
                 
@@ -106,15 +107,17 @@ type Record
     datetime_board::TmStruct 
     datetime_alight::TmStruct
     
-    origin::Uint16
-    destination::Uint16
+    origin::Int64
+    destination::Int64
     
-    direction::Uint8
+    direction::Int64
     distance::Float64 #store in meters
     time_taken::Float64 #store in seconds
 
+    hops::Int64
+
     function Record(bus_no::ASCIIString, datetime_board::TmStruct, datetime_alight::TmStruct, 
-        origin::Uint16, destination::Uint16, direction::Uint8, distance::Float64, time_taken::Float64)
+        origin::Int64, destination::Int64, direction::Int64, distance::Float64, time_taken::Float64)
         record = new()
         record.bus_no = bus_no
         record.datetime_board = datetime_board
@@ -124,6 +127,7 @@ type Record
         record.direction = direction
         record.distance = distance
         record.time_taken = time_taken
+        record.hops = 0
         record
     end
 end
@@ -144,23 +148,23 @@ function check_finite(record::Record, bus_stops::Dict{Int64, Bus_Stop}, bus_serv
     
     #@printf("bus: %s, orig: %d, dest: %d, dir: %d\n", bus_no, origin_id, destination_id, direction)
 
-    bus_stop_origin = bus_stops[convert(Int64, origin_id)]
-    bus_stop_destination = bus_stops[convert(Int64, destination_id)]
+    bus_stop_origin = bus_stops[origin_id]
+    bus_stop_destination = bus_stops[destination_id]
 
     if haskey(bus_stops_dict, bus_stop_origin)
-        origin_node = bus_stops_dict[ bus_stops[convert(Int64, origin_id)] ]
+        origin_node = bus_stops_dict[ bus_stops[origin_id] ]
 
         if haskey(bus_stops_dict, bus_stop_destination)
             destination_node = bus_stops_dict[ bus_stop_destination ]
 
             # iterate through the segments, must find an easy way of doing this...
-            loop_count = 0
+            
             current_node = origin_node
             while current_node != destination_node
                 current_node = current_node.next
-        
-                loop_count += 1
-                if loop_count > 1000
+                record.hops += 1
+                
+                if record.hops > 1000
                     return false
                 end
             end # end while loop
@@ -179,10 +183,11 @@ end
 function read_all_records(prefix::ASCIIString, date::ASCIIString, 
     bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
 
+    total_hops = 0
     records = Array(Record, 0)
     fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
     while !eof(fid_success)
-    #for i=1:20
+    #for i=1:40
         line = readline(fid_success)
         bus_no = strip(line)
         #bus_no = "7"
@@ -198,11 +203,11 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString,
             datetime_alight = strptime("%d/%m/%Y %H:%M:%S", string(fields[5], ' ', fields[6]))
             
             # get origin, destination
-            origin = convert(Uint16, parseint(fields[9]))
-            destination = convert(Uint16, parseint(fields[10]))
+            origin = parseint(fields[9])
+            destination = parseint(fields[10])
 
             # get direction
-            direction = convert(Uint8, parseint(fields[12]))
+            direction = parseint(fields[12])
 
             # get distance
             distance = parsefloat(fields[14]) * 1000
@@ -215,30 +220,30 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString,
             # check to ensure that this record terminates, does not go infinite loop
             if check_finite(record, bus_stops, bus_services)
                 push!(records, record)
+                total_hops += record.hops
             end
         end
         close(fid_bus)
     end
     close(fid_success)
-    return records
+    return records, total_hops
 end
 
-function sum_time(origin_node::List_Node, destination_node::List_Node)
-    tmp = 0.0::Float64
-    #d = 0.0
+function summation_time(origin_node::List_Node, destination_node::List_Node)
+    tmp = 0.0
+    
     current_node = origin_node
     while current_node != destination_node
-        #get bus stop of node
-        src_bus_stop = first(values(current_node.bus_stops))
-        tar_bus_stop = first(values(current_node.next.bus_stops))
+
+        src_bus_stop = current_node.bus_stop 
+        tar_bus_stop = current_node.next.bus_stop
 
         edge = src_bus_stop.edges[tar_bus_stop]
         tmp += edge.distance / edge.speed
-        #d += edge.distance
-
+    
         current_node = current_node.next
     end
-    #@printf("%f - %f = %f\n", distance, d, distance - d)
+    
     return tmp
 end
 
@@ -265,11 +270,11 @@ function calculate_squared_error(records::Array{Record},
         
         #@printf("bus: %s, orig: %d, dest: %d, dir: %d\n", bus_no, origin_id, destination_id, direction)
 
-        origin_node = bus_stops_dict[ bus_stops[convert(Int64, origin_id)] ]
-        destination_node = bus_stops_dict[ bus_stops[convert(Int64, destination_id)] ]
+        origin_node = bus_stops_dict[ bus_stops[origin_id] ]
+        destination_node = bus_stops_dict[ bus_stops[destination_id] ]
         
         # first find the sum of the times
-        tmp = sum_time(origin_node, destination_node) #, record.distance)
+        tmp = summation_time(origin_node, destination_node) #, record.distance)
         diff = record.time_taken - tmp
 
         squared_error += diff * diff
@@ -279,7 +284,7 @@ end
 
 function speed_estimation(iterations::Int64, records::Array{Record}, 
     bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, 
-    eta::Float64, tau::Float64)
+    eta::Float64, tau::Float64, total_hops::Int64)
     # iteration starts
     for iter=1:iterations
         # shuffle it
@@ -295,23 +300,23 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         for record in records
             # determine the routes
             # get the bus service number
-            bus_no = record.bus_no :: ASCIIString
-            bus_service = bus_services[bus_no] :: Bus_Service
+            bus_no = record.bus_no
+            bus_service = bus_services[bus_no]
             
             # get the origin and dest
-            origin_id = record.origin :: Uint16
-            destination_id = record.destination :: Uint16
+            origin_id = record.origin
+            destination_id = record.destination
             
             # get the direction
-            direction = record.direction :: Uint8
+            direction = record.direction
             
             # retrieve the list_nodes associated with them
             bus_stops_dict = bus_service.bus_stops[direction]
             
             #@printf("bus: %s, orig: %d, dest: %d, dir: %d\n", bus_no, origin_id, destination_id, direction)
        
-            origin_node = bus_stops_dict[ bus_stops[convert(Int64, origin_id)] ]
-            destination_node = bus_stops_dict[ bus_stops[convert(Int64, destination_id)] ]
+            origin_node = bus_stops_dict[ bus_stops[origin_id] ]
+            destination_node = bus_stops_dict[ bus_stops[destination_id] ]
             
             # stochastic gradient descent of the segment speeds
             # iterate through the segments, must find an easy way of doing this...
@@ -319,13 +324,13 @@ function speed_estimation(iterations::Int64, records::Array{Record},
             # the segments between origin and destination requires SGD update
 
             # first find the sum of the times
-            tmp = sum_time(origin_node, destination_node)::Float64
-
+            tmp = summation_time(origin_node, destination_node)
+            
             current_node = origin_node
             while current_node != destination_node
                 #get bus stop of node
-                src_bus_stop = first(values(current_node.bus_stops))
-                tar_bus_stop = first(values(current_node.next.bus_stops))
+                src_bus_stop = current_node.bus_stop
+                tar_bus_stop = current_node.next.bus_stop
 
                 edge = src_bus_stop.edges[tar_bus_stop]
 
@@ -356,7 +361,8 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         time_elapsed = toq()
         @printf(", SGD takes: %f secs", time_elapsed)
         #squared_error = calculate_squared_error(records, bus_stops, bus_services)
-        @printf(", per: %f secs\n", time_elapsed / length(records))
+        #@printf(", per: %f secs\n", time_elapsed / length(records))
+        @printf(", per: %e secs\n", time_elapsed / total_hops)
         #@printf(", error: %f\n", squared_error)
         flush(STDOUT)
     end # end of this iteration
@@ -378,6 +384,18 @@ function baseline(records::Array{Record})
         squared_error += diff * diff
     end
     return speed, squared_error
+end
+
+macro nogc(ex)
+  quote
+    try
+      gc_disable()
+      local val = $(esc(ex))
+    finally
+      gc_enable()
+    end
+    val
+  end
 end
 
 function start()
@@ -415,9 +433,9 @@ function start()
     bus_stops, bus_services = read_bus_routes(prefix, date)
 
     # Now read all records into memory
-    records = read_all_records(prefix, date, bus_stops, bus_services)
+    records, total_hops = read_all_records(prefix, date, bus_stops, bus_services)
 
-    println("Number of records: ", length(records))
+    println("Number of hops: ", total_hops)
 
     init_speed, baseline_sum_squared_error = baseline(records)
 
@@ -429,9 +447,10 @@ function start()
     # init_speed = get_initial_speed(prefix, date)
 
     # Now construct the topology of the network based on the routes that was read in
-    
+    # init_speed = 4.7
     create_bus_routes_topology(bus_services, init_speed)
-    speed_estimation(iterations, records, bus_stops, bus_services, eta, tau)
+
+    @nogc speed_estimation(iterations, records, bus_stops, bus_services, eta, tau, total_hops)
 
     # ta da !
     # calculate the RMSE

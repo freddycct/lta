@@ -7,6 +7,7 @@ type Bus_Stop
 	latitude::Float64
 	longitude::Float64
 
+	#edges::ObjectIdDict
 	edges::Dict{Bus_Stop, EdgeAbstract}
 
 	Bus_Stop(id::Int64) = (bs = new(); bs.id = id; bs)
@@ -31,7 +32,7 @@ end
 
 # Define the doubly linked list to store the routes
 type List_Node
-	#bus_stop::Bus_Stop
+	bus_stop::Bus_Stop
 	bus_stops::Dict{Int64, Bus_Stop}
 
 	next::List_Node
@@ -45,7 +46,7 @@ type List_Node
 
 	function List_Node(bus_stop::Bus_Stop)
 		list_node = new()
-		#list_node.bus_stop = bus_stop
+		list_node.bus_stop = bus_stop
 		list_node.bus_stops = Dict{Int64, Bus_Stop}()
 		list_node.bus_stops[bus_stop.id] = bus_stop
 		list_node.next = list_node
@@ -72,6 +73,7 @@ type Bus_Service
 	
 	routes::Array{List}
 	bus_stops::Array{Dict{Bus_Stop, List_Node}}
+	#bus_stops::Array{ObjectIdDict}
 
 	function Bus_Service(num::ASCIIString)
 		bs = new()
@@ -79,6 +81,7 @@ type Bus_Service
 
 		bs.routes = Array(List, 2)
 		bs.bus_stops = Array(Dict{Bus_Stop, List_Node}, 2)
+		#bs.bus_stops = Array(ObjectIdDict, 2)
 		bs
 	end
 end
@@ -109,6 +112,7 @@ function get_id(node::List_Node)
 end
 
 function create_node(ids_string::ASCIIString, bus_stops_1::Dict{Int64, Bus_Stop}, 
+	#bus_stops_2::ObjectIdDict)
 	bus_stops_2::Dict{Bus_Stop, List_Node})
 	#handle the case of multiple bus stops in one node
 	bus_stop_ids = split(strip(ids_string, ['(', ')']), ',')
@@ -168,6 +172,7 @@ function append(bus_service::Bus_Service, direction::Int64,
 end
 
 function merge_nodes(node1::List_Node, node2::List_Node, bus_stops::Dict{Bus_Stop, List_Node})
+	#bus_stops::ObjectIdDict) 
 	# add node2 bus stops to node1
 	for dict_pair in node2.bus_stops
 		node1.bus_stops[ dict_pair[1] ] = dict_pair[2]
@@ -231,7 +236,9 @@ function merge_nodes(node1::List_Node, node2::List_Node, bus_stops::Dict{Bus_Sto
 end
 
 function insert_bus_stop(start_node::List_Node, end_node::List_Node, 
-	distance::Float64, bus_stops::Dict{Bus_Stop, List_Node})
+	distance::Float64, 
+	#bus_stops::ObjectIdDict)
+	bus_stops::Dict{Bus_Stop, List_Node})
 
 	if start_node == end_node
 		return false
@@ -287,7 +294,7 @@ function insert_bus_stop(start_node::List_Node, end_node::List_Node,
 
 				# after previous insert_bus_stop, the nodes might have merged, so we need to 
 				# retrive start_node again.
-				start_node = bus_stops[ first(values(start_node.bus_stops)) ]
+				start_node = bus_stops[ start_node.bus_stop ]
 
 				# println(get_id(start_node), " *- ", get_id(end_node), " : ", distance)
 				insert_bus_stop(start_node, end_node, distance, bus_stops)
