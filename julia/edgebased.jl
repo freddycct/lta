@@ -266,7 +266,10 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         
         tic()
         shuffle!(records) # potentially expensive operation
+        time_elapsed = toq()
+        @printf(", Shuffling takes: %f secs", time_elapsed)
         
+        tic()
         for record in records
             # determine the routes
             # get the bus service number
@@ -299,36 +302,35 @@ function speed_estimation(iterations::Int64, records::Array{Record},
             current_node = origin_node
             while current_node != destination_node
                 #get bus stop of node
-                #src_bus_stop = first(values(current_node.bus_stops))
-                #tar_bus_stop = first(values(current_node.next.bus_stops))
+                src_bus_stop = first(values(current_node.bus_stops))
+                tar_bus_stop = first(values(current_node.next.bus_stops))
 
-                #edge = src_bus_stop.edges[tar_bus_stop]                
+                edge = src_bus_stop.edges[tar_bus_stop]                
 
                 # deduct from tmp
-                #tmp2 = tmp - edge.distance / edge.speed
+                tmp2 = tmp - edge.distance / edge.speed
 
                 # this is the stochastic gradient descent !!!
-                #edge.speed = edge.speed - eta * ( 2.0 * ( record.time_taken - tmp ) 
-                #    * ( edge.distance / ( edge.speed * edge.speed ) ) - (tau / edge.speed) )
+                edge.speed = edge.speed - eta * ( 2.0 * ( record.time_taken - tmp ) 
+                    * ( edge.distance / ( edge.speed * edge.speed ) ) - (tau / edge.speed) )
                 
-                #if edge.speed < 0
-                #    println("Violate constraints!")
-                #    edge.speed = 1.0
+                if edge.speed < 0
+                    println("Violate constraints!")
+                    edge.speed = 1.0
                     #break
-                #else
-                    #println(edge.speed)
-                #end
+                else
+                    println(edge.speed)
+                end
 
                 # add it back to tmp
-                #tmp = tmp2 + edge.distance / edge.speed
-
+                tmp = tmp2 + edge.distance / edge.speed
                 current_node = current_node.next
             end # end while loop
         end # end for loop
         # calculate the RMSE
         time_elapsed = toq()
-        @printf(", time elasped: %f", time_elapsed)
-        squared_error = calculate_squared_error(records, bus_services)
+        @printf(", SGD takes: %f secs", time_elapsed)
+        squared_error = calculate_squared_error(records, bus_stops, bus_services)
         @printf(", error: %f\n", squared_error)
     end # end of this iteration
     # loop this iteration
@@ -376,14 +378,14 @@ function start()
 
     # Now read all records into memory
     records = read_all_records(prefix, date, bus_stops, bus_services)
-
+    #println("Number of records: ", length(records))
     speed_estimation(iterations, records, bus_stops, bus_services, eta, tau)
 
     # ta da !
     # calculate the RMSE
     squared_error = calculate_squared_error(records, bus_stops, bus_services)
     rmse = sqrt(squared_error / length(records))
+    @printf("RMSE: %f\n", rmse)
 end
 
 start()
-# @printf("RMSE: %f\n", rmse)
