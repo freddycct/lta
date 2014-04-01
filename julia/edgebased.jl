@@ -220,7 +220,9 @@ function sum_time(origin_node::List_Node, destination_node::List_Node)
     return tmp
 end
 
-function calculate_squared_error(records::Array{Record}, bus_services::Dict{ASCIIString, Bus_Service})
+function calculate_squared_error(records::Array{Record}, 
+    bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
+
     squared_error = 0.0
 
     for record in records
@@ -255,7 +257,8 @@ function calculate_squared_error(records::Array{Record}, bus_services::Dict{ASCI
 end
 
 function speed_estimation(iterations::Int64, records::Array{Record}, 
-    bus_services::Dict{ASCIIString, Bus_Service}, eta::Float64, tau::Float64)
+    bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, 
+    eta::Float64, tau::Float64)
     # iteration starts
     for iter=1:iterations
         # shuffle it
@@ -331,38 +334,38 @@ function speed_estimation(iterations::Int64, records::Array{Record},
     # loop this iteration
 end
 
-if isdefined(ARGS, 1)
-    prefix = convert(ASCIIString, ARGS[1])
-else
-    prefix = "../data"
-end
-
-if isdefined(ARGS, 2)
-    date = convert(ASCIIString, ARGS[2])
-else
-    date = "20111101"
-end
-
-if isdefined(ARGS, 3)
-    eta = parsefloat(ARGS[3])
-else
-    eta = 1e-5
-end
-
-if isdefined(ARGS, 4)
-    tau = parsefloat(ARGS[4])
-else
-    tau = 0.0
-end
-
-if isdefined(ARGS, 5)
-    iterations = parseint(ARGS[5])
-else
-    iterations = 5
-end
-
-# first step would be to read in success and store the routes of each bus service in memory
 function start()
+    if isdefined(ARGS, 1)
+        prefix = convert(ASCIIString, ARGS[1])
+    else
+        prefix = "../data"
+    end
+
+    if isdefined(ARGS, 2)
+        date = convert(ASCIIString, ARGS[2])
+    else
+        date = "20111101"
+    end
+
+    if isdefined(ARGS, 3)
+        eta = parsefloat(ARGS[3])
+    else
+        eta = 1e-5
+    end
+
+    if isdefined(ARGS, 4)
+        tau = parsefloat(ARGS[4])
+    else
+        tau = 0.0
+    end
+
+    if isdefined(ARGS, 5)
+        iterations = parseint(ARGS[5])
+    else
+        iterations = 5
+    end
+
+    # first step would be to read in success and store the routes of each bus service in memory
     bus_stops, bus_services = read_bus_routes(prefix, date)
 
     # get initial speed from baseline
@@ -374,12 +377,12 @@ function start()
     # Now read all records into memory
     records = read_all_records(prefix, date, bus_stops, bus_services)
 
-    # speed_estimation(10, records, bus_services, eta, tau)
+    speed_estimation(iterations, records, bus_stops, bus_services, eta, tau)
 
     # ta da !
     # calculate the RMSE
-    # squared_error = calculate_squared_error(records, bus_services)
-    # rmse = sqrt(squared_error / length(records))
+    squared_error = calculate_squared_error(records, bus_stops, bus_services)
+    rmse = sqrt(squared_error / length(records))
 end
 
 start()
