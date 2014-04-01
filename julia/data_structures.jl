@@ -108,13 +108,19 @@ function get_id(node::List_Node)
 	return str
 end
 
-function create_node(ids_string::SubString, bus_stops_1::Dict{Int64, Bus_Stop}, 
+function create_node(ids_string::ASCIIString, bus_stops_1::Dict{Int64, Bus_Stop}, 
 	bus_stops_2::Dict{Bus_Stop, List_Node})
 	#handle the case of multiple bus stops in one node
 	bus_stop_ids = split(strip(ids_string, ['(', ')']), ',')
 	bus_stop_id = parseint(bus_stop_ids[1])
 
-	bus_stop = get!(bus_stops_1, bus_stop_id, Bus_Stop(bus_stop_id))
+	bus_stop = get(bus_stops_1, bus_stop_id, Bus_Stop(bus_stop_id))
+	if !haskey(bus_stops_1, bus_stop_id)
+		bus_stops_1[bus_stop_id] = bus_stop
+	end
+	
+	#removed because v0.2.1 does not have get!
+	#bus_stop = get!(bus_stops_1, bus_stop_id, Bus_Stop(bus_stop_id))
 
 	if haskey(bus_stops_2, bus_stop)
 		node = get(bus_stops_2, bus_stop)
@@ -126,7 +132,14 @@ function create_node(ids_string::SubString, bus_stops_1::Dict{Int64, Bus_Stop},
 
 		for i=2:length(bus_stop_ids)
 			bus_stop_id = parseint(bus_stop_ids[i])
-			bus_stop = get!(bus_stops_1, bus_stop_id, Bus_Stop(bus_stop_id))
+
+			#removed because v0.2.1 does not have get!
+			#bus_stop = get!(bus_stops_1, bus_stop_id, Bus_Stop(bus_stop_id))
+
+			bus_stop = get(bus_stops_1, bus_stop_id, Bus_Stop(bus_stop_id))
+			if !haskey(bus_stops_1, bus_stop_id)
+				bus_stops_1[bus_stop_id] = bus_stop
+			end
 
 			node.bus_stops[bus_stop_id] = bus_stop
 			bus_stops_2[bus_stop] = node
@@ -390,8 +403,20 @@ function add_tuple(bus_service::Bus_Service,
 	end
 
 	# retrieve node using direction
-	start_node = get!(bus_stops, boarding_bus_stop, List_Node(boarding_bus_stop))
-	end_node   = get!(bus_stops, alighting_bus_stop, List_Node(alighting_bus_stop))
+
+	#removed because v0.2.1 does not have get!
+	#start_node = get!(bus_stops, boarding_bus_stop, List_Node(boarding_bus_stop))
+	#end_node   = get!(bus_stops, alighting_bus_stop, List_Node(alighting_bus_stop))
+
+	start_node = get(bus_stops, boarding_bus_stop, List_Node(boarding_bus_stop))
+	if !haskey(bus_stops, boarding_bus_stop)
+		bus_stops[boarding_bus_stop] = start_node
+	end
+
+	end_node   = get(bus_stops, alighting_bus_stop, List_Node(alighting_bus_stop))
+	if !haskey(bus_stops, alighting_bus_stop)
+		bus_stops[alighting_bus_stop] = end_node
+	end
 
 	# if direction == 1
 	# 	println("Before adding")
