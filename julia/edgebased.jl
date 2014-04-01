@@ -108,10 +108,38 @@ type Record
     time_taken::Float64 #store in seconds
 end
 
+function check_finite(record::Record, bus_services::Dict{ASCIIString, Bus_Service})
+    bus_no = record.bus_no
+    bus_service = bus_services[bus_no]
+    
+    # get the origin and dest
+    origin_id = record.origin
+    destination_id = record.destination
+    
+    # get the direction
+    direction = record.direction
+    
+    # retrieve the list_nodes associated with them
+    bus_stops_dict = bus_service.bus_stops[direction]
+    
+    #@printf("bus: %s, orig: %d, dest: %d, dir: %d\n", bus_no, origin_id, destination_id, direction)
+
+    origin_node = bus_stops_dict[ bus_stops[convert(Int64, origin_id)] ]
+    destination_node = bus_stops_dict[ bus_stops[convert(Int64, destination_id)] ]
+    
+    # iterate through the segments, must find an easy way of doing this...
+    current_node = origin_node
+    while current_node != destination_node
+        current_node = current_node.next
+    end # end while loop
+    return true
+end
+
 #<passenger_id> <type> <date_boarded> <time_boarded> <date_alighted> <time_alighted>
 #<card> <card> <origin> <dest> <svc_no> <dir> <dir> <distance> <time_taken>
 
-function read_all_records(prefix::ASCIIString, date::ASCIIString)
+function read_all_records(prefix::ASCIIString, date::ASCIIString, bus_services::Dict{ASCIIString, Bus_Service})
+
     records = Array(Record, 0)
     fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
     while !eof(fid_success)
@@ -119,7 +147,8 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString)
         line = readline(fid_success)
         bus_no = strip(line)
         #bus_no = "7"
-
+        println("Reading ", bus_no)
+        
         fid_bus = open(@sprintf("%s/%s/bus_records/%s.txt", prefix, date, bus_no), "r")
         while !eof(fid_bus)
             line = readline(fid_bus)
@@ -142,7 +171,11 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString)
             time_taken = parsefloat(fields[15])
             
             record = Record(bus_no, datetime_board, datetime_alight, origin, destination, direction, distance, time_taken)
-            push!(records, record)
+
+            # check to ensure that this record terminates, does not go infinite loop
+            if check_finite(record, bus_services)
+                push!(records, record)
+            end
         end
         close(fid_bus)
     end
@@ -317,12 +350,12 @@ init_speed = get_initial_speed(prefix, date)
 create_bus_routes_topology(bus_services, init_speed)
 
 # Now read all records into memory
-records = read_all_records(prefix, date)
+records = read_all_records(prefix, date, bus_services)
 
-speed_estimation(10, records, bus_services, eta, tau)
+# speed_estimation(10, records, bus_services, eta, tau)
 
 # ta da !
 # calculate the RMSE
-squared_error = calculate_squared_error(records, bus_services)
-rmse = sqrt(squared_error / length(records))
-@printf("RMSE: %f\n", rmse)
+# squared_error = calculate_squared_error(records, bus_services)
+# rmse = sqrt(squared_error / length(records))
+# @printf("RMSE: %f\n", rmse)
