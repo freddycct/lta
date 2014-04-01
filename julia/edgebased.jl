@@ -181,8 +181,8 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString,
 
     records = Array(Record, 0)
     fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
-    #while !eof(fid_success)
-    for i=1:20
+    while !eof(fid_success)
+    #for i=1:20
         line = readline(fid_success)
         bus_no = strip(line)
         #bus_no = "7"
