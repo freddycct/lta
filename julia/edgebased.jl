@@ -319,7 +319,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
                     edge.speed = 1.0
                     #break
                 else
-                    println(edge.speed)
+                    #println(edge.speed)
                 end
 
                 # add it back to tmp
