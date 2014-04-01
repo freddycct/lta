@@ -368,6 +368,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         flush(STDOUT)
 
         gc_enable()
+        gc()
     end # end of this iteration
     # loop this iteration
 end
