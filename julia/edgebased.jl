@@ -296,6 +296,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         @printf(", Shuffling takes: %f secs", time_elapsed)
         flush(STDOUT)
 
+        gc_disable()
         tic()
         for record in records
             # determine the routes
@@ -365,6 +366,8 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         @printf(", per: %e secs\n", time_elapsed / total_hops)
         #@printf(", error: %f\n", squared_error)
         flush(STDOUT)
+
+        gc_enable()
     end # end of this iteration
     # loop this iteration
 end
@@ -450,7 +453,7 @@ function start()
     # init_speed = 4.7
     create_bus_routes_topology(bus_services, init_speed)
 
-    @nogc speed_estimation(iterations, records, bus_stops, bus_services, eta, tau, total_hops)
+    speed_estimation(iterations, records, bus_stops, bus_services, eta, tau, total_hops)
 
     # ta da !
     # calculate the RMSE
