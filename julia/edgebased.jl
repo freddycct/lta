@@ -420,19 +420,19 @@ function start()
     if isdefined(ARGS, 3)
         eta = parsefloat(ARGS[3])
     else
-        eta = 1e-5
+        eta = 1e-7
     end
 
     if isdefined(ARGS, 4)
         tau = parsefloat(ARGS[4])
     else
-        tau = 0.1
+        tau = 1.0
     end
 
     if isdefined(ARGS, 5)
         iterations = parseint(ARGS[5])
     else
-        iterations = 5
+        iterations = 50
     end
 
     # first step would be to read in success and store the routes of each bus service in memory
