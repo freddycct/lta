@@ -186,10 +186,8 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString,
     records = Array(Record, 0)
     fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
     while !eof(fid_success)
-    #for i=1:100
         line = readline(fid_success)
         bus_no = strip(line)
-        #bus_no = "7"
 
         fid_bus = open(@sprintf("%s/%s/bus_records/%s.txt", prefix, date, bus_no), "r")
         while !eof(fid_bus)
@@ -295,7 +293,6 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         @printf(", Shuffling takes: %f secs", time_elapsed)
         flush(STDOUT)
 
-        #gc_disable()
         tic()
         for record in records
             # determine the routes
@@ -360,14 +357,18 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         # calculate the RMSE
         time_elapsed = toq()
         @printf(", SGD takes: %f secs", time_elapsed)
-        #squared_error = calculate_squared_error(records, bus_stops, bus_services)
+        
+        tic()
+        squared_error = calculate_squared_error(records, bus_stops, bus_services)
+        time_elapsed = toq()
+        
         #@printf(", per: %f secs\n", time_elapsed / length(records))
-        @printf(", per: %e secs\n", time_elapsed / total_hops)
-        #@printf(", error: %f\n", squared_error)
+        #@printf(", per: %e secs\n", time_elapsed / total_hops)
+        
+        @printf(", error: %f (%f secs)\n", squared_error, time_elapsed)
+        
         flush(STDOUT)
 
-        #gc_enable()
-        #gc()
     end # end of this iteration
     # loop this iteration
 end
