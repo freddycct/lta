@@ -365,7 +365,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         #@printf(", per: %f secs\n", time_elapsed / length(records))
         #@printf(", per: %e secs\n", time_elapsed / total_hops)
         
-        @printf(", error: %f (%f secs)\n", squared_error, time_elapsed)
+        @printf(", error: %e (%f secs)\n", squared_error, time_elapsed)
         
         flush(STDOUT)
 
