@@ -1,19 +1,7 @@
 # Define the bus stop composite type
-type Edge #<: EdgeAbstract
-	
-	#src::Bus_Stop
-	#tar::Bus_Stop
+type Edge
 	speed::Float64
 	distance::Float64
-
-	# function Edge(src::Bus_Stop, tar::Bus_Stop, distance::Float64, speed::Float64)
-	# 	edge = new()
-	# 	edge.src = src
-	# 	edge.tar = tar
-	# 	edge.distance = distance
-	# 	edge.speed = speed
-	# 	edge
-	# end
 
 	function Edge(distance::Float64, speed::Float64)
 		edge = new()
@@ -28,9 +16,6 @@ type Bus_Stop
 	name::ASCIIString
 	latitude::Float64
 	longitude::Float64
-
-	#edges::ObjectIdDict
-	#edges::Dict{Bus_Stop, EdgeAbstract}
 	edges::Dict{Bus_Stop, Edge}
 
 	Bus_Stop(id::Int64) = (bs = new(); bs.id = id; bs)
@@ -76,10 +61,8 @@ end
 # Define the bus route
 type Bus_Service
 	svc_num::ASCIIString
-	
 	routes::Array{List}
 	bus_stops::Array{Dict{Bus_Stop, List_Node}}
-	#bus_stops::Array{ObjectIdDict}
 
 	function Bus_Service(num::ASCIIString)
 		bs = new()
@@ -87,7 +70,6 @@ type Bus_Service
 
 		bs.routes = Array(List, 2)
 		bs.bus_stops = Array(Dict{Bus_Stop, List_Node}, 2)
-		#bs.bus_stops = Array(ObjectIdDict, 2)
 		bs
 	end
 end
@@ -118,7 +100,6 @@ function get_id(node::List_Node)
 end
 
 function create_node(ids_string::ASCIIString, bus_stops_1::Dict{Int64, Bus_Stop}, 
-	#bus_stops_2::ObjectIdDict)
 	bus_stops_2::Dict{Bus_Stop, List_Node})
 	#handle the case of multiple bus stops in one node
 	bus_stop_ids = split(strip(ids_string, ['(', ')']), ',')
@@ -178,7 +159,6 @@ function append(bus_service::Bus_Service, direction::Int64,
 end
 
 function merge_nodes(node1::List_Node, node2::List_Node, bus_stops::Dict{Bus_Stop, List_Node})
-	#bus_stops::ObjectIdDict) 
 	# add node2 bus stops to node1
 	for dict_pair in node2.bus_stops
 		node1.bus_stops[ dict_pair[1] ] = dict_pair[2]
@@ -213,38 +193,10 @@ function merge_nodes(node1::List_Node, node2::List_Node, bus_stops::Dict{Bus_Sto
 
 		insert_bus_stop(tmp, node1, tmp_distance, bus_stops)
 	end
-
-	# println("After merging")
-	# print("Forward: ")
-	# print_node_forward(node1)
-	# println()
-	# print("Backward: ")
-	# print_node_backward(node1)
-	# println()
-
-	# detect whether any nodes still point to node2
-	# for node in values(bus_stops)
-	# 	if node.next == node2
-	# 		println(get_id(node))
-	# 	end
-	# 	if node.prev == node2
-	# 		println(get_id(node))
-	# 	end
-	# end
-
-	# print("Backward: ")
-	# print_node_backward(end_node)
-	# println()
-	# print("Forward: ")
-	# print_node_forward(end_node)
-	# println()
-	# println()
 end
 
 function insert_bus_stop(start_node::List_Node, end_node::List_Node, 
-	distance::Float64, 
-	#bus_stops::ObjectIdDict)
-	bus_stops::Dict{Bus_Stop, List_Node})
+	distance::Float64, bus_stops::Dict{Bus_Stop, List_Node})
 
 	if start_node == end_node
 		return false
@@ -335,11 +287,7 @@ end
 
 function count_node_forward(node::List_Node)
 	if node.num_next == -1
-		#if node.next != node
 		node.num_next = count_node_forward(node.next, node)
-		#else
-		#	node.num_next = 0
-		#end
 	end
 	return 1 + node.num_next
 end
@@ -347,8 +295,6 @@ end
 function count_node_backward(node::List_Node, origin_node::List_Node)
 	if node.num_prev == -1
 		if node == origin_node
-			# circular linked list detected
-			# println("Loop detected")
 			node.num_prev = 0
 		elseif node.prev != node
 			node.num_prev = count_node_backward(node.prev, origin_node)
@@ -361,11 +307,7 @@ end
 
 function count_node_backward(node::List_Node)
 	if node.num_prev == -1
-		#if node.prev != node
 		node.num_prev = count_node_backward(node.prev, node)
-		#else
-		#	node.num_prev = 0
-		#end
 	end
 	return 1 + node.num_prev
 end
@@ -378,11 +320,7 @@ function print_node_forward(node::List_Node, origin::List_Node)
 end
 
 function print_node_forward(node::List_Node)
-	#print(node.bus_stop.id, ":", node.num_next, ", ")
-	#print(node.bus_stop.id, ", ")
 	@printf("%s:%.2f, ", get_id(node), node.distance_to_next)
-	#println("!", get_id(node.next))
-	#println("@", get_id(node))
 	if node.next != node
 		print_node_forward(node.next, node)
 	end
@@ -396,8 +334,6 @@ function print_node_backward(node::List_Node, origin::List_Node)
 end
 
 function print_node_backward(node::List_Node)
-	#print(node.bus_stop.id, ":", node.num_prev, ", ")
-	#print(node.bus_stop.id, ", ")
 	@printf("%s:%.2f, ", get_id(node), node.distance_to_prev)
 	if node.prev != node
 		print_node_backward(node.prev, node)
@@ -431,41 +367,5 @@ function add_tuple(bus_service::Bus_Service,
 		bus_stops[alighting_bus_stop] = end_node
 	end
 
-	# if direction == 1
-	# 	println("Before adding")
-	# 	print("Forward: ")
-	# 	print_node_forward(start_node)
-	# 	println()
-	# 	print("Backward: ")
-	# 	print_node_backward(start_node)
-	# 	println()
-
-	# 	print("Backward: ")
-	# 	print_node_backward(end_node)
-	# 	println()
-	# 	print("Forward: ")
-	# 	print_node_forward(end_node)
-	# 	println()
-	# 	println()
-	# end
-
 	insert_bus_stop(start_node, end_node, distance, bus_stops)
-
-	# if direction == 1
-	# 	println("After adding")
-	# 	print("Forward: ")
-	# 	print_node_forward(start_node)
-	# 	println()
-	# 	print("Backward: ")
-	# 	print_node_backward(start_node)
-	# 	println()
-
-	# 	print("Backward: ")
-	# 	print_node_backward(end_node)
-	# 	println()
-	# 	print("Forward: ")
-	# 	print_node_forward(end_node)
-	# 	println()
-	# 	println()
-	# end
 end

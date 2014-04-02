@@ -74,7 +74,6 @@ function create_bus_routes_topology(bus_services::Dict{ASCIIString, Bus_Service}
                 bus_stop_next = current_node.bus_stop
                 
                 if !isdefined(bus_stop_prev, :edges)
-                    #bus_stop_prev.edges = ObjectIdDict()
                     bus_stop_prev.edges = Dict{Bus_Stop, Edge}()
                 end
                 
