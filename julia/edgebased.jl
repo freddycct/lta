@@ -285,7 +285,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
     # iteration starts
     for iter=1:iterations
         # shuffle it
-        adjusted_eta = eta / (iter * iter)
+        adjusted_eta = eta / iter # * iter)
 
         @printf("Iteration: %d/%d", iter, iterations)
         
