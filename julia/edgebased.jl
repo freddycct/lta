@@ -439,6 +439,7 @@ function start()
     bus_stops, bus_services = read_bus_routes(prefix, date)
 
     # Now read all records into memory
+    println("Reading records...")
     records, total_hops = read_all_records(prefix, date, bus_stops, bus_services)
 
     println("Number of hops: ", total_hops)
