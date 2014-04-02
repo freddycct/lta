@@ -176,6 +176,44 @@ function check_finite(record::Record, bus_stops::Dict{Int64, Bus_Stop}, bus_serv
     end
 end
 
+function print_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
+
+    bus_no = "7"
+    bus_service = bus_services[bus_no]
+
+    for direction=1:2
+        if !isdefined(bus_service.routes, direction)
+            continue
+        else
+            @printf("Direction_%d\n", direction)
+        end
+        
+        route = bus_service.routes[direction] # route is List
+        node = route.head # obtained linked list node that contains bus stops
+        
+        current_node = node.next
+        while current_node != node
+
+            bus_stop_prev = node.bus_stop
+            bus_stop_next = current_node.bus_stop
+            
+            #edge = get!(bus_stop_prev.edges, bus_stop_next, Edge(bus_stop_prev, bus_stop_next, node.distance_to_next, init_speed))
+
+            edge = bus_stop_prev.edges[bus_stop_next]
+
+            @printf("%d -> %d: %f %f\n", bus_stop_prev.id, bus_stop_next.id, edge.distance, edge.speed)
+
+            #check whether the linkedlist have gone circular
+            if current_node == route.head
+                break
+            end
+            
+            node = current_node
+            current_node = current_node.next
+        end
+    end
+end
+
 #<passenger_id> <type> <date_boarded> <time_boarded> <date_alighted> <time_alighted>
 #<card> <card> <origin> <dest> <svc_no> <dir> <dir> <distance> <time_taken>
 
@@ -464,6 +502,8 @@ function start()
     squared_error = calculate_squared_error(records, bus_stops, bus_services)
     rmse = sqrt(squared_error / length(records))
     @printf("RMSE: %f\n", rmse)
+
+    print_edge_speeds(prefix, date, bus_stops, bus_services)
 end
 
 start()
