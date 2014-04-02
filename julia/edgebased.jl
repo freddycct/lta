@@ -285,6 +285,8 @@ function speed_estimation(iterations::Int64, records::Array{Record},
     # iteration starts
     for iter=1:iterations
         # shuffle it
+        adjusted_eta = eta / (iter * iter)
+
         @printf("Iteration: %d/%d", iter, iterations)
         
         tic()
@@ -338,7 +340,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
                 tmp2 = tmp - (dist/speed)
 
                 # this is the stochastic gradient descent !!!
-                speed = speed - eta * ((record.time_taken-tmp)*(dist/(speed*speed))-(tau/speed))
+                speed = speed-adjusted_eta*((record.time_taken-tmp)*(dist/(speed*speed))-(tau/speed))
                 
                 if speed <= 0
                     println("Violate constraints!")
@@ -418,7 +420,7 @@ function start()
     if isdefined(ARGS, 3)
         eta = parsefloat(ARGS[3])
     else
-        eta = 1e-7
+        eta = 1e-5
     end
 
     if isdefined(ARGS, 4)
