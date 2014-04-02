@@ -503,7 +503,7 @@ function start()
     rmse = sqrt(squared_error / length(records))
     @printf("RMSE: %f\n", rmse)
 
-    print_edge_speeds(prefix, date, bus_stops, bus_services)
+    print_edge_speeds(bus_stops, bus_services)
 end
 
 start()
