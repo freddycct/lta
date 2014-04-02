@@ -176,9 +176,8 @@ function check_finite(record::Record, bus_stops::Dict{Int64, Bus_Stop}, bus_serv
     end
 end
 
-function print_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
-
-    bus_no = "7"
+function print_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, bus_no::ASCIIString)
+    #bus_no = "7"
     bus_service = bus_services[bus_no]
 
     for direction=1:2
