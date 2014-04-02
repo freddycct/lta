@@ -358,16 +358,16 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         end # end for loop
         # calculate the RMSE
         time_elapsed = toq()
-        @printf(", SGD takes: %f secs", time_elapsed)
+        @printf(", SGD takes: %f secs\n", time_elapsed)
         
-        tic()
-        squared_error = calculate_squared_error(records, bus_stops, bus_services)
-        time_elapsed = toq()
+        #tic()
+        #squared_error = calculate_squared_error(records, bus_stops, bus_services)
+        #time_elapsed = toq()
         
         #@printf(", per: %f secs\n", time_elapsed / length(records))
         #@printf(", per: %e secs\n", time_elapsed / total_hops)
         
-        @printf(", error: %e (%f secs)\n", squared_error, time_elapsed)
+        #@printf(", error: %e (%f secs)\n", squared_error, time_elapsed)
         
         flush(STDOUT)
 
