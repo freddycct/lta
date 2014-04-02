@@ -1,5 +1,27 @@
 # Define the bus stop composite type
-abstract EdgeAbstract
+type Edge #<: EdgeAbstract
+	
+	#src::Bus_Stop
+	#tar::Bus_Stop
+	speed::Float64
+	distance::Float64
+
+	# function Edge(src::Bus_Stop, tar::Bus_Stop, distance::Float64, speed::Float64)
+	# 	edge = new()
+	# 	edge.src = src
+	# 	edge.tar = tar
+	# 	edge.distance = distance
+	# 	edge.speed = speed
+	# 	edge
+	# end
+
+	function Edge(distance::Float64, speed::Float64)
+		edge = new()
+		edge.distance = distance
+		edge.speed = speed
+		edge
+	end
+end
 
 type Bus_Stop
 	id::Int64
@@ -8,26 +30,10 @@ type Bus_Stop
 	longitude::Float64
 
 	#edges::ObjectIdDict
-	edges::Dict{Bus_Stop, EdgeAbstract}
+	#edges::Dict{Bus_Stop, EdgeAbstract}
+	edges::Dict{Bus_Stop, Edge}
 
 	Bus_Stop(id::Int64) = (bs = new(); bs.id = id; bs)
-end
-
-type Edge <: EdgeAbstract
-	
-	src::Bus_Stop
-	tar::Bus_Stop
-	speed::Float64
-	distance::Float64
-
-	function Edge(src::Bus_Stop, tar::Bus_Stop, distance::Float64, speed::Float64)
-		edge = new()
-		edge.src = src
-		edge.tar = tar
-		edge.distance = distance
-		edge.speed = speed
-		edge
-	end
 end
 
 # Define the doubly linked list to store the routes

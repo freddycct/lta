@@ -75,12 +75,12 @@ function create_bus_routes_topology(bus_services::Dict{ASCIIString, Bus_Service}
                 
                 if !isdefined(bus_stop_prev, :edges)
                     #bus_stop_prev.edges = ObjectIdDict()
-                    bus_stop_prev.edges = Dict{Bus_Stop, EdgeAbstract}()
+                    bus_stop_prev.edges = Dict{Bus_Stop, Edge}()
                 end
                 
                 #edge = get!(bus_stop_prev.edges, bus_stop_next, Edge(bus_stop_prev, bus_stop_next, node.distance_to_next, init_speed))
 
-                edge = get(bus_stop_prev.edges, bus_stop_next, Edge(bus_stop_prev, bus_stop_next, node.distance_to_next, init_speed))
+                edge = get(bus_stop_prev.edges, bus_stop_next, Edge(node.distance_to_next, init_speed))
 
                 if !haskey(bus_stop_prev.edges, bus_stop_next)
                     bus_stop_prev.edges[bus_stop_next] = edge
@@ -187,7 +187,7 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString,
     records = Array(Record, 0)
     fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
     while !eof(fid_success)
-    #for i=1:40
+    #for i=1:100
         line = readline(fid_success)
         bus_no = strip(line)
         #bus_no = "7"
@@ -296,7 +296,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         @printf(", Shuffling takes: %f secs", time_elapsed)
         flush(STDOUT)
 
-        gc_disable()
+        #gc_disable()
         tic()
         for record in records
             # determine the routes
@@ -314,7 +314,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
             # retrieve the list_nodes associated with them
             bus_stops_dict = bus_service.bus_stops[direction]
             
-            #@printf("bus: %s, orig: %d, dest: %d, dir: %d\n", bus_no, origin_id, destination_id, direction)
+            # @printf("bus: %s, orig: %d, dest: %d, dir: %d\n", bus_no, origin_id, destination_id, direction)
        
             origin_node = bus_stops_dict[ bus_stops[origin_id] ]
             destination_node = bus_stops_dict[ bus_stops[destination_id] ]
@@ -367,8 +367,8 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         #@printf(", error: %f\n", squared_error)
         flush(STDOUT)
 
-        gc_enable()
-        gc()
+        #gc_enable()
+        #gc()
     end # end of this iteration
     # loop this iteration
 end
