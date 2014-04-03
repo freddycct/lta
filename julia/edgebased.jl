@@ -338,7 +338,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
 
     for iter=1:iterations
         # shuffle it
-        adjusted_eta = eta #/ sqrt(iter) # * iter)
+        adjusted_eta = eta / sqrt(iter) # * iter)
 
         @printf("Iteration: %d/%d", iter, iterations)
         
@@ -477,7 +477,7 @@ function start()
     if isdefined(ARGS, 5)
         iterations = parseint(ARGS[5])
     else
-        iterations = 5
+        iterations = 10
     end
 
     # first step would be to read in success and store the routes of each bus service in memory
