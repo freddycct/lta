@@ -345,7 +345,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         tic()
         shuffle!(records) # potentially expensive operation
         time_elapsed = toq()
-        @printf(", Shuffling: %f secs", time_elapsed)
+        @printf(", Shuffling: %f (s)", time_elapsed)
         flush(STDOUT)
 
         tic()
@@ -410,12 +410,12 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         end # end for loop
         # calculate the RMSE
         time_elapsed = toq()
-        @printf(", SGD: %f secs", time_elapsed)
+        @printf(", SGD: %f (s)", time_elapsed)
         
         tic()
         squared_error = calculate_squared_error(records, bus_stops, bus_services)
         time_elapsed = toq()
-        @printf(", Sum_Square: %f", time_elapsed)
+        @printf(", Sum_Square: %f (s)", time_elapsed)
 
         sigma2 = squared_error / total_distance
         @printf(", Error: %e, Sigma2: %f\n", squared_error, sigma2)
