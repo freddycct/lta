@@ -15,6 +15,71 @@
 
 \maketitle
 
+\section{Model}
+
+For the road connecting two bus stops, we call it a segment. We assume that every segment has a speed associated with it. A bus traveling from a point of origin $x$ to its destination $y$ goes through a sequence of segments. Instead of assuming a constant speed associated with the route, we assume that the route can be divided into multiple segments, where each segment takes on a speed of its own. Given that a journey $n$ starts at $x$ and ends at $y$, a route taken by $n$ is denoted by $r_n(x_n, y_n)$ ($r_n$ for brevity).
+%An edge that belongs to $r_n(x_n, y_n)$ connects two other nodes which could intersect with the route of others.
+
+%Suppose there are $N$ journeys, $r_n(x_n, y_n)$ denotes one of the journey $n$. 
+Given that $i$ is the starting point and $j$ is the ending point within each segment $(i, j)$, let $d_{i,j}$ be the distance associated with this segment and $c_{i,j}$ be the speed associated with this segment.
+
+The predicted time $\hat{t}_n$ of the journey is given by the following Gaussian distribution,
+\begin{gather}
+\hat{t}_n \sim \mathcal{N} \left( \sum_{ (i,j) \in r_n } \frac{ d_{i,j} }{ c_{i,j} }, d_{x_n, y_n} \sigma^2 \right)
+\end{gather}
+
+\subsection{Estimation of the Mean using Least Squares Error}
+
+To estimate the speed $c_{i,j}$ of every segment $(i,j)$ using the observed time of the journey $t_n$, we formulate the following objective function based on minimizing the least squares error\footnote{Maximizing the Log Likelihood would give similar results} between the observed time $t_n$ and predicted time $\hat{t}_n$,
+
+\begin{align*}
+\mathcal{L} &= \sum_{n} \left( t_n - \hat{t}_n \right)^2 - \tau \sum_{(i,j) \in E} \log(c_{i,j}) \\
+&= \sum_{n} \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right)^2 - \tau \sum_{(i,j) \in E} \log(c_{i,j}) \\
+\frac{d \mathcal{L}}{d c_{i,j}} &= \sum_{n} 2 \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right) \frac{d_{i,j}}{c_{i,j}^2} - \frac{\tau}{c_{i,j}}
+\end{align*}
+
+Using Stochastic Gradient Descent, we would be able to update $c_{i,j}$ using each trip information $n$ as follows,
+\begin{gather}
+c_{i,j}^{new} = c_{i, j}^{old} - \eta \left[ \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right) \frac{d_{i,j}}{c_{i,j}^2} - \frac{\tau}{c_{i,j}} \right]
+\end{gather}
+
+\subsection{Estimation of the Mean by Maximum Log Likelihood}
+
+The log likelihood as contributed by each trip $n$ is given by, 
+\begin{align}
+	\mathcal{L} &= \log \left( \frac{1}{\sqrt{2 \pi d_{x_n, y_n} \sigma^2 }} \right) - \frac{\left( t_n - \sum_{ (i,j) \in r_n } \frac{d_{i,j}}{c_{i,j}} \right)^2}{2 d_{x_n, y_n} \sigma^2 } \nonumber \\
+	&= - \frac{1}{2} \log \left( d_{x_n, y_n} \sigma^2 \right) - \frac{\left( t_n - \sum_{ (i,j) \in r_n } \frac{d_{i,j}}{c_{i,j}} \right)^2}{2 d_{x_n, y_n} \sigma^2 }
+\end{align}
+We add a log barrier penalty to prevent negative speeds, 
+\begin{align}
+	\mathcal{L^*} = - \frac{1}{2} \log \left( d_{x_n, y_n} \sigma^2 \right) - \frac{\left( t_n - \sum_{ (i,j) \in r_n } \frac{d_{i,j}}{c_{i,j}} \right)^2}{2 d_{x_n, y_n} \sigma^2 } + \tau \sum_{(i,j) \in E} \log c_{i,j}
+\end{align}
+By taking partial derivative with respect to $c_{p,q}$,
+\begin{align}
+	\label{eqn:sgd_mean}
+	\frac{\partial \mathcal{L}}{\partial c_{p,q}} = - \frac{\left( t_n - \sum_{ (i,j) \in r_n } \frac{d_{i,j}}{c_{i,j}} \right)}{d_{x_n, y_n} \sigma^2 } \cdot \frac{d_{p,q}}{c_{p,q}^2} + \frac{\tau}{c_{p,q}}
+\end{align}
+The partial derivative allows us to perform Stochastic Gradient Descent on parameters $c_{p,q}$ as follows.
+\begin{align}
+	c_{p,q} \leftarrow c_{p,q} + \eta \frac{\partial \mathcal{L}}{\partial c_{p,q}}
+\end{align}
+There are several interesting properties with the partial derivative in Equation \ref{eqn:sgd_mean}. The denominator of the variance shows that the more uncertain we are, the lesser the gradient is, hence less changes to $c_{i,j}$. The smaller $c_{i,j}$ is, the second component in Equation \ref{eqn:sgd_mean} will compensate by adding positive speed to prevent negative speeds.
+
+\subsection{Estimation of the Variance}
+
+To estimate the variance $\sigma^2$ in every segment $(i,j)$, 
+\begin{align}
+	\frac{\partial \mathcal{L}}{\partial \sigma^2} &= - \frac{1}{ 2 \sigma^2 } + \frac{ \left( t_n - \sum_{ (i,j) \in r_n } \frac{d_{i,j}}{c_{i,j}} \right)^2}{ 2 d_{x_n, y_n} \sigma^4 }
+\end{align}
+Solving for $\sigma^2$
+\begin{align}
+	\sigma^2 = \frac{ \sum_n \left( t_n - \sum_{ (i,j) \in r_n } \frac{d_{i,j}}{c_{i,j}} \right)^2}{\sum_n d_{x_n, y_n}}
+\end{align}
+%Then using Stochastic Gradient Descent, 
+%\begin{align}
+%	\sigma^2 \leftarrow \sigma^2 + \eta \frac{\partial \mathcal{L}}{\partial \sigma^2}
+%\end{align}
+
 \section{Introduction}
 
 We perform our analysis on a transportation data set from an urbanized city, where majority of the population uses the public transportation system (PTS) which includes a network of railways and buses. 

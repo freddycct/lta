@@ -55,6 +55,7 @@ function get_initial_speed(prefix::ASCIIString, date::ASCIIString)
 end
 
 function create_bus_routes_topology(bus_services::Dict{ASCIIString, Bus_Service}, init_speed::Float64)
+
     for bus_service in values(bus_services)
         for direction=1:2
             if !isdefined(bus_service.routes, direction)
@@ -79,7 +80,8 @@ function create_bus_routes_topology(bus_services::Dict{ASCIIString, Bus_Service}
                 
                 #edge = get!(bus_stop_prev.edges, bus_stop_next, Edge(bus_stop_prev, bus_stop_next, node.distance_to_next, init_speed))
 
-                edge = get(bus_stop_prev.edges, bus_stop_next, Edge(node.distance_to_next, init_speed))
+                edge = get(bus_stop_prev.edges, bus_stop_next, 
+                    Edge(node.distance_to_next, init_speed))
 
                 if !haskey(bus_stop_prev.edges, bus_stop_next)
                     bus_stop_prev.edges[bus_stop_next] = edge
@@ -176,42 +178,42 @@ function check_finite(record::Record, bus_stops::Dict{Int64, Bus_Stop}, bus_serv
     end
 end
 
-function print_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, bus_no::ASCIIString)
-    #bus_no = "7"
-    bus_service = bus_services[bus_no]
+# function print_edge_speeds(sigma2::Float64, bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, bus_no::ASCIIString)
+#     #bus_no = "7"
+#     bus_service = bus_services[bus_no]
 
-    for direction=1:2
-        if !isdefined(bus_service.routes, direction)
-            continue
-        else
-            @printf("Direction_%d\n", direction)
-        end
+#     for direction=1:2
+#         if !isdefined(bus_service.routes, direction)
+#             continue
+#         else
+#             @printf("Direction_%d\n", direction)
+#         end
         
-        route = bus_service.routes[direction] # route is List
-        node = route.head # obtained linked list node that contains bus stops
+#         route = bus_service.routes[direction] # route is List
+#         node = route.head # obtained linked list node that contains bus stops
         
-        current_node = node.next
-        while current_node != node
+#         current_node = node.next
+#         while current_node != node
 
-            bus_stop_prev = node.bus_stop
-            bus_stop_next = current_node.bus_stop
+#             bus_stop_prev = node.bus_stop
+#             bus_stop_next = current_node.bus_stop
             
-            #edge = get!(bus_stop_prev.edges, bus_stop_next, Edge(bus_stop_prev, bus_stop_next, node.distance_to_next, init_speed))
+#             #edge = get!(bus_stop_prev.edges, bus_stop_next, Edge(bus_stop_prev, bus_stop_next, node.distance_to_next, init_speed))
 
-            edge = bus_stop_prev.edges[bus_stop_next]
+#             edge = bus_stop_prev.edges[bus_stop_next]
 
-            @printf("%d -> %d: %f %f\n", bus_stop_prev.id, bus_stop_next.id, edge.distance, edge.speed)
+#             @printf("%d -> %d: %f %f\n", bus_stop_prev.id, bus_stop_next.id, edge.distance, edge.speed, edge.distance * sigma2)
 
-            #check whether the linkedlist have gone circular
-            if current_node == route.head
-                break
-            end
+#             #check whether the linkedlist have gone circular
+#             if current_node == route.head
+#                 break
+#             end
             
-            node = current_node
-            current_node = current_node.next
-        end
-    end
-end
+#             node = current_node
+#             current_node = current_node.next
+#         end
+#     end
+# end
 
 #<passenger_id> <type> <date_boarded> <time_boarded> <date_alighted> <time_alighted>
 #<card> <card> <origin> <dest> <svc_no> <dir> <dir> <distance> <time_taken>
@@ -220,11 +222,16 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString,
     bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
 
     total_hops = 0
+    total_distance = 0.0
+
     records = Array(Record, 0)
     fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
+    
     while !eof(fid_success)
+    #for i=1:20
         line = readline(fid_success)
         bus_no = strip(line)
+        #bus_no = "7"
 
         fid_bus = open(@sprintf("%s/%s/bus_records/%s.txt", prefix, date, bus_no), "r")
         while !eof(fid_bus)
@@ -255,15 +262,17 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString,
             if check_finite(record, bus_stops, bus_services)
                 push!(records, record)
                 total_hops += record.hops
+                total_distance += distance
             end
         end
         close(fid_bus)
     end
     close(fid_success)
-    return records, total_hops
+    return records, total_hops, total_distance
 end
 
 function summation_time(origin_node::List_Node, destination_node::List_Node)
+
     tmp = 0.0
     
     current_node = origin_node
@@ -309,6 +318,7 @@ function calculate_squared_error(records::Array{Record},
         
         # first find the sum of the times
         tmp = summation_time(origin_node, destination_node) #, record.distance)
+        
         diff = record.time_taken - tmp
 
         squared_error += diff * diff
@@ -318,11 +328,17 @@ end
 
 function speed_estimation(iterations::Int64, records::Array{Record}, 
     bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, 
-    eta::Float64, tau::Float64, total_hops::Int64)
+    eta::Float64, tau::Float64, total_hops::Int64, sigma2::Float64, total_distance::Float64)
     # iteration starts
+
+    # first calculate the total error
+    # important to execute this as it will compute and store t_hat in each record
+    squared_error = calculate_squared_error(records, bus_stops, bus_services)
+    sigma2 = squared_error / total_distance
+
     for iter=1:iterations
         # shuffle it
-        adjusted_eta = eta / sqrt(iter) # * iter)
+        adjusted_eta = eta #/ sqrt(iter) # * iter)
 
         @printf("Iteration: %d/%d", iter, iterations)
         
@@ -343,6 +359,8 @@ function speed_estimation(iterations::Int64, records::Array{Record},
             origin_id = record.origin
             destination_id = record.destination
             
+            distance = record.distance
+
             # get the direction
             direction = record.direction
             
@@ -355,13 +373,12 @@ function speed_estimation(iterations::Int64, records::Array{Record},
             destination_node = bus_stops_dict[ bus_stops[destination_id] ]
             
             # stochastic gradient descent of the segment speeds
-            # iterate through the segments, must find an easy way of doing this...
-            
-            # the segments between origin and destination requires SGD update
 
             # first find the sum of the times
             tmp = summation_time(origin_node, destination_node)
-            
+
+            time_taken = record.time_taken
+
             current_node = origin_node
             while current_node != destination_node
                 #get bus stop of node
@@ -377,37 +394,28 @@ function speed_estimation(iterations::Int64, records::Array{Record},
                 tmp2 = tmp - (dist/speed)
 
                 # this is the stochastic gradient descent !!!
-                speed = speed-adjusted_eta*((record.time_taken-tmp)*(dist/(speed*speed))-(tau/speed))
-                
+                speed = speed + adjusted_eta * ( -((time_taken-tmp)/(distance*sigma2)) * (dist/(speed*speed)) + (tau/speed))
+
                 if speed <= 0
-                    println("Violate constraints!")
-                    edge.speed = 0.1
-                    #break
-                else
-                    edge.speed = speed
-                    #println(edge.speed)
+                    println("Violate speed constraints!")
+                    speed = 0.1
                 end
+                edge.speed = speed
 
                 # add it back to tmp
                 tmp = tmp2 + (dist / speed)
+
                 current_node = current_node.next
             end # end while loop
         end # end for loop
         # calculate the RMSE
         time_elapsed = toq()
-        @printf(", SGD takes: %f secs\n", time_elapsed)
-        
-        #tic()
-        #squared_error = calculate_squared_error(records, bus_stops, bus_services)
-        #time_elapsed = toq()
-        
-        #@printf(", per: %f secs\n", time_elapsed / length(records))
-        #@printf(", per: %e secs\n", time_elapsed / total_hops)
-        
-        #@printf(", error: %e (%f secs)\n", squared_error, time_elapsed)
+        @printf(", SGD takes: %f secs", time_elapsed)
+        squared_error = calculate_squared_error(records, bus_stops, bus_services)
+        sigma2 = squared_error / total_distance
+        @printf(", error: %e, sigma2: %f\n", squared_error, sigma2)
         
         flush(STDOUT)
-
     end # end of this iteration
     # loop this iteration
 end
@@ -457,19 +465,19 @@ function start()
     if isdefined(ARGS, 3)
         eta = parsefloat(ARGS[3])
     else
-        eta = 1e-7
+        eta = 1e-2
     end
 
     if isdefined(ARGS, 4)
         tau = parsefloat(ARGS[4])
     else
-        tau = 1.0
+        tau = 1e-2
     end
 
     if isdefined(ARGS, 5)
         iterations = parseint(ARGS[5])
     else
-        iterations = 50
+        iterations = 5
     end
 
     # first step would be to read in success and store the routes of each bus service in memory
@@ -477,16 +485,18 @@ function start()
 
     # Now read all records into memory
     println("Reading records...")
-    records, total_hops = read_all_records(prefix, date, bus_stops, bus_services)
+    records, total_hops, total_distance = read_all_records(prefix, date, bus_stops, bus_services)
 
     println("Number of hops: ", total_hops)
 
     init_speed, baseline_sum_squared_error = baseline(records)
+    init_sigma2 = baseline_sum_squared_error / total_distance
 
     println("Initial Speed: ", init_speed)
+    println("Initial Sigma2: ", init_sigma2)
     println("Baseline Error: ", baseline_sum_squared_error)
     println("Baseline RMSE: ", sqrt(baseline_sum_squared_error / length(records)))
-
+    
     # get initial speed from baseline
     # init_speed = get_initial_speed(prefix, date)
 
@@ -494,7 +504,7 @@ function start()
     # init_speed = 4.7
     create_bus_routes_topology(bus_services, init_speed)
 
-    speed_estimation(iterations, records, bus_stops, bus_services, eta, tau, total_hops)
+    speed_estimation(iterations, records, bus_stops, bus_services, eta, tau, total_hops, init_sigma2, total_distance)
 
     # ta da !
     # calculate the RMSE
@@ -502,7 +512,7 @@ function start()
     rmse = sqrt(squared_error / length(records))
     @printf("RMSE: %f\n", rmse)
 
-    print_edge_speeds(bus_stops, bus_services)
+    #print_edge_speeds(sigma2bus_stops, bus_services, "7")
 end
 
 start()
