@@ -33,6 +33,9 @@ end
 # first step would be to read in success and store the routes of each bus service in memory
 bus_stops, bus_services = read_bus_routes(prefix, date)
 
+# Now construct the topology of the network based on the routes that was read in
+create_bus_routes_topology(bus_services)
+
 # Now read all records into memory
 println("Reading records...")
 records = read_all_records(prefix, date, bus_stops, bus_services)
