@@ -1,5 +1,7 @@
 include("edgebased.jl")
 
+using HDF5, JLD
+
 if isdefined(ARGS, 1)
     prefix = convert(ASCIIString, ARGS[1])
 else
@@ -150,4 +152,4 @@ for k=1:k_fold
     # End of Smoothed method
 end
 
-@save "experiments.hdf5" baseline_train_rmse baseline_test_rmse baseline2_train_rmse baseline2_test_rmse edgebased_train_rmse edgebased_test_rmse smoothed_train_rmse smoothed_test_rmse
+@save "experiments.jld" baseline_train_rmse baseline_test_rmse baseline2_train_rmse baseline2_test_rmse edgebased_train_rmse edgebased_test_rmse smoothed_train_rmse smoothed_test_rmse
