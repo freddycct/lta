@@ -28,20 +28,22 @@ The predicted time $\hat{t}_n$ of the journey is given by the following Gaussian
 \hat{t}_n \sim \mathcal{N} \left( \sum_{ (i,j) \in r_n } \frac{ d_{i,j} }{ c_{i,j} }, d_{x_n, y_n} \sigma^2 \right)
 \end{gather}
 
-\subsection{Estimation of the Mean using Least Squares Error}
+\begin{comment}
+	\subsection{Estimation of the Mean using Least Squares Error}
 
-To estimate the speed $c_{i,j}$ of every segment $(i,j)$ using the observed time of the journey $t_n$, we formulate the following objective function based on minimizing the least squares error\footnote{Maximizing the Log Likelihood would give similar results} between the observed time $t_n$ and predicted time $\hat{t}_n$,
+	To estimate the speed $c_{i,j}$ of every segment $(i,j)$ using the observed time of the journey $t_n$, we formulate the following objective function based on minimizing the least squares error\footnote{Maximizing the Log Likelihood would give similar results} between the observed time $t_n$ and predicted time $\hat{t}_n$,
 
-\begin{align*}
-\mathcal{L} &= \sum_{n} \left( t_n - \hat{t}_n \right)^2 - \tau \sum_{(i,j) \in E} \log(c_{i,j}) \\
-&= \sum_{n} \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right)^2 - \tau \sum_{(i,j) \in E} \log(c_{i,j}) \\
-\frac{d \mathcal{L}}{d c_{i,j}} &= \sum_{n} 2 \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right) \frac{d_{i,j}}{c_{i,j}^2} - \frac{\tau}{c_{i,j}}
-\end{align*}
+	\begin{align*}
+	\mathcal{L} &= \sum_{n} \left( t_n - \hat{t}_n \right)^2 - \tau \sum_{(i,j) \in E} \log(c_{i,j}) \\
+	&= \sum_{n} \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right)^2 - \tau \sum_{(i,j) \in E} \log(c_{i,j}) \\
+	\frac{d \mathcal{L}}{d c_{i,j}} &= \sum_{n} 2 \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right) \frac{d_{i,j}}{c_{i,j}^2} - \frac{\tau}{c_{i,j}}
+	\end{align*}
 
-Using Stochastic Gradient Descent, we would be able to update $c_{i,j}$ using each trip information $n$ as follows,
-\begin{gather}
-c_{i,j}^{new} = c_{i, j}^{old} - \eta \left[ \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right) \frac{d_{i,j}}{c_{i,j}^2} - \frac{\tau}{c_{i,j}} \right]
-\end{gather}
+	Using Stochastic Gradient Descent, we would be able to update $c_{i,j}$ using each trip information $n$ as follows,
+	\begin{gather}
+	c_{i,j}^{new} = c_{i, j}^{old} - \eta \left[ \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right) \frac{d_{i,j}}{c_{i,j}^2} - \frac{\tau}{c_{i,j}} \right]
+	\end{gather}
+\end{comment}
 
 \subsection{Estimation of the Mean by Maximum Log Likelihood}
 
