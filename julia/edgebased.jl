@@ -372,6 +372,10 @@ function speed_estimation(iterations::Int64, records::Array{Record},
        
             origin_node = bus_stops_dict[ bus_stops[origin_id] ]
             destination_node = bus_stops_dict[ bus_stops[destination_id] ]
+
+			if origin_node == destination_node
+				continue
+			end
             
             # stochastic gradient descent of the segment speeds
 
@@ -386,7 +390,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
             src_bus_stop = current_node.bus_stop
             tar_bus_stop = next_node.bus_stop
 
-            next_edge = src_bus_stop.edges[tar_bus_stop]
+			next_edge = src_bus_stop.edges[tar_bus_stop]
             while current_node != destination_node
                 #get bus stop of node
 
