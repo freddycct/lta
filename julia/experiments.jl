@@ -1,3 +1,5 @@
+include("edgebased.jl")
+
 if isdefined(ARGS, 1)
     prefix = convert(ASCIIString, ARGS[1])
 else
