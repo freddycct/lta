@@ -233,8 +233,8 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString,
     records = Array(Record, 0)
     fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
     
-    while !eof(fid_success)
-    #for i=1:10
+    #while !eof(fid_success)
+    for i=1:10
         line = readline(fid_success)
         bus_no = strip(line)
 
@@ -330,7 +330,7 @@ end
 
 function speed_estimation(iterations::Int64, records::Array{Record}, 
     bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, 
-    eta::Float64, tau::Float64, sigma2::Float64, total_distance::Float64)
+    eta::Float64, tau::Float64, psi::Float64, sigma2::Float64, total_distance::Float64)
     # iteration starts
 
     # first calculate the total error
@@ -382,12 +382,16 @@ function speed_estimation(iterations::Int64, records::Array{Record},
             time_taken = record.time_taken
 
             current_node = origin_node
+            next_node = current_node.next
+
+            src_bus_stop = current_node.bus_stop
+            tar_bus_stop = next_node.bus_stop
+
+            next_edge = src_bus_stop.edges[tar_bus_stop]
             while current_node != destination_node
                 #get bus stop of node
-                src_bus_stop = current_node.bus_stop
-                tar_bus_stop = current_node.next.bus_stop
 
-                edge = src_bus_stop.edges[tar_bus_stop]
+                edge = next_edge
 
                 dist = edge.distance
                 speed = edge.speed
@@ -395,8 +399,17 @@ function speed_estimation(iterations::Int64, records::Array{Record},
                 # deduct from tmp
                 tmp2 = tmp - (dist/speed)
 
+                gradient = - ((time_taken-tmp)/(distance*sigma2)) * (dist/(speed*speed)) + (tau/speed)
+
+                # get the speed of next segment
+                next_next_node = next_node.next
+                if next_node != next_next_node
+                    next_edge = next_node.bus_stop.edges[ next_next_node.bus_stop ]
+                    gradient -= psi * (speed - next_edge.speed)
+                end
+
                 # this is the stochastic gradient descent !!!
-                speed = speed + adjusted_eta * ( -((time_taken-tmp)/(distance*sigma2)) * (dist/(speed*speed)) + (tau/speed))
+                speed = speed + adjusted_eta * gradient
 
                 if speed <= 0
                     println("Violate speed constraints!")
@@ -407,7 +420,8 @@ function speed_estimation(iterations::Int64, records::Array{Record},
                 # add it back to tmp
                 tmp = tmp2 + (dist / speed)
 
-                current_node = current_node.next
+                current_node = next_node
+                next_node = next_node.next
             end # end while loop
         end # end for loop
         # calculate the RMSE
@@ -428,6 +442,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
 end
 
 function baseline2(records::Array{Record})
+
     bus_services_distance = Dict{ASCIIString, Float64}()
     bus_services_time = Dict{ASCIIString, Float64}()
 

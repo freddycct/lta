@@ -25,7 +25,13 @@ else
 end
 
 if isdefined(ARGS, 5)
-    iterations = parseint(ARGS[5])
+    psi = parsefloat(ARGS[5])
+else
+    psi = 0.1
+end
+
+if isdefined(ARGS, 6)
+    iterations = parseint(ARGS[6])
 else
     iterations = 2
 end
@@ -51,6 +57,9 @@ baseline2_test_rmse  = Array(Float64, 5)
 
 edgebased_train_rmse = Array(Float64, 5)
 edgebased_test_rmse  = Array(Float64, 5)
+
+smoothed_train_rmse = Array(Float64, 5)
+smoothed_test_rmse  = Array(Float64, 5)
 
 for k=1:k_fold
     @printf("Fold %d\n", k)
@@ -114,7 +123,7 @@ for k=1:k_fold
 
     init_edges_speed(bus_stops, init_speed)
     
-    edgebased_train_squared_error = speed_estimation(iterations, train_set, bus_stops, bus_services, eta, tau, init_sigma2, total_distance)
+    edgebased_train_squared_error = speed_estimation(iterations, train_set, bus_stops, bus_services, eta, tau, 0.0, init_sigma2, total_distance)
     edgebased_train_rmse[k] = sqrt(edgebased_train_squared_error / length(train_set))
     @printf("Edgebased Train RMSE: %f\n", edgebased_train_rmse[k])
     
@@ -122,8 +131,23 @@ for k=1:k_fold
     edgebased_test_rmse[k] = sqrt(edgebased_test_squared_error / length(test_set))
     @printf("Edgebased Test RMSE: %f\n", edgebased_test_rmse[k])
     println()
-
+    
     # End of EdgeBased method
+
+    # Start of Smoothed method
+
+    init_edges_speed(bus_stops, init_speed)
+    
+    smoothed_train_squared_error = speed_estimation(iterations, train_set, bus_stops, bus_services, eta, tau, psi, init_sigma2, total_distance)
+    smoothed_train_rmse[k] = sqrt(smoothed_train_squared_error / length(train_set))
+    @printf("Smoothed Train RMSE: %f\n", smoothed_train_rmse[k])
+    
+    smoothed_test_squared_error = calculate_squared_error(test_set, bus_stops, bus_services)
+    smoothed_test_rmse[k] = sqrt(smoothed_test_squared_error / length(test_set))
+    @printf("Smoothed Test RMSE: %f\n", smoothed_test_rmse[k])
+    println()
+
+    # End of Smoothed method
 end
 
-
+@save "experiments.hdf5" baseline_train_rmse baseline_test_rmse baseline2_train_rmse baseline2_test_rmse edgebased_train_rmse edgebased_test_rmse smoothed_train_rmse smoothed_test_rmse
