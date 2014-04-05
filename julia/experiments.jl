@@ -158,7 +158,7 @@ for k=1:k_fold
 
     init_edges_speed(bus_stops, init_speed)
 
-    cd_train_squared_error = coordinate_descent(iterations, train_set, bus_stops, bus_services, total_distance)
+    cd_train_squared_error = coordinate_descent(convert(Int64, round(iterations/5)), train_set, bus_stops, bus_services, total_distance)
     cd_train_rmse[k] = sqrt(cd_train_squared_error / length(records))
     @printf("Coordinate Descent Train RMSE: %f\n", cd_train_rmse[k])
 
