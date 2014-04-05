@@ -35,7 +35,7 @@ end
 if isdefined(ARGS, 6)
     iterations = parseint(ARGS[6])
 else
-    iterations = 2
+    iterations = 1
 end
 
 # first step would be to read in success and store the routes of each bus service in memory
@@ -62,6 +62,9 @@ edgebased_test_rmse  = Array(Float64, 5)
 
 smoothed_train_rmse = Array(Float64, 5)
 smoothed_test_rmse  = Array(Float64, 5)
+
+cd_train_rmse = Array(Float64, 5)
+cd_test_rmse = Array(Float64, 5)
 
 for k=1:k_fold
     @printf("Fold %d\n", k)
@@ -150,6 +153,21 @@ for k=1:k_fold
     println()
 
     # End of Smoothed method
+
+    # Start of Coordinate Descent method
+
+    init_edges_speed(bus_stops, init_speed)
+
+    cd_train_squared_error = coordinate_descent(iterations, train_set, bus_stops, bus_services, total_distance)
+    cd_train_rmse[k] = sqrt(cd_train_squared_error / length(records))
+    @printf("Coordinate Descent Train RMSE: %f\n", cd_train_rmse[k])
+
+    cd_test_squared_error = calculate_squared_error(test_set, bus_stops, bus_services)
+    cd_test_rmse[k] = sqrt(cd_test_squared_error / length(test_set))
+    @printf("Coordinate Descent Test RMSE: %f\n", cd_test_rmse[k])
+    println()
+
+    # End of Coordinate Descent method
 end
 
-@save "experiments.jld" baseline_train_rmse baseline_test_rmse baseline2_train_rmse baseline2_test_rmse edgebased_train_rmse edgebased_test_rmse smoothed_train_rmse smoothed_test_rmse
+@save "experiments.jld" baseline_train_rmse baseline_test_rmse baseline2_train_rmse baseline2_test_rmse edgebased_train_rmse edgebased_test_rmse smoothed_train_rmse smoothed_test_rmse cd_train_rmse cd_test_rmse
