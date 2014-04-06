@@ -57,6 +57,13 @@ edgebased_train_rmse = sqrt(edgebased_train_squared_error / length(records))
 
 init_edges_speed(bus_stops, init_speed)
 
-edgebased_train_squared_error = speed_estimation(iterations, records, bus_stops, bus_services, eta, tau, 0.01, init_sigma2, total_distance)
-edgebased_train_rmse = sqrt(edgebased_train_squared_error / length(records))
-@printf("Smoothed Train RMSE: %f\n", edgebased_train_rmse)
+smoothed_train_squared_error = speed_estimation(iterations, records, bus_stops, bus_services, eta, tau, 0.01, init_sigma2, total_distance)
+smoothed_train_rmse = sqrt(smoothed_train_squared_error / length(records))
+@printf("Smoothed Train RMSE: %f\n", smoothed_train_rmse)
+
+init_edges_speed(bus_stops, init_speed)
+
+cd_train_squared_error = coordinate_descent(iterations, records, bus_stops, bus_services, total_distance)
+cd_train_rmse = sqrt(cd_train_squared_error / length(records))
+@printf("Coordinate Descent Train RMSE: %f\n", cd_train_rmse)
+
