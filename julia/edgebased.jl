@@ -1,5 +1,48 @@
 include("data_structures.jl")
 
+function get_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
+    
+    edge_speeds_dict = Dict{ASCIIString, Array{Array{Float64}}}()
+
+    for (bus_no, bus_service) in bus_services
+        edge_speeds = Array(Array{Float64}, 2)
+        edge_speeds_dict[bus_no] = edge_speeds
+
+        for direction=1:2
+            if !isdefined(bus_service.routes, direction)
+                continue
+            else
+                @printf("Direction_%d\n", direction)
+                edge_speeds[direction] = Array(Float64, 0)
+            end
+
+            route = bus_service.routes[direction] # route is List
+            node  = route.head # obtained linked list node that contains bus stops
+
+            current_node = node.next
+            while current_node != node
+
+                bus_stop_prev = node.bus_stop
+                bus_stop_next = current_node.bus_stop
+            
+                #edge = get!(bus_stop_prev.edges, bus_stop_next, Edge(bus_stop_prev, bus_stop_next, node.distance_to_next, init_speed))
+
+                edge = bus_stop_prev.edges[bus_stop_next]
+                push!(edge_speeds[direction], edge.speed)
+            
+                #check whether the linkedlist have gone circular
+                if current_node == route.head
+                    break
+                end
+            
+                node = current_node
+                current_node = current_node.next
+            end
+        end
+    end
+    return edge_speeds_dict
+end
+
 function read_bus_routes(prefix::ASCIIString, date::ASCIIString)
     # Create the Hash Table to store the bus stops
     bus_stops = Dict{Int64, Bus_Stop}()
