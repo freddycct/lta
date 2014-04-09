@@ -7,7 +7,7 @@ begin
 	eta = 2e-3
 	tau = 1e-4
 	psi = 0.0
-	iterations = 2
+	iterations = 100
 
 	bus_stops, bus_services = read_bus_routes(prefix, date)
 
@@ -38,5 +38,5 @@ begin
 
 	smoothed_speeds = get_edge_speeds(bus_stops, bus_services)
 
-	@save "edge_speeds.jld" edgebased_speeds smoothed_speeds
+	@save "edge_speeds.jld" edgebased_speeds smoothed_speeds edgebased_train_rmse smoothed_train_rmse
 end
