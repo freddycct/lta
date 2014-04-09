@@ -2,7 +2,7 @@ include("data_structures.jl")
 
 function get_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
     
-    edge_speeds_dict = Dict{ASCIIString, Array{Array{Float64}}}()
+    edge_speeds_dict = Dict{ASCIIString, Array{Array{(Float64, Float64)}}}()
 
     for (bus_no, bus_service) in bus_services
         edge_speeds = Array(Array{Float64}, 2)
@@ -28,7 +28,7 @@ function get_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{AS
                 #edge = get!(bus_stop_prev.edges, bus_stop_next, Edge(bus_stop_prev, bus_stop_next, node.distance_to_next, init_speed))
 
                 edge = bus_stop_prev.edges[bus_stop_next]
-                push!(edge_speeds[direction], edge.speed)
+                push!(edge_speeds[direction], (edge.distance, edge.speed))
             
                 #check whether the linkedlist have gone circular
                 if current_node == route.head
