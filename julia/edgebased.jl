@@ -12,7 +12,7 @@ function get_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{AS
             if !isdefined(bus_service.routes, direction)
                 continue
             else
-                @printf("Direction_%d\n", direction)
+                #@printf("Direction_%d\n", direction)
                 edge_speeds[direction] = Array(Float64, 0)
             end
 
