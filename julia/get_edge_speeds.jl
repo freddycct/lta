@@ -38,5 +38,5 @@ begin
 
 	smoothed_speeds = get_edge_speeds(bus_stops, bus_services)
 
-	@save "edge_speeds.jld" edgebased_speeds smoothed_speeds edgebased_train_rmse smoothed_train_rmse total_distance
+	@save "edge_speeds.jld" edgebased_speeds smoothed_speeds edgebased_train_squared_error smoothed_train_squared_error total_distance
 end
