@@ -1,4 +1,4 @@
-# This script mainly reads from standard input and prints to standard output. The output is boarding location and time, I forgot what this is used for.
+# This script mainly reads from standard input and prints to standard output. The output is boarding location and time, I forgot what this is used for. This is for plotting the histogram used in the slides as proposal to LTA
 
 begin
 	while !eof(STDIN)

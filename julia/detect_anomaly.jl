@@ -8,7 +8,7 @@ begin
 	date = "20111101"
 	learning_rate = 2e-3
 	tau = 1e-4
-	iterations = 1
+	iterations = 100
 
 	bus_stops, bus_services = read_bus_routes(prefix, date)
 
