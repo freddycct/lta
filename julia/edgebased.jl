@@ -508,7 +508,7 @@ end
 
 function speed_estimation(iterations::Int64, records::Array{Record}, 
     bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, 
-    eta::Float64, tau::Float64, psi::Float64, sigma2::Float64, total_distance::Float64)
+    learning_rate::Float64, tau::Float64, psi::Float64, sigma2::Float64, total_distance::Float64)
     # iteration starts
 
     # first calculate the total error
@@ -518,7 +518,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
 
     for iter=1:iterations
         # shuffle it
-        adjusted_eta = eta / sqrt(iter) # * iter)
+        adjusted_learning_rate = learning_rate / sqrt(iter) # * iter)
 
         @printf("Iteration: %d/%d", iter, iterations)
         
@@ -530,7 +530,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
 
         tic()
         for record in records
-            
+            distance = record.distance
 			origin_node, destination_node = get_origin_destination_nodes(record, bus_stops, bus_services)
 
 			if origin_node == destination_node
@@ -572,7 +572,7 @@ function speed_estimation(iterations::Int64, records::Array{Record},
                 end
 
                 # this is the stochastic gradient descent !!!
-                speed = speed + adjusted_eta * gradient
+                speed = speed + adjusted_learning_rate * gradient
 
                 if speed <= 0.0
                     println("Violate speed constraints!")

@@ -6,7 +6,7 @@ using HDF5, JLD
 begin
 	prefix = "../data"
 	date = "20111101"
-	eta = 2e-3
+	learning_rate = 2e-3
 	tau = 1e-4
 	iterations = 100
 
@@ -22,7 +22,7 @@ begin
 	create_bus_routes_topology(bus_services, init_speed)
 
 	edgebased_train_squared_error = speed_estimation(iterations, records, bus_stops, 
-		bus_services, eta, tau, 0.0, init_sigma2, total_distance)
+		bus_services, learning_rate, tau, 0.0, init_sigma2, total_distance)
 
 	edgebased_train_rmse = sqrt(edgebased_train_squared_error / length(records))
 	@printf("Edgebased Train RMSE: %f\n", edgebased_train_rmse)
