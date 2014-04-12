@@ -24,6 +24,10 @@ begin
 			continue
 		end
 
+		if boarding_loc == alighting_loc
+			continue
+		end
+
 		direction = fields[12]
 		if direction == "?"
 			continue

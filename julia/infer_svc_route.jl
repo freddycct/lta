@@ -49,6 +49,10 @@ begin
 			alighting_loc = parseint(alighting_loc)
 		end
 
+		if boarding_loc == alighting_loc
+			continue
+		end
+
 		direction = fields[12]
 		if direction == "?"
 			continue
