@@ -508,7 +508,8 @@ end
 
 function speed_estimation(iterations::Int64, records::Array{Record}, 
     bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, 
-    learning_rate::Float64, tau::Float64, psi::Float64, sigma2::Float64, total_distance::Float64)
+    learning_rate::Float64, tau::Float64, psi::Float64, sigma2::Float64, 
+    total_distance::Float64)
     # iteration starts
 
     # first calculate the total error

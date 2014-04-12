@@ -27,5 +27,5 @@ begin
 	edgebased_train_rmse = sqrt(edgebased_train_squared_error / length(records))
 	@printf("Edgebased Train RMSE: %f\n", edgebased_train_rmse)
 
-	@save sprintf("%s/%s/jld/edgebased.jld", prefix, date) bus_stops, bus_services
+	@save @sprintf("%s/%s/jld/edgebased.jld", prefix, date) bus_stops, bus_services
 end
