@@ -37,7 +37,7 @@ begin
 	if isdefined(ARGS, 6)
 	    iterations = parseint(ARGS[6])
 	else
-	    iterations = 100
+	    iterations = 1
 	end
 
 	# first step would be to read in success and store the routes of each bus service in memory
@@ -173,5 +173,5 @@ begin
 	    # End of Coordinate Descent method
 	end
 
-	@save "experiments.jld" baseline_train_rmse baseline_test_rmse baseline2_train_rmse baseline2_test_rmse edgebased_train_rmse edgebased_test_rmse smoothed_train_rmse smoothed_test_rmse
+	@save @sprintf("%s/%s/jld/experiments.jld", prefix, date) baseline_train_rmse baseline_test_rmse baseline2_train_rmse baseline2_test_rmse edgebased_train_rmse edgebased_test_rmse smoothed_train_rmse smoothed_test_rmse
 end
