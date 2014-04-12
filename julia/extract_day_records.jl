@@ -37,6 +37,11 @@ begin
 			continue
 		end
 
+		#distance traveled
+		if parsefloat(fields[14]) <= 0.0
+			continue
+		end
+
 		#time taken
 		if parsefloat(fields[15]) <= 0.0
 			continue
