@@ -171,6 +171,13 @@ type Record
 
     hops::Int64
 
+    time_predicted::Float64
+
+    estimated_sigma::Float64
+    observed_sigma::Float64
+
+    ratio::Float64
+
     function Record(bus_no::ASCIIString, datetime_board::TmStruct, datetime_alight::TmStruct, 
         origin::Int64, destination::Int64, direction::Int64, distance::Float64, time_taken::Float64)
         record = new()
