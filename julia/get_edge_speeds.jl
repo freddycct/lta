@@ -6,7 +6,7 @@ using HDF5, JLD
 begin
 	prefix = "../data"
 	date = "20111101"
-	learning_rate = 2e-3
+	learning_rate = 1e-3
 	tau = 1e-4
 	psi = 0.01
 	iterations = 100

@@ -19,7 +19,7 @@ begin
 	if isdefined(ARGS, 3)
 	    learning_rate = parsefloat(ARGS[3])
 	else
-	    learning_rate = 2e-3
+	    learning_rate = 1e-3
 	end
 
 	if isdefined(ARGS, 4)
