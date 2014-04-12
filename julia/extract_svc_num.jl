@@ -41,6 +41,15 @@ begin
 			svc_num = convert(ASCIIString, svc_num)
 		end
 
+		if fields[7] == "Cash"
+			continue
+		end
+
+		#time taken
+		if parsefloat(fields[15]) <= 0.0
+			continue
+		end
+
 		date = fields[3]
 		datefields = split(date, '/')
 		year = datefields[3]
