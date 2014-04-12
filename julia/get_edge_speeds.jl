@@ -40,5 +40,5 @@ begin
 
 	smoothed_speeds = get_edge_speeds(bus_stops, bus_services)
 
-	@save "edge_speeds.jld" edgebased_speeds smoothed_speeds edgebased_train_squared_error smoothed_train_squared_error total_distance
+	@save @sprintf("%s/%s/jld/edge_speeds.jld", prefix, date) edgebased_speeds smoothed_speeds edgebased_train_squared_error smoothed_train_squared_error total_distance
 end
