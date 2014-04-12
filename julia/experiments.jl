@@ -37,7 +37,7 @@ begin
 	if isdefined(ARGS, 6)
 	    iterations = parseint(ARGS[6])
 	else
-	    iterations = 1
+	    iterations = 100
 	end
 
 	# first step would be to read in success and store the routes of each bus service in memory
