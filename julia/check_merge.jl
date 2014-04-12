@@ -1,15 +1,19 @@
-readline(STDIN)
+#This script is used to check which bus number has no merges
 
-while !eof(STDIN)
-	line = readline(STDIN)
-	
-	fields = split(line)
+begin
+	readline(STDIN)
 
-	size = parseint(fields[5])
-	svc_num = fields[9]
+	while !eof(STDIN)
+		line = readline(STDIN)
+		
+		fields = split(line)
 
-	if size <= 0
-		println(svc_num)
+		size = parseint(fields[5])
+		svc_num = fields[9]
+
+		if size <= 0
+			println(svc_num)
+		end
 	end
 end
 

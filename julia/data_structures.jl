@@ -1,4 +1,5 @@
-# Define the bus stop composite type
+# This file defines some of the data sructures used in various Julia script. It is usually included or required for many other Julia scripts.
+
 type Edge
 	speed::Float64
 	distance::Float64

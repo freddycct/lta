@@ -1,3 +1,5 @@
+# This file contains the stochastic gradient descent algorithm for inferring the speeds of each segment based on the given data.
+
 include("data_structures.jl")
 
 function get_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
@@ -108,7 +110,6 @@ function init_edges_speed(bus_stops::Dict{Int64, Bus_Stop}, init_speed::Float64)
 end
 
 function create_bus_routes_topology(bus_services::Dict{ASCIIString, Bus_Service}, init_speed::Float64 = 4.0)
-
     for bus_service in values(bus_services)
         for direction=1:2
             if !isdefined(bus_service.routes, direction)
@@ -181,7 +182,6 @@ type Record
         record.direction = direction
         record.distance = distance
         record.time_taken = time_taken
-        record.hops = 0
         record
     end
 end
@@ -213,6 +213,7 @@ function check_finite(record::Record, bus_stops::Dict{Int64, Bus_Stop}, bus_serv
 
             # iterate through the segments, must find an easy way of doing this...
             
+            record.hops = 0
             current_node = origin_node
             while current_node != destination_node
                 current_node = current_node.next
@@ -341,26 +342,8 @@ function calculate_squared_error(records::Array{Record},
 
     squared_error = 0.0
     for record in records
-        # determine the routes
-        # get the bus service number
-        bus_no = record.bus_no
-        bus_service = bus_services[bus_no]
-        
-        # get the origin and dest
-        origin_id = record.origin
-        destination_id = record.destination
-        
-        # get the direction
-        direction = record.direction
-        
-        # retrieve the list_nodes associated with them
-        bus_stops_dict = bus_service.bus_stops[direction]
-        
-        #@printf("bus: %s, orig: %d, dest: %d, dir: %d\n", bus_no, origin_id, destination_id, direction)
+		origin_node, destination_node = get_origin_destination_nodes(record, bus_stops, bus_services)
 
-        origin_node = bus_stops_dict[ bus_stops[origin_id] ]
-        destination_node = bus_stops_dict[ bus_stops[destination_id] ]
-        
         # first find the sum of the times
         tmp = summation_time(origin_node, destination_node) #, record.distance)
         
@@ -494,6 +477,35 @@ end
 #     return squared_error
 # end
 
+function get_origin_destination_nodes(record::Record, 
+	bus_stops::Dict{Int64, Bus_Stop}, 
+	bus_services::Dict{ASCIIString, Bus_Service})
+
+	# determine the routes
+    # get the bus service number
+    bus_no = record.bus_no
+    bus_service = bus_services[bus_no]
+    
+    # get the origin and dest
+    origin_id = record.origin
+    destination_id = record.destination
+    
+    distance = record.distance
+
+    # get the direction
+    direction = record.direction
+    
+    # retrieve the list_nodes associated with them
+    bus_stops_dict = bus_service.bus_stops[direction]
+    
+    # @printf("bus: %s, orig: %d, dest: %d, dir: %d\n", bus_no, origin_id, destination_id, direction)
+
+    origin_node = bus_stops_dict[ bus_stops[origin_id] ]
+    destination_node = bus_stops_dict[ bus_stops[destination_id] ]
+
+    return origin_node, destination_node
+end
+
 function speed_estimation(iterations::Int64, records::Array{Record}, 
     bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, 
     eta::Float64, tau::Float64, psi::Float64, sigma2::Float64, total_distance::Float64)
@@ -518,27 +530,8 @@ function speed_estimation(iterations::Int64, records::Array{Record},
 
         tic()
         for record in records
-            # determine the routes
-            # get the bus service number
-            bus_no = record.bus_no
-            bus_service = bus_services[bus_no]
             
-            # get the origin and dest
-            origin_id = record.origin
-            destination_id = record.destination
-            
-            distance = record.distance
-
-            # get the direction
-            direction = record.direction
-            
-            # retrieve the list_nodes associated with them
-            bus_stops_dict = bus_service.bus_stops[direction]
-            
-            # @printf("bus: %s, orig: %d, dest: %d, dir: %d\n", bus_no, origin_id, destination_id, direction)
-       
-            origin_node = bus_stops_dict[ bus_stops[origin_id] ]
-            destination_node = bus_stops_dict[ bus_stops[destination_id] ]
+			origin_node, destination_node = get_origin_destination_nodes(record, bus_stops, bus_services)
 
 			if origin_node == destination_node
 				continue
