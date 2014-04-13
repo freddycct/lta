@@ -326,9 +326,7 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString,
 end
 
 function summation_time(origin_node::List_Node, destination_node::List_Node)
-
     tmp = 0.0
-    
     current_node = origin_node
     while current_node != destination_node
 
@@ -340,7 +338,6 @@ function summation_time(origin_node::List_Node, destination_node::List_Node)
     
         current_node = current_node.next
     end
-    
     return tmp
 end
 
