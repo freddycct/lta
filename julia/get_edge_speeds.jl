@@ -1,7 +1,7 @@
 # This script runs the edgebased algorithm on the full data set in order to plot the speeds of each segment
 
-include("edgebased.jl")
-using HDF5, JLD
+require("edgebased.jl")
+require("io.jl")
 
 begin
 	prefix = "../data"
@@ -29,7 +29,7 @@ begin
 	edgebased_train_rmse = sqrt(edgebased_train_squared_error / length(records))
 	@printf("Edgebased Train RMSE: %f\n", edgebased_train_rmse)
 
-	#sigma2 = edgebased_train_squared_error / total_distance
+	save_edge_speeds(bus_stops, @sprintf("%s/%s/jld/edgebased_edges.jld", prefix, date))
 	edgebased_speeds = get_edge_speeds(bus_stops, bus_services)
 
 	init_edges_speed(bus_stops, init_speed)
@@ -37,7 +37,8 @@ begin
 	smoothed_train_squared_error = speed_estimation(iterations, records, bus_stops, bus_services, learning_rate, tau, psi, init_sigma2, total_distance)
 	smoothed_train_rmse = sqrt(smoothed_train_squared_error / length(records))
 	@printf("Smoothed Train RMSE: %f\n", smoothed_train_rmse)
-
+	
+	save_edge_speeds(bus_stops, @sprintf("%s/%s/jld/smoothed_edges.jld", prefix, date))
 	smoothed_speeds = get_edge_speeds(bus_stops, bus_services)
 
 	@save @sprintf("%s/%s/jld/edge_speeds.jld", prefix, date) edgebased_speeds smoothed_speeds edgebased_train_squared_error smoothed_train_squared_error total_distance

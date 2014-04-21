@@ -1,6 +1,48 @@
 # This file contains the stochastic gradient descent algorithm for inferring the speeds of each segment based on the given data.
 
-include("data_structures.jl")
+require("data_structures.jl")
+
+# Read in data
+# Store it in memory
+
+type Record
+    bus_no::ASCIIString
+    
+    datetime_board::TmStruct 
+    datetime_alight::TmStruct
+    
+    origin::Int64
+    destination::Int64
+    
+    direction::Int64
+    distance::Float64 #store in meters
+    time_taken::Float64 #store in seconds
+
+    hops::Int64
+
+    time_predicted::Float64
+
+    estimated_sigma::Float64
+    observed_sigma::Float64
+
+    ratio::Float64
+
+    related_records::Array{Record}
+
+    function Record(bus_no::ASCIIString, datetime_board::TmStruct, datetime_alight::TmStruct, 
+        origin::Int64, destination::Int64, direction::Int64, distance::Float64, time_taken::Float64)
+        record = new()
+        record.bus_no = bus_no
+        record.datetime_board = datetime_board
+        record.datetime_alight = datetime_alight
+        record.origin = origin
+        record.destination = destination
+        record.direction = direction
+        record.distance = distance
+        record.time_taken = time_taken
+        record
+    end
+end
 
 function get_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
     
@@ -26,8 +68,6 @@ function get_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{AS
 
                 bus_stop_prev = node.bus_stop
                 bus_stop_next = current_node.bus_stop
-            
-                #edge = get!(bus_stop_prev.edges, bus_stop_next, Edge(bus_stop_prev, bus_stop_next, node.distance_to_next, init_speed))
 
                 edge = bus_stop_prev.edges[bus_stop_next]
                 push!(edge_speeds[direction], (edge.distance, edge.speed))
@@ -43,48 +83,6 @@ function get_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{AS
         end
     end
     return edge_speeds_dict
-end
-
-function read_bus_routes(prefix::ASCIIString, date::ASCIIString)
-    # Create the Hash Table to store the bus stops
-    bus_stops = Dict{Int64, Bus_Stop}()
-
-    # Create the Hash Table to store the bus services
-    bus_services = Dict{ASCIIString, Bus_Service}()
-
-    fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
-    while !eof(fid_success)
-        line = readline(fid_success)
-        bus_no = strip(line)
-        
-        # initialize the data structure for storing this route
-        bus_service = Bus_Service(bus_no)
-        bus_services[bus_no] = bus_service
-        
-        # now read in the bus routes of bus_no
-        fid_bus = open(@sprintf("%s/%s/bus_routes/%s.txt", prefix, date, bus_no), "r")
-        while !eof(fid_bus)
-            line = readline(fid_bus)
-            fields = split(line)
-            direction = parseint(split(strip(fields[1], ':'), '_')[2])
-            
-            # create the data structures to contain this direction
-            bus_service.routes[direction]    = List()
-            bus_service.bus_stops[direction] = Dict{Bus_Stop, List_Node}()
-            
-            for i=2:length(fields)
-                tuple = split(fields[i], ':')
-                
-                distance_to_next = parsefloat(tuple[2]) * 1000
-                node = create_node(convert(ASCIIString, tuple[1]), bus_stops, bus_service.bus_stops[direction])
-                
-                append(bus_service, direction, node, distance_to_next)
-            end
-        end
-        close(fid_bus)
-    end
-    close(fid_success)
-    return bus_stops, bus_services
 end
 
 # read the initial speed from the baseline model
@@ -132,14 +130,8 @@ function create_bus_routes_topology(bus_services::Dict{ASCIIString, Bus_Service}
                     bus_stop_prev.edges = Dict{Bus_Stop, Edge}()
                 end
                 
-                #edge = get!(bus_stop_prev.edges, bus_stop_next, Edge(bus_stop_prev, bus_stop_next, node.distance_to_next, init_speed))
-
-                edge = get(bus_stop_prev.edges, bus_stop_next, 
-                    Edge(node.distance_to_next, init_speed))
-
-                if !haskey(bus_stop_prev.edges, bus_stop_next)
-                    bus_stop_prev.edges[bus_stop_next] = edge
-                end
+                edge = get!(bus_stop_prev.edges, bus_stop_next, 
+                    Edge(bus_stop_prev.id, bus_stop_next.id, node.distance_to_next, init_speed))
                 
                 #check whether the linkedlist have gone circular
                 if current_node == route.head
@@ -150,46 +142,6 @@ function create_bus_routes_topology(bus_services::Dict{ASCIIString, Bus_Service}
                 current_node = current_node.next
             end
         end
-    end
-end
-
-# Read in data
-# Store it in memory
-
-type Record
-    bus_no::ASCIIString
-    
-    datetime_board::TmStruct 
-    datetime_alight::TmStruct
-    
-    origin::Int64
-    destination::Int64
-    
-    direction::Int64
-    distance::Float64 #store in meters
-    time_taken::Float64 #store in seconds
-
-    hops::Int64
-
-    time_predicted::Float64
-
-    estimated_sigma::Float64
-    observed_sigma::Float64
-
-    ratio::Float64
-
-    function Record(bus_no::ASCIIString, datetime_board::TmStruct, datetime_alight::TmStruct, 
-        origin::Int64, destination::Int64, direction::Int64, distance::Float64, time_taken::Float64)
-        record = new()
-        record.bus_no = bus_no
-        record.datetime_board = datetime_board
-        record.datetime_alight = datetime_alight
-        record.origin = origin
-        record.destination = destination
-        record.direction = direction
-        record.distance = distance
-        record.time_taken = time_taken
-        record
     end
 end
 
@@ -257,8 +209,6 @@ function print_edge_speeds(sigma2::Float64, bus_stops::Dict{Int64, Bus_Stop}, bu
 
             bus_stop_prev = node.bus_stop
             bus_stop_next = current_node.bus_stop
-            
-            #edge = get!(bus_stop_prev.edges, bus_stop_next, Edge(bus_stop_prev, bus_stop_next, node.distance_to_next, init_speed))
 
             edge = bus_stop_prev.edges[bus_stop_next]
 
@@ -273,56 +223,6 @@ function print_edge_speeds(sigma2::Float64, bus_stops::Dict{Int64, Bus_Stop}, bu
             current_node = current_node.next
         end
     end
-end
-
-#<passenger_id> <type> <date_boarded> <time_boarded> <date_alighted> <time_alighted>
-#<card> <card> <origin> <dest> <svc_no> <dir> <dir> <distance> <time_taken>
-
-function read_all_records(prefix::ASCIIString, date::ASCIIString, 
-    bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
-
-    records = Array(Record, 0)
-    fid_success = open(@sprintf("%s/%s/success", prefix, date), "r")
-    
-    while !eof(fid_success)
-    #for i=1:10
-        line = readline(fid_success)
-        bus_no = strip(line)
-
-        fid_bus = open(@sprintf("%s/%s/bus_records/%s.txt", prefix, date, bus_no), "r")
-        while !eof(fid_bus)
-            line = readline(fid_bus)
-            #print(line)
-
-            fields = split(line, ['\t', '\n'], false)
-            
-            datetime_board = strptime("%d/%m/%Y %H:%M:%S", string(fields[3], ' ', fields[4]))
-            datetime_alight = strptime("%d/%m/%Y %H:%M:%S", string(fields[5], ' ', fields[6]))
-            
-            # get origin, destination
-            origin = parseint(fields[9])
-            destination = parseint(fields[10])
-
-            # get direction
-            direction = parseint(fields[12])
-
-            # get distance
-            distance = parsefloat(fields[14]) * 1000
-
-            # get time taken
-            time_taken = parsefloat(fields[15]) * 60
-            
-            record = Record(bus_no, datetime_board, datetime_alight, origin, destination, direction, distance, time_taken)
-
-            # check to ensure that this record terminates, does not go infinite loop
-            if check_finite(record, bus_stops, bus_services)
-                push!(records, record)
-            end
-        end
-        close(fid_bus)
-    end
-    close(fid_success)
-    return records
 end
 
 function summation_time(origin_node::List_Node, destination_node::List_Node)
@@ -494,7 +394,7 @@ function get_origin_destination_nodes(record::Record,
     origin_id = record.origin
     destination_id = record.destination
     
-    distance = record.distance
+    # distance = record.distance
 
     # get the direction
     direction = record.direction
@@ -504,7 +404,7 @@ function get_origin_destination_nodes(record::Record,
     
     # @printf("bus: %s, orig: %d, dest: %d, dir: %d\n", bus_no, origin_id, destination_id, direction)
 
-    origin_node = bus_stops_dict[ bus_stops[origin_id] ]
+    origin_node      = bus_stops_dict[ bus_stops[origin_id] ]
     destination_node = bus_stops_dict[ bus_stops[destination_id] ]
 
     return origin_node, destination_node

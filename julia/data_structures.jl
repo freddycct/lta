@@ -1,11 +1,15 @@
 # This file defines some of the data sructures used in various Julia script. It is usually included or required for many other Julia scripts.
 
 type Edge
+	src::Int64
+	tar::Int64
 	speed::Float64
 	distance::Float64
 
-	function Edge(distance::Float64, speed::Float64)
+	function Edge(src::Int64, tar::Int64, distance::Float64, speed::Float64)
 		edge = new()
+		edge.src = src
+		edge.tar = tar
 		edge.distance = distance
 		edge.speed = speed
 		edge
