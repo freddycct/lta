@@ -150,7 +150,7 @@ function check_finite(record::Record, bus_stops::Dict{Int64, Bus_Stop}, bus_serv
     bus_service = bus_services[bus_no]
     
     # get the origin and dest
-    origin_id = record.origin
+    origin_id      = record.origin
     destination_id = record.destination
     
     # get the direction
@@ -161,8 +161,17 @@ function check_finite(record::Record, bus_stops::Dict{Int64, Bus_Stop}, bus_serv
     
     #@printf("bus: %s, orig: %d, dest: %d, dir: %d\n", bus_no, origin_id, destination_id, direction)
 
-    bus_stop_origin = bus_stops[origin_id]
-    bus_stop_destination = bus_stops[destination_id]
+    if haskey(bus_stops, origin_id)
+        bus_stop_origin = bus_stops[origin_id]
+    else
+        return false
+    end
+
+    if haskey(bus_stops, destination_id)
+        bus_stop_destination = bus_stops[destination_id]
+    else
+        return false
+    end
 
     if haskey(bus_stops_dict, bus_stop_origin)
         origin_node = bus_stops_dict[ bus_stops[origin_id] ]
