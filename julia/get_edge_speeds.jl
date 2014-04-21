@@ -5,7 +5,11 @@ require("io.jl")
 
 begin
 	prefix = "../data"
-	date = "20111101"
+	if isdefined(ARGS, 1)
+		date = convert(ASCIIString, ARGS[1])
+	else
+		date = "20111101"
+	end
 	learning_rate = 1e-3
 	tau = 1e-4
 	psi = 0.01
