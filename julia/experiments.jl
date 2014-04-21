@@ -68,6 +68,8 @@ begin
 	cd_train_rmse = Array(Float64, 5)
 	cd_test_rmse = Array(Float64, 5)
 
+	shuffle!(records)
+
 	for k=1:k_fold
 	    @printf("Fold %d\n", k)
 
