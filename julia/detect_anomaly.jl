@@ -1,42 +1,64 @@
-# This script is meant to detect anomalies in the traffic patterns
+require("edgebased.jl")
+require("data_structures.jl")
 
-include("edgebased.jl")
-using HDF5, JLD
+function cmp_record(r1::Record, r2::Record)
+    return isless(r1.ratio, r2.ratio)
+end
 
-begin
-	prefix = "../data"
-	date = "20111101"
-	learning_rate = 1e-3
-	tau = 1e-4
-	iterations = 100
+function compute_std_ratio!(records::Array{Record}, sigma2::Float64)
+    # now determine which are the anomalies
+    for record in records
+        origin_node, destination_node = get_origin_destination_nodes(record, bus_stops, bus_services)
+        record.time_predicted = summation_time(origin_node, destination_node)
 
-	bus_stops, bus_services = read_bus_routes(prefix, date)
+        record.estimated_sigma = sqrt(sigma2 * record.distance)
+        record.observed_sigma = abs(record.time_taken - record.time_predicted)
 
-	# Now read all records into memory
-	records = read_all_records(prefix, date, bus_stops, bus_services)
+        record.ratio = record.observed_sigma / record.estimated_sigma
+    end
+end
 
-	init_speed, baseline_train_squared_error, total_distance = baseline(records)
-	init_sigma2 = baseline_train_squared_error / total_distance
+function is_inside(r1::Record, r2::Record, r1_origin::List_Node, r1_destination::List_Node)
+    # tests whether r1 is inside r2
+    if r1.hops >= r2.hops
+        # simple test
+        return false
+    elseif time(r1.datetime_board) < time(r2.datetime_board) || time(r1.datetime_alight) > time(r2.datetime_alight)
+        # test the time
+        return false
+    end
+    
+    # now test whether the route of r1 is inside the route of r2
+    seen_r1_origin = false
+    seen_r1_dest = false
+    
+    r2_origin, r2_destination = get_origin_destination_nodes(r2, bus_stops, bus_services)
+    current_node = r2_origin
+    
+    while current_node != r2_destination
 
-	# Now construct the topology of the network based on the routes that was read in
-	create_bus_routes_topology(bus_services, init_speed)
-
-	edgebased_train_squared_error = speed_estimation(iterations, records, bus_stops, 
-		bus_services, learning_rate, tau, 0.0, init_sigma2, total_distance)
-
-	sigma2 = edgebased_train_squared_error / total_distance
-
-	edgebased_train_rmse = sqrt(edgebased_train_squared_error / length(records))
-	@printf("Edgebased Train RMSE: %f\n", edgebased_train_rmse)
-
-	# now determine which are the anomalies
-	for record in records
-		origin_node, destination_node = get_origin_destination_nodes(record, bus_stops, bus_services)
-		record.time_predicted = summation_time(origin_node, destination_node)
-
-		record.estimated_sigma = sqrt(sigma2 * record.distance)
-		record.observed_sigma = abs(record.time_taken - record.time_predicted)
-
-		record.ratio = record.observed_sigma / record.estimated_sigma
-	end
+        if !seen_r1_origin
+            seen_r1_origin = current_node == r1_origin
+        end
+        
+        if !seen_r1_dest
+            seen_r1_dest = current_node == r1_destination
+        end
+        
+        if seen_r1_origin && seen_r1_dest
+            return true
+        end
+    
+        current_node = current_node.next
+    end
+    
+    if !seen_r1_origin
+        seen_r1_origin = current_node == r1_origin
+    end
+        
+    if !seen_r1_dest
+        seen_r1_dest = current_node == r1_destination
+    end
+    
+    return seen_r1_origin && seen_r1_dest
 end

@@ -33,7 +33,8 @@ function read_bus_routes(prefix::ASCIIString, date::ASCIIString)
                 tuple = split(fields[i], ':')
                 
                 distance_to_next = parsefloat(tuple[2]) * 1000
-                node = create_node(convert(ASCIIString, tuple[1]), bus_stops, bus_service.bus_stops[direction])
+                node = create_node(convert(ASCIIString, tuple[1]), bus_stops, 
+                    bus_service.bus_stops[direction])
                 
                 append(bus_service, direction, node, distance_to_next)
             end
@@ -106,7 +107,7 @@ function save_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, file_name::ASCIIStri
     @save file_name edges
 end
 
-function load_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, file_name::ASCIIString)
+function load_edge_speeds!(bus_stops::Dict{Int64, Bus_Stop}, file_name::ASCIIString)
 	@load(file_name, edges)
 	for edge in edges
 		src_bus_stop = bus_stops[edge.src]
@@ -117,4 +118,16 @@ function load_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, file_name::ASCIIStri
 		end
 		src_bus_stop.edges[tar_bus_stop] = edge
 	end
+end
+
+function read_bus_stop_id_mapping!(prefix::ASCIIString, bus_stops::Dict{Int64, Bus_Stop})
+    fid = open(@sprintf("%s/bus_stop_id_mapping.txt", prefix), "r")
+    while !eof(fid)
+        line = readline(fid)
+        fields = split(line, ['\t', '\n'], false)
+        bus_stop_id = parseint(fields[1])
+        bus_stop = get!(bus_stops, bus_stop_id, Bus_Stop(bus_stop_id))
+        bus_stop.name = convert(ASCIIString, fields[2])
+    end
+    close(fid)
 end

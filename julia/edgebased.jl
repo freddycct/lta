@@ -44,6 +44,12 @@ type Record
     end
 end
 
+function print_record(record::Record)
+    @printf("Bus_no: %s, origin: %d, dest: %d, direction: %d, distance: %f, time_taken: %f, time_predicted: %f, ratio: %f\n",
+        record.bus_no, record.origin, record.destination, record.direction, 
+        record.distance, record.time_taken, record.time_predicted, record.ratio)
+end
+
 function get_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
     
     edge_speeds_dict = Dict{ASCIIString, Array{Array{(Float64, Float64)}}}()
@@ -547,6 +553,14 @@ function baseline2(records::Array{Record})
         squared_error += diff * diff
     end
     return squared_error, bus_services_speed
+end
+
+function get_total_distance(records::Array{Record})
+    sum_distances = 0.0
+    for record in records
+        sum_distances += record.distance
+    end
+    return sum_distances
 end
 
 function baseline(records::Array{Record})
