@@ -1,7 +1,7 @@
 # This script runs the K Fold validation experiment by calling the algorithms found in edgebased.jl
 
-include("edgebased.jl")
-using HDF5, JLD
+require("edgebased.jl")
+require("io.jl")
 
 begin
 	if isdefined(ARGS, 1)
