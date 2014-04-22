@@ -1,5 +1,3 @@
-using PyPlot
-
 require("io.jl")
 require("anomaly.jl")
 
@@ -26,7 +24,7 @@ begin
 	compute_std_ratio!(records, sigma2)
 
 	sort!(records, lt=cmp_record, rev=true)
-	
+
 	top_point_5_percent = convert(Int64, round(0.005 * length(records)))
 
 	# this is to relate the abnormal records to one another
