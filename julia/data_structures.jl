@@ -5,6 +5,7 @@ type Edge
 	tar::Int64
 	speed::Float64
 	distance::Float64
+	#intensity::Int64
 
 	function Edge(src::Int64, tar::Int64, distance::Float64, speed::Float64)
 		edge = new()

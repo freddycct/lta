@@ -45,9 +45,11 @@ type Record
 end
 
 function print_record(record::Record)
-    @printf("Bus_no: %s, origin: %d, dest: %d, direction: %d, distance: %f, time_taken: %f, time_predicted: %f, ratio: %f\n",
+    @printf("Bus_no: %s, origin: %d, dest: %d, direction: %d, distance: %f, time_taken: %f, time_predicted: %f, ratio: %f, board: %d:%d, alight: %d:%d\n",
         record.bus_no, record.origin, record.destination, record.direction, 
-        record.distance, record.time_taken, record.time_predicted, record.ratio)
+        record.distance, record.time_taken, record.time_predicted, record.ratio,
+        record.datetime_board.hour, record.datetime_board.min,
+        record.datetime_alight.hour, record.datetime_alight.min)
 end
 
 function get_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
@@ -425,7 +427,7 @@ function get_origin_destination_nodes(record::Record,
     return origin_node, destination_node
 end
 
-function speed_estimation(iterations::Int64, records::Array{Record}, 
+function speed_estimation!(iterations::Int64, records::Array{Record}, 
     bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, 
     learning_rate::Float64, tau::Float64, psi::Float64, sigma2::Float64, 
     total_distance::Float64)
@@ -436,6 +438,9 @@ function speed_estimation(iterations::Int64, records::Array{Record},
     squared_error = calculate_squared_error(records, bus_stops, bus_services)
     sigma2 = squared_error / total_distance
 
+    time_error = Array(Float64, (iterations + 1, 2))
+    time_error[1, :] = [0.0 squared_error]
+
     for iter=1:iterations
         # shuffle it
         adjusted_learning_rate = learning_rate / sqrt(iter) # * iter)
@@ -444,8 +449,8 @@ function speed_estimation(iterations::Int64, records::Array{Record},
         
         tic()
         shuffle!(records) # potentially expensive operation
-        time_elapsed = toq()
-        @printf(", Shuffling: %f (s)", time_elapsed)
+        shuffle_time_elapsed = toq()
+        @printf(", Shuffling: %f (s)", shuffle_time_elapsed)
         flush(STDOUT)
 
         tic()
@@ -508,20 +513,22 @@ function speed_estimation(iterations::Int64, records::Array{Record},
             end # end while loop
         end # end for loop
         # calculate the RMSE
-        time_elapsed = toq()
-        @printf(", SGD: %f (s)", time_elapsed)
+        sgd_time_elapsed = toq()
+        @printf(", SGD: %f (s)", sgd_time_elapsed)
         
         tic()
         squared_error = calculate_squared_error(records, bus_stops, bus_services)
         time_elapsed = toq()
         @printf(", Sum_Square: %f (s)", time_elapsed)
 
+        time_error[iter + 1, :] = [ (time_error[iter, 1] + shuffle_time_elapsed + sgd_time_elapsed) squared_error ]
+
         sigma2 = squared_error / total_distance
         @printf(", Error: %e, Sigma2: %f\n", squared_error, sigma2)
         
         flush(STDOUT)
     end # end of this iteration
-    return squared_error
+    return time_error
 end
 
 function baseline2(records::Array{Record})

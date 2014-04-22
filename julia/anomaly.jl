@@ -5,6 +5,10 @@ function cmp_record(r1::Record, r2::Record)
     return isless(r1.ratio, r2.ratio)
 end
 
+function cmp_record_related_length(r1::Record, r2::Record)
+    return isless(length(r1.related_records), length(r2.related_records))
+end
+
 function compute_std_ratio!(records::Array{Record}, sigma2::Float64)
     # now determine which are the anomalies
     for record in records
@@ -15,6 +19,9 @@ function compute_std_ratio!(records::Array{Record}, sigma2::Float64)
         record.observed_sigma = abs(record.time_taken - record.time_predicted)
 
         record.ratio = record.observed_sigma / record.estimated_sigma
+        if record.time_taken < record.time_predicted
+            record.ratio = - record.ratio
+        end
     end
 end
 
