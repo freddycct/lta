@@ -115,3 +115,39 @@ function plot_edge_speeds(bus_no::ASCIIString, direction::Int64,
     file_name = @sprintf("%s/%s/bus_time_%s_%d.pdf", prefix, date, bus_no, direction)
     savefig(file_name, transparent=true)
 end
+
+function plot_histogram(file_name::ASCIIString, data::Array{Float64, 1}, bin_edges, 
+    x_label::ASCIIString, y_label::ASCIIString, title_label::ASCIIString)
+    #6772
+    bin_size = bin_edges[2] - bin_edges[1]
+    
+    #use Julia hist function to obtain data
+    hist_count = Base.hist(data, bin_edges)
+    
+    #find first and last index of hist_count[2] that is > 0
+    non_zero_index = find(hist_count[2])
+    first_index = non_zero_index[1]
+    last_index = non_zero_index[end]
+    
+    #plot histogram using bar instead of plt.hist
+    fig = figure(figsize=(10,3))
+    bar(hist_count[1][first_index:last_index], hist_count[2][first_index:last_index], width = bin_size, linewidth=0.0)
+
+    #now reduce the figure size by changing xlim
+    #x_start = floor(hist_count[1][first_index] / (60*60)) * 60 * 60
+    x_start = 5*60*60
+    x_end   = ceil(hist_count[1][last_index] / (60*60)) * 60 * 60
+    xlim(x_start, x_end)
+    
+    #label the xticks in hours
+    locs = x_start : 3600 * 2 : x_end
+    labels = (x_start / 3600) : 2 : (x_end / 3600)
+    xticks(locs, labels)
+
+    #label the axis and title
+    xlabel(x_label)
+    ylabel(y_label)
+    title(title_label)
+    
+    savefig(file_name, transparent=true)
+end
