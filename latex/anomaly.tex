@@ -11,14 +11,14 @@
 \usepackage{subcaption}
 
 \begin{document}
-%
+
 % --- Author Metadata here ---
 %\conferenceinfo{WOODSTOCK}{'97 El Paso, Texas USA}
 %\CopyrightYear{2007} % Allows default copyright year (20XX) to be over-ridden - IF NEED BE.
 %\crdata{0-12345-67-8/90/01}  % Allows default copyright data (0-89791-88-6/97/05) to be over-ridden - IF NEED BE.
 % --- End of Author Metadata ---
 
-\title{A Crowdsourcing Based Approach for\\
+\title{A Crowd-sourcing Based Approach for\\
 Network Anomalies Detection}
 
 \numberofauthors{3}
@@ -69,13 +69,24 @@ Abstract...
 
 % The first paragraph of a research paper is always the hardest to write. Just write and ideas will flow while writing. (Writers' block)
 
-In our increasingly complex world, networks offer an abstract representation for organizing the relationships between entities of interest in a complex system. The entities are represented as nodes while edges connecting pairs of nodes represent the existence of relationship between the entities. Examples of networks pervasive in our lives are social networks \cite{Wu2004}, protein networks, computer networks, transportation networks, neurological networks, organizational networks \cite{Mihm2010}, wireless sensor networks\footnote{a.k.a. Internet of Things}, electrical networks, etc. 
+In our increasingly complex world, networks offer an abstract representation for organizing the relationships between entities of interest in a complex system. The entities are represented as nodes while edges connecting pairs of nodes represent the existence of relationship between the entities. Examples of networks pervasive in our lives are social networks \cite{Wu2004}, protein networks, computer networks, transportation networks, neurological networks, organizational networks \cite{Mihm2010}, wireless sensor networks\footnote{Internet of Things}, electrical networks, etc. 
 
 In these complex systems, a functional network that facilitates reliable flow of information through the edges is necessary for the complex system to achieve its objectives. However, it is inevitable that complex systems are subjected to wear and tear, leading to occasional anomalous behavior in certain parts of the system. Anomalies in the system would disrupt normal operations, and prevent the complex system from meeting its objectives.
 
 While critical anomalies lead to catastrophic failures and cause the complete shutdown of a complex system, it is highly noticeable by the stakeholders of the complex system. The anomalies are thus quickly identified and localized for corrections to restore the functions of the complex system.
 
-A more challenging problem is to recognize the non-critical anomalies that would result in a lower than optimal efficiency of the complex system. Such non-critical anomalies are usually overlooked since the complex system can continue to function without corrections to them. 
+A more challenging \textbf{problem} which we address in our research, is to recognize the \emph{non-critical} anomalies that would result in a lower than optimal efficiency of the complex system. Such non-critical anomalies are often \emph{ignored} and its \emph{location unknown}, since the complex system can continue to function without corrections to them. But non-critical anomalies that are not corrected could aggravate over time into critical anomalies and cause catastrophic failure to the complex system in the unforeseeable future. 
+
+Before proceeding further, we would use the Figures \ref{fig:travel_graph} and \ref{fig:7} to illustrate the problem. Figure \ref{fig:travel_graph} shows a small network where information flows from nodes to nodes through the directed edges. The edges connecting nodes $\{a, b, c, d, e\}$ form a route for information to flow between them. We do not assume that $a$ and $e$ is always the origin and destination of every information flow. Users of the complex system could choose any of the intermediate nodes $\{b, c, d\}$ as origin or destination of the information journey, i,e. the rule of conservation between two nodes does not apply. The \textcolor{red}{red $- ~ \cdot \rightarrow$} line indicates the possibility of an existing anomaly that would disrupt the flow of information along this route.
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=3.3in]{travel_graph}
+	\caption{Information Flow in Networks}
+	\label{fig:travel_graph}
+\end{figure}
+
+Figures \ref{fig:7_start} and \ref{fig:7_end} show the histograms of information beginning its journey at the start node $a$, and ending its journey at the end node $e$. In the histograms, the x-axis represents the hour of the day, and each bin on the x-axis has a time interval of two minutes. The y-axis shows the number of journeys starting or ending its journey at the time corresponding to the timing of the bins. The phenomenon that we could immediately observe is that while the start node shows a \emph{regular} transmission of information, the end node receives the information at \emph{irregular} intervals. This could suggest the presence of an anomaly within the route such as the segment connecting node $b$ and $c$ as shown in Figure \ref{fig:travel_graph}.
 
 \begin{figure}[htb]
 	\centering
@@ -87,9 +98,13 @@ A more challenging problem is to recognize the non-critical anomalies that would
 	\begin{subfigure}{3.3in}
 		\includegraphics[width=3.3in]{7_end} %3.3in is max!
 		\caption{Histogram at End of Route}
-		\label{fig:7_start}
+		\label{fig:7_end}
 	\end{subfigure}
+	\caption{Histograms of Information Flow}
+	\label{fig:7}
 \end{figure}
+
+We propose a \emph{non-intrusive} solution to early detection of such anomalies in the rest of this paper. Our proposed non-intrusive \textbf{solution} relies on \emph{temporal} data related to the \emph{flow} of information from an \emph{origin} node to a \emph{destination} node. Since the solution should be non-intrusive, we only require temporal information from the two (origin and destination) end points while assuming that detailed temporal information during the journey is missing or difficult to obtain.
 
 \begin{comment}
 
