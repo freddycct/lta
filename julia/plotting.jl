@@ -116,9 +116,9 @@ function plot_edge_speeds(bus_no::ASCIIString, direction::Int64,
     savefig(file_name, transparent=true)
 end
 
-function plot_histogram(file_name::ASCIIString, data::Array{Float64, 1}, bin_edges, 
+function plot_histogram(file_name::ASCIIString, data::Array{Float64, 1}, bin_edges::FloatRange{Float64}, 
     x_label::ASCIIString, y_label::ASCIIString, title_label::ASCIIString)
-    #6772
+    
     bin_size = bin_edges[2] - bin_edges[1]
     
     #use Julia hist function to obtain data
@@ -130,7 +130,7 @@ function plot_histogram(file_name::ASCIIString, data::Array{Float64, 1}, bin_edg
     last_index = non_zero_index[end]
     
     #plot histogram using bar instead of plt.hist
-    fig = figure(figsize=(10,3))
+    fig = figure(figsize=(8,3))
     bar(hist_count[1][first_index:last_index], hist_count[2][first_index:last_index], width = bin_size, linewidth=0.0)
 
     #now reduce the figure size by changing xlim
@@ -142,12 +142,12 @@ function plot_histogram(file_name::ASCIIString, data::Array{Float64, 1}, bin_edg
     #label the xticks in hours
     locs = x_start : 3600 * 2 : x_end
     labels = (x_start / 3600) : 2 : (x_end / 3600)
-    xticks(locs, labels)
+    xticks(locs, labels)#, size=14)
 
     #label the axis and title
-    xlabel(x_label)
-    ylabel(y_label)
-    title(title_label)
-    
+    xlabel(x_label, size=18)
+    ylabel(y_label, size=18)
+    #title(title_label, size=16)
+    tight_layout()
     savefig(file_name, transparent=true)
 end

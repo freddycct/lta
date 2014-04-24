@@ -3,32 +3,29 @@
 
 \documentclass{sig-alternate}
 
-%\usepackage[dvips]{graphicx}
 \graphicspath{{./eps/}}
 \DeclareGraphicsExtensions{.eps}
 
 \usepackage{verbatim}
 \usepackage{color}
+\usepackage{subcaption}
 
 \begin{document}
 %
 % --- Author Metadata here ---
-\conferenceinfo{WOODSTOCK}{'97 El Paso, Texas USA}
+%\conferenceinfo{WOODSTOCK}{'97 El Paso, Texas USA}
 %\CopyrightYear{2007} % Allows default copyright year (20XX) to be over-ridden - IF NEED BE.
 %\crdata{0-12345-67-8/90/01}  % Allows default copyright data (0-89791-88-6/97/05) to be over-ridden - IF NEED BE.
 % --- End of Author Metadata ---
 
-\title{A Crowdsourcing Based Approach for Network Anomalies Detection}
+\title{A Crowdsourcing Based Approach for\\
+Network Anomalies Detection}
 
 \numberofauthors{3}
 
 \author{
-       \alignauthor
-       Double Blind Submission
-% You can go ahead and credit any number of authors here,
-% e.g. one 'row of three' or two rows (consisting of one row of three
-% and a second row of one, two or three).
-%
+	\alignauthor
+	Double Blind Submission
 % The command \alignauthor (no curly braces needed) should
 % precede each author name, affiliation/snail-mail address and
 % e-mail address. Additionally, tag each line of
@@ -51,31 +48,6 @@
 %        \affaddr{Dublin, Ohio 43017-6221}\\
 %        \email{webmaster@marysville-ohio.com}
 % % 3rd. author
-% \alignauthor Lars Th{\o}rv{\"a}ld\titlenote{This author is the
-% one who did all the really hard work.}\\
-%        \affaddr{The Th{\o}rv{\"a}ld Group}\\
-%        \affaddr{1 Th{\o}rv{\"a}ld Circle}\\
-%        \affaddr{Hekla, Iceland}\\
-%        \email{larst@affiliation.org}
-% \and  % use '\and' if you need 'another row' of author names
-% % 4th. author
-% \alignauthor Lawrence P. Leipuner\\
-%        \affaddr{Brookhaven Laboratories}\\
-%        \affaddr{Brookhaven National Lab}\\
-%        \affaddr{P.O. Box 5000}\\
-%        \email{lleipuner@researchlabs.org}
-% % 5th. author
-% \alignauthor Sean Fogarty\\
-%        \affaddr{NASA Ames Research Center}\\
-%        \affaddr{Moffett Field}\\
-%        \affaddr{California 94035}\\
-%        \email{fogartys@amesres.org}
-% % 6th. author
-% \alignauthor Charles Palmer\\
-%        \affaddr{Palmer Research Laboratories}\\
-%        \affaddr{8600 Datapoint Drive}\\
-%        \affaddr{San Antonio, Texas 78229}\\
-%        \email{cpalmer@prl.com}
 }
 
 \maketitle
@@ -97,9 +69,29 @@ Abstract...
 
 % The first paragraph of a research paper is always the hardest to write. Just write and ideas will flow while writing. (Writers' block)
 
-In our increasingly complex world, networks offer an abstract representation for organizing the relationships between entities of interest and importance. Examples of networks pervasive in our lives are social networks, protein networks, computer networks, transportation networks, neurological networks, organizational networks, wireless sensor networks\footnote{a.k.a. Internet of Things}, etc.
+In our increasingly complex world, networks offer an abstract representation for organizing the relationships between entities of interest in a complex system. The entities are represented as nodes while edges connecting pairs of nodes represent the existence of relationship between the entities. Examples of networks pervasive in our lives are social networks \cite{Wu2004}, protein networks, computer networks, transportation networks, neurological networks, organizational networks \cite{Mihm2010}, wireless sensor networks\footnote{a.k.a. Internet of Things}, electrical networks, etc. 
 
+In these complex systems, a functional network that facilitates reliable flow of information through the edges is necessary for the complex system to achieve its objectives. However, it is inevitable that complex systems are subjected to wear and tear, leading to occasional anomalous behavior in certain parts of the system. Anomalies in the system would disrupt normal operations, and prevent the complex system from meeting its objectives.
 
+While critical anomalies lead to catastrophic failures and cause the complete shutdown of a complex system, it is highly noticeable by the stakeholders of the complex system. The anomalies are thus quickly identified and localized for corrections to restore the functions of the complex system.
+
+A more challenging problem is to recognize the non-critical anomalies that would result in a lower than optimal efficiency of the complex system. Such non-critical anomalies are usually overlooked since the complex system can continue to function without corrections to them. 
+
+\begin{figure}[htb]
+	\centering
+	\begin{subfigure}{3.3in}
+		\includegraphics[width=3.3in]{7_start} %3.3in is max!
+		\caption{Histogram at Start of Route}
+		\label{fig:7_start}
+	\end{subfigure}
+	\begin{subfigure}{3.3in}
+		\includegraphics[width=3.3in]{7_end} %3.3in is max!
+		\caption{Histogram at End of Route}
+		\label{fig:7_start}
+	\end{subfigure}
+\end{figure}
+
+\begin{comment}
 
 \section{Model}
 
@@ -114,22 +106,22 @@ The predicted time $\hat{t}_n$ of the journey is given by the following Gaussian
 \hat{t}_n \sim \mathcal{N} \left( \sum_{ (i,j) \in r_n } \frac{ d_{i,j} }{ c_{i,j} }, d_{x_n, y_n} \sigma^2 \right)
 \end{gather}
 
-\begin{comment}
-	\subsection{Estimation of the Mean using Least Squares Error}
 
-	To estimate the speed $c_{i,j}$ of every segment $(i,j)$ using the observed time of the journey $t_n$, we formulate the following objective function based on minimizing the least squares error\footnote{Maximizing the Log Likelihood would give similar results} between the observed time $t_n$ and predicted time $\hat{t}_n$,
+\subsection{Estimation of the Mean using Least Squares Error}
 
-	\begin{align*}
-	\mathcal{L} &= \sum_{n} \left( t_n - \hat{t}_n \right)^2 - \tau \sum_{(i,j) \in E} \log(c_{i,j}) \\
-	&= \sum_{n} \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right)^2 - \tau \sum_{(i,j) \in E} \log(c_{i,j}) \\
-	\frac{d \mathcal{L}}{d c_{i,j}} &= \sum_{n} 2 \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right) \frac{d_{i,j}}{c_{i,j}^2} - \frac{\tau}{c_{i,j}}
-	\end{align*}
+To estimate the speed $c_{i,j}$ of every segment $(i,j)$ using the observed time of the journey $t_n$, we formulate the following objective function based on minimizing the least squares error\footnote{Maximizing the Log Likelihood would give similar results} between the observed time $t_n$ and predicted time $\hat{t}_n$,
 
-	Using Stochastic Gradient Descent, we would be able to update $c_{i,j}$ using each trip information $n$ as follows,
-	\begin{gather}
-	c_{i,j}^{new} = c_{i, j}^{old} - \eta \left[ \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right) \frac{d_{i,j}}{c_{i,j}^2} - \frac{\tau}{c_{i,j}} \right]
-	\end{gather}
-\end{comment}
+\begin{align*}
+\mathcal{L} &= \sum_{n} \left( t_n - \hat{t}_n \right)^2 - \tau \sum_{(i,j) \in E} \log(c_{i,j}) \\
+&= \sum_{n} \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right)^2 - \tau \sum_{(i,j) \in E} \log(c_{i,j}) \\
+\frac{d \mathcal{L}}{d c_{i,j}} &= \sum_{n} 2 \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right) \frac{d_{i,j}}{c_{i,j}^2} - \frac{\tau}{c_{i,j}}
+\end{align*}
+
+Using Stochastic Gradient Descent, we would be able to update $c_{i,j}$ using each trip information $n$ as follows,
+\begin{gather}
+c_{i,j}^{new} = c_{i, j}^{old} - \eta \left[ \left( t_n - \sum_{ (i,j) \in r_n(x_n, y_n) } \frac{d_{i,j}}{c_{i,j}} \right) \frac{d_{i,j}}{c_{i,j}^2} - \frac{\tau}{c_{i,j}} \right]
+\end{gather}
+
 
 \subsection{Estimation of the Mean by Maximum Log Likelihood}
 
@@ -311,6 +303,8 @@ Liu et al. \cite{Liu2011} proposed the discovery of causal interactions among tr
 
 Chawla et al. \cite{Chawla2012} proposed an algorithm to detect anomalies based Pinciple Component Analysis (PCA). Chawla et al. \cite{Chawla2012} represent the traffic data into two matrices, 1) the link-path matrix and the 2) link-time matrix. Then using PCA, Chawla et al. \cite{Chawla2012} is able to factorize the matrices into eigenvectors with its respective eigenvalues. The eigenvectors corresponding to large eigenvalues represent the norm, while those eigenvectors corresponding to lower eigenvalues represent the anomalies. Using these anomalies, Chawla et al. \cite{Chawla2012} tested their method to see if they could determine the root cause on synthetically generated data sets.
 
+\end{comment}
+
 \begin{comment}
 
 \section{Data Set}
@@ -381,7 +375,7 @@ Therefore, we would like to propose an algorithm for detecting such failures fro
 \end{enumerate}
 \end{comment}
 
-\bibliographystyle{plain}
+\bibliographystyle{abbrv}
 \bibliography{references}
 
 \end{document}3
