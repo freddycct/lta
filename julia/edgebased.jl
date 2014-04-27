@@ -465,18 +465,6 @@ function baseline(records::Array{Record})
     return speed, squared_error, sum_distances
 end
 
-macro nogc(ex)
-  quote
-    try
-      gc_disable()
-      local val = $(esc(ex))
-    finally
-      gc_enable()
-    end
-    val
-  end
-end
-
 function create_k_fold_validation_sets(records::Array{Record}, k_fold::Int64)
     # create the five fold validation sets
     shuffle!(records)
