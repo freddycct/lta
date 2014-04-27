@@ -375,7 +375,7 @@ function speed_estimation!(iterations::Int64, records::Array{Record},
                 end
 
                 # this is the stochastic gradient descent !!!
-                speed = speed + adjusted_learning_rate * gradient
+                speed += adjusted_learning_rate * gradient
 
                 if speed <= 0.0
                     println("Violate speed constraints!")
