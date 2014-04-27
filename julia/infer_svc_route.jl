@@ -2,7 +2,7 @@
 
 include("data_structures.jl")
 
-begin
+function main()
 	if isdefined(ARGS, 1)
 		prefix = ARGS[1]
 	else
@@ -146,3 +146,5 @@ begin
 		close(fid)
 	end
 end
+
+main()

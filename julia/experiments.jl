@@ -3,7 +3,7 @@
 require("edgebased.jl")
 require("io.jl")
 
-begin
+function main()
 	if isdefined(ARGS, 1)
 	    prefix = convert(ASCIIString, ARGS[1])
 	else
@@ -177,3 +177,5 @@ begin
 
 	@save @sprintf("%s/%s/jld/experiments.jld", prefix, date) baseline_train_rmse baseline_test_rmse baseline2_train_rmse baseline2_test_rmse edgebased_train_rmse edgebased_test_rmse smoothed_train_rmse smoothed_test_rmse
 end
+
+main()

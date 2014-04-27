@@ -106,10 +106,32 @@ Figures \ref{fig:7_start} and \ref{fig:7_end} show the histograms of information
 
 We propose a \emph{non-intrusive} solution to early detection of such anomalies in the rest of this paper. Our proposed non-intrusive \textbf{solution} relies on \emph{temporal} data related to the \emph{flow} of information from an \emph{origin} node to a \emph{destination} node. Since the solution should be non-intrusive, we only require temporal information from the two (origin and destination) end points while assuming that detailed temporal information during the journey is missing or difficult to obtain.
 
-\begin{comment}
+We formally define our problem based on the assumption that the following logged data is made available for our analysis. That is, given a set of records $R$ for a complex system, each record $r \in R$ contains the following,
+\begin{enumerate}
+	\item The origin node $x_r$, and destination node $y_r$ of information flow in $r$.
+	\item The time $t(x_r)$ when information flow begins at the origin and the time $t(y_r)$ when information flow ends at the destination.
+	\item The distance $d(x_r, y_r)$ traveled by the information, or the non-temporal cost incurred due to the information flow.
+	\item The path $p_r$ taken by $r$. The path consists of the sequence of nodes that the information visits for it to travel from node $x_r$ to node $y_r$.
+\end{enumerate}
+A pair of consecutive nodes $i,j$ in path $p_r$, forms a segment $s_{i,j}$. We determine whether the time taken for information flow in $p_r$ deviates significantly from expectation. Then we locate the segments $s_{i,j} \in p_r$ that are likely to be the cause of the deviation. 
+
+This task is challenging due to the lack of data on the time it takes for information to flow through the individual segments. We need to infer the expected time for each segment based on the set of available records we have. The inference is only possible if the set of records are diverse in their origins and destinations. We would elaborate the proposed model in greater detail in Section \ref{sec:model}
+
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Traffic Anomalies Detection}
+
+Pan et al. \cite{Pan2013} address the problem of detecting and describing traffic anomalies using crowd sensing with Beijing's taxis' GPS data and China's ``Weibo''\footnote{This service resembles Twitter but is catered for the Chinese population in Chinese language.} social media data. The anomaly which Pan et al. \cite{Pan2013} identifies is the deviance in traffic volume on segments of road during some special events. The detection of anomaly is relatively direct and the focus is on increasing the efficiency of the algorithm based on two special indexing structure for the detection algorithm.
+
+Liu et al. \cite{Liu2011} proposed the discovery of causal interactions among traffic outliers. The framework as proposed in Liu et al.\cite{Liu2011} first partitions the geographical space into regions represented by nodes in a region graph. Edges between nodes represent the traffic flow between regions. Each edge in the region graph is differentiated within each time frame. By comparing the features of each edge across different time frames, Liu et al. is able to identify the outlier travel trajectories. From the detected outliers, an outlier tree is constructed with certain rules. In the outlier tree, each node represents an outlier trajectory. The parent of an outlier node occurs before in time and the destination of the parent is the origin of the child. The cause of the outlier, is the parent.
+
+\cite{Ge2011,Zhang2011,Zhang2012} analyzed taxi GPS data to detect drivers who overcharge their passengers by deliberately taking the longer route to reach the destination. The general idea for finding these anomalous routes is to compare the route taken for each pickup and destination points and obtain a measure of how much it deviates from the usual routes.
+
+Chawla et al. \cite{Chawla2012} proposed an algorithm to detect anomalies based Pinciple Component Analysis (PCA). Chawla et al. \cite{Chawla2012} represent the traffic data into two matrices, 1) the link-path matrix and the 2) link-time matrix. Then using PCA, Chawla et al. \cite{Chawla2012} is able to factorize the matrices into eigenvectors with its respective eigenvalues. The eigenvectors corresponding to large eigenvalues represent the norm, while those eigenvectors corresponding to lower eigenvalues represent the anomalies. Using these anomalies, Chawla et al. \cite{Chawla2012} tested their method to see if they could determine the root cause on synthetically generated data sets.
 
 \section{Model}
-
+\label{sec:model}
 For the road connecting two bus stops, we call it a segment. We assume that every segment has a speed associated with it. A bus traveling from a point of origin $x$ to its destination $y$ goes through a sequence of segments. Instead of assuming a constant speed associated with the route, we assume that the route can be divided into multiple segments, where each segment takes on a speed of its own. Given that a journey $n$ starts at $x$ and ends at $y$, a route taken by $n$ is denoted by $r_n(x_n, y_n)$ ($r_n$ for brevity).
 %An edge that belongs to $r_n(x_n, y_n)$ connects two other nodes which could intersect with the route of others.
 
@@ -174,6 +196,8 @@ Solving for $\sigma^2$
 %\begin{align}
 %	\sigma^2 \leftarrow \sigma^2 + \eta \frac{\partial \mathcal{L}}{\partial \sigma^2}
 %\end{align}
+
+\begin{comment}
 
 \section{Introduction}
 
@@ -306,17 +330,7 @@ There is an important property that is necessary for Group Testing to be relevan
 
 M\'{e}zard et al. \cite{Mezard2008} mentioned that detecting failures in distributed systems \cite{Zheng2004,Zheng2005} can be an application of Group Testing. Zheng et al. \cite{Zheng2004,Zheng2005} proposed that a set of tests should be selected to minimize the uncertainty about the state of the distributed system. A natural measurement of uncertainty is to use conditional entropy, i.e. the entropy of the distributed system conditioned on the outcome of the tests. Zheng et al. \cite{Zheng2004,Zheng2005} model a distributed system using Bayesian network and proposed an algorithm for estimating conditional entropy on the Bayesian network. The distributed system used for their experiments is synthetically generated by the INET generator \cite{Winick2002}. By using the proposed conditional entropy estimation, Zheng et al. \cite{Zheng2004,Zheng2005} were able to select the minimal set of tests to minimize the uncertainty, thus minimizing the costs of testing.
 
-\subsection{Traffic Anomalies Detection}
 
-Pan et al. \cite{Pan2013} address the problem of detecting and describing traffic anomalies using crowd sensing with Beijing's taxis' GPS data and China's ``Weibo''\footnote{This service resembles Twitter but is catered for the Chinese population in Chinese language.} social media data. The anomaly which Pan et al. \cite{Pan2013} identifies is the deviance in traffic volume on segments of road during some special events. The detection of anomaly is relatively direct and the focus is on increasing the efficiency of the algorithm based on two special indexing structure for the detection algorithm.
-
-Liu et al. \cite{Liu2011} proposed the discovery of causal interactions among traffic outliers. The framework as proposed in Liu et al.\cite{Liu2011} first partitions the geographical space into regions represented by nodes in a region graph. Edges between nodes represent the traffic flow between regions. Each edge in the region graph is differentiated within each time frame. By comparing the features of each edge across different time frames, Liu et al. is able to identify the outlier travel trajectories. From the detected outliers, an outlier tree is constructed with certain rules. In the outlier tree, each node represents an outlier trajectory. The parent of an outlier node occurs before in time and the destination of the parent is the origin of the child. The cause of the outlier, is the parent.
-
-%However to the best of our knowledge, the discovery of relationships, especially causal interactions, among detected traffic outliers has not been investigated before. In this paper we propose algorithms which construct outlier causality trees based on temporal and spatial properties of detected outliers. Frequent substructures of these causality trees reveal not only recurring interactions among spatio-temporal outliers, but potential flaws in the design of existing traffic networks. 
-
-\cite{Ge2011,Zhang2011,Zhang2012} analyzed taxi GPS data to detect drivers who overcharge their passengers by deliberately taking the longer route to reach the destination. The general idea for finding these anomalous routes is to compare the route taken for each pickup and destination points and obtain a measure of how much it deviates from the usual routes.
-
-Chawla et al. \cite{Chawla2012} proposed an algorithm to detect anomalies based Pinciple Component Analysis (PCA). Chawla et al. \cite{Chawla2012} represent the traffic data into two matrices, 1) the link-path matrix and the 2) link-time matrix. Then using PCA, Chawla et al. \cite{Chawla2012} is able to factorize the matrices into eigenvectors with its respective eigenvalues. The eigenvectors corresponding to large eigenvalues represent the norm, while those eigenvectors corresponding to lower eigenvalues represent the anomalies. Using these anomalies, Chawla et al. \cite{Chawla2012} tested their method to see if they could determine the root cause on synthetically generated data sets.
 
 \end{comment}
 

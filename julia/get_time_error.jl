@@ -3,7 +3,7 @@
 require("edgebased.jl")
 require("io.jl")
 
-begin
+function main()
 	prefix = "../data"
 	if isdefined(ARGS, 1)
 		date = convert(ASCIIString, ARGS[1])
@@ -42,3 +42,5 @@ begin
 	
 	@save @sprintf("%s/%s/jld/time_error.jld", prefix, date) baseline_train_squared_error baseline2_train_squared_error edgebased_train_squared_error smoothed_train_squared_error total_distance
 end
+
+main()

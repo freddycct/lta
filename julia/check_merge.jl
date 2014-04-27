@@ -1,6 +1,6 @@
 #This script is used to check which bus number has no merges
 
-begin
+function main()
 	readline(STDIN)
 
 	while !eof(STDIN)
@@ -17,3 +17,4 @@ begin
 	end
 end
 
+main()

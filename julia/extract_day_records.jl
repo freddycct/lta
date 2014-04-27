@@ -1,6 +1,6 @@
 # The purpose of this script is to separate the data into different days
 
-begin
+function main()
 	current_date = ""
 
 	while !eof(STDIN)
@@ -83,3 +83,5 @@ begin
 		close(fid)
 	end
 end
+
+main()

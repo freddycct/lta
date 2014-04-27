@@ -6,7 +6,7 @@
 #println("Service number to extract: ", extract_svc_num)
 # while loop to read in from Standard Input
 
-begin
+function main()
 	while !eof(STDIN)
 		line = readline(STDIN)
 		#print(line)
@@ -76,3 +76,5 @@ begin
 		# end
 	end
 end
+
+main()

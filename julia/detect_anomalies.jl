@@ -1,7 +1,7 @@
 require("io.jl")
 require("anomaly.jl")
 
-begin
+function main()
 	prefix = "../data"
 	if isdefined(ARGS, 1)
 		date = convert(ASCIIString, ARGS[1])
@@ -51,3 +51,5 @@ begin
 	end
 	close(fid)
 end
+
+main()

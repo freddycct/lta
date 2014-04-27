@@ -1,6 +1,6 @@
 # This script mainly reads from standard input and prints to standard output. The output is boarding location and time, I forgot what this is used for. This is for plotting the histogram used in the slides as proposal to LTA
 
-begin
+function main()
 	while !eof(STDIN)
 		line = readline(STDIN)
 
@@ -51,3 +51,5 @@ begin
 		println(alighting_loc, '\t', alighting_sec)
 	end
 end
+
+main()

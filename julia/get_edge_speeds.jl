@@ -3,7 +3,7 @@
 require("edgebased.jl")
 require("io.jl")
 
-begin
+function main()
 	prefix = "../data"
 	if isdefined(ARGS, 1)
 		date = convert(ASCIIString, ARGS[1])
@@ -47,3 +47,5 @@ begin
 
 	#@save @sprintf("%s/%s/jld/edge_speeds.jld", prefix, date) edgebased_speeds smoothed_speeds edgebased_train_squared_error smoothed_train_squared_error total_distance
 end
+
+main()
