@@ -5,13 +5,13 @@ require("io.jl")
 
 function main()
 	if isdefined(ARGS, 1)
-	    prefix = convert(ASCIIString, ARGS[1])
+	    prefix = ascii(ARGS[1])
 	else
 	    prefix = "../data"
 	end
 
 	if isdefined(ARGS, 2)
-	    date = convert(ASCIIString, ARGS[2])
+	    date = ascii(ARGS[2])
 	else
 	    date = "20111101"
 	end
@@ -44,7 +44,7 @@ function main()
 	bus_stops, bus_services = read_bus_routes(prefix, date)
 
 	# Now construct the topology of the network based on the routes that was read in
-	create_bus_routes_topology(bus_services)
+	create_bus_routes_topology!(bus_services)
 
 	# Now read all records into memory
 	println("Reading records...")
@@ -130,7 +130,7 @@ function main()
 
 	    # Start of EdgeBased method
 
-	    init_edges_speed(bus_stops, init_speed)
+	    init_edges_speed!(bus_stops, init_speed)
 	    
 	    edgebased_train_squared_error = speed_estimation(iterations, train_set, bus_stops, bus_services, learning_rate, tau, 0.0, init_sigma2, total_distance)
 	    
@@ -146,7 +146,7 @@ function main()
 
 	    # Start of Smoothed method
 
-	    init_edges_speed(bus_stops, init_speed)
+	    init_edges_speed!(bus_stops, init_speed)
 	    
 	    smoothed_train_squared_error = speed_estimation(iterations, train_set, bus_stops, bus_services, learning_rate, tau, psi, init_sigma2, total_distance)
 	    smoothed_train_rmse[k] = sqrt(smoothed_train_squared_error / length(train_set))
@@ -158,21 +158,6 @@ function main()
 	    println()
 
 	    # End of Smoothed method
-
-	    # Start of Coordinate Descent method
-
-	    # init_edges_speed(bus_stops, init_speed)
-
-	    # cd_train_squared_error = coordinate_descent(convert(Int64, round(iterations/5)), train_set, bus_stops, bus_services, total_distance)
-	    # cd_train_rmse[k] = sqrt(cd_train_squared_error / length(records))
-	    # @printf("Coordinate Descent Train RMSE: %f\n", cd_train_rmse[k])
-
-	    # cd_test_squared_error = calculate_squared_error(test_set, bus_stops, bus_services)
-	    # cd_test_rmse[k] = sqrt(cd_test_squared_error / length(test_set))
-	    # @printf("Coordinate Descent Test RMSE: %f\n", cd_test_rmse[k])
-	    # println()
-
-	    # End of Coordinate Descent method
 	end
 
 	@save @sprintf("%s/%s/jld/experiments.jld", prefix, date) baseline_train_rmse baseline_test_rmse baseline2_train_rmse baseline2_test_rmse edgebased_train_rmse edgebased_test_rmse smoothed_train_rmse smoothed_test_rmse

@@ -31,7 +31,7 @@ function main()
 		if svc_num == "?"
 			continue
 		else
-			svc_num = convert(ASCIIString, svc_num)
+			svc_num = ascii(svc_num)
 		end
 		bus_service = get!(bus_services, svc_num, Bus_Service(svc_num))
 
@@ -71,7 +71,7 @@ function main()
 	 	boarding_bus_stop  = get!(bus_stops, boarding_loc,  Bus_Stop(boarding_loc))
 	 	alighting_bus_stop = get!(bus_stops, alighting_loc, Bus_Stop(alighting_loc))
 
-	 	add_tuple(bus_service, boarding_bus_stop, alighting_bus_stop, direction, distance)
+	 	add_tuple!(bus_service, boarding_bus_stop, alighting_bus_stop, direction, distance)
 	end
 
 	# now count the next bus stops each bus stop has and select the head/tail

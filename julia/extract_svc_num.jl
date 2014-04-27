@@ -42,7 +42,7 @@ function main()
 		if svc_num == "?"
 			continue
 		else
-			svc_num = convert(ASCIIString, svc_num)
+			svc_num = ascii(svc_num)
 		end
 
 		if fields[7] == "Cash"

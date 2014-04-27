@@ -33,10 +33,10 @@ function read_bus_routes(prefix::ASCIIString, date::ASCIIString)
                 tuple = split(fields[i], ':')
                 
                 distance_to_next = parsefloat(tuple[2]) * 1000
-                node = create_node(convert(ASCIIString, tuple[1]), bus_stops, 
+                node = create_node(ascii(tuple[1]), bus_stops, 
                     bus_service.bus_stops[direction])
                 
-                append(bus_service, direction, node, distance_to_next)
+                append!(bus_service, direction, node, distance_to_next)
             end
         end
         close(fid_bus)
@@ -85,7 +85,7 @@ function read_all_records(prefix::ASCIIString, date::ASCIIString,
             record = Record(bus_no, datetime_board, datetime_alight, origin, destination, direction, distance, time_taken)
 
             # check to ensure that this record terminates, does not go infinite loop
-            if check_finite(record, bus_stops, bus_services)
+            if check_finite!(record, bus_stops, bus_services)
                 push!(records, record)
             end
         end
@@ -127,7 +127,7 @@ function read_bus_stop_id_mapping!(prefix::ASCIIString, bus_stops::Dict{Int64, B
         fields = split(line, ['\t', '\n'], false)
         bus_stop_id = parseint(fields[1])
         bus_stop = get!(bus_stops, bus_stop_id, Bus_Stop(bus_stop_id))
-        bus_stop.name = convert(ASCIIString, fields[2])
+        bus_stop.name = ascii(fields[2])
     end
     close(fid)
 end

@@ -73,6 +73,7 @@ function main()
 			mkdir(string("../data/", year, month, day, "/bus_records/"), 0o755)
 			mkdir(string("../data/", year, month, day, "/bus_routes/"), 0o755)
 			mkdir(string("../data/", year, month, day, "/logs/"), 0o755)
+			mkdir(string("../data/", year, month, day, "/jld/"), 0o755)
 			
 			fid = open(string("../data/", year, month, day, "/date_sorted"), "w")
 		end

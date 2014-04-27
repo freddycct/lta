@@ -4,7 +4,7 @@ require("anomaly.jl")
 function main()
 	prefix = "../data"
 	if isdefined(ARGS, 1)
-		date = convert(ASCIIString, ARGS[1])
+		date = ascii(ARGS[1])
 	else
 		date = "20111101"
 	end
@@ -25,7 +25,7 @@ function main()
 
 	sort!(records, lt=cmp_record, rev=true)
 
-	top_point_5_percent = convert(Int64, round(0.005 * length(records)))
+	top_point_5_percent = int(round(0.005 * length(records)))
 
 	# this is to relate the abnormal records to one another
 	for i=1:top_point_5_percent

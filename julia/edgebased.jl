@@ -105,7 +105,7 @@ function get_initial_speed(prefix::ASCIIString, date::ASCIIString)
     return parsefloat(fields[2])
 end
 
-function init_edges_speed(bus_stops::Dict{Int64, Bus_Stop}, init_speed::Float64)
+function init_edges_speed!(bus_stops::Dict{Int64, Bus_Stop}, init_speed::Float64)
     for bus_stop in values(bus_stops)
         if isdefined(bus_stop, :edges)
             for edge in values(bus_stop.edges)
@@ -115,7 +115,8 @@ function init_edges_speed(bus_stops::Dict{Int64, Bus_Stop}, init_speed::Float64)
     end
 end
 
-function create_bus_routes_topology(bus_services::Dict{ASCIIString, Bus_Service}, init_speed::Float64 = 4.0)
+function create_bus_routes_topology!(bus_services::Dict{ASCIIString, Bus_Service}, 
+    init_speed::Float64 = 4.0)
     for bus_service in values(bus_services)
         for direction=1:2
             if !isdefined(bus_service.routes, direction)
@@ -153,7 +154,7 @@ function create_bus_routes_topology(bus_services::Dict{ASCIIString, Bus_Service}
     end
 end
 
-function check_finite(record::Record, bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
+function check_finite!(record::Record, bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
     bus_no = record.bus_no
     bus_service = bus_services[bus_no]
     
@@ -274,129 +275,6 @@ function calculate_squared_error(records::Array{Record},
     end # end for loop
     return squared_error
 end
-
-# function coordinate_descent(iterations::Int64, records::Array{Record},
-#     bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service},
-#     total_distance::Float64)
-    
-#     # the coordinate descent algorithm proceeds as follows
-    
-#     # first create a dictionary containing the edge -> Array of records
-#     edge_records_dict = Dict{Edge, Array{Record}}()
-#     for record in records
-#         bus_no = record.bus_no
-#         bus_service = bus_services[bus_no]
-            
-#         # get the origin and dest
-#         origin_id = record.origin
-#         destination_id = record.destination
-            
-#         # get the direction
-#         direction = record.direction
-            
-#         # retrieve the list_nodes associated with them
-#         bus_stops_dict = bus_service.bus_stops[direction]
-            
-#         origin_node = bus_stops_dict[ bus_stops[origin_id] ]
-#         destination_node = bus_stops_dict[ bus_stops[destination_id] ]
-
-#         current_node = origin_node
-#         while current_node != destination_node
-
-#             src_bus_stop = current_node.bus_stop
-#             tar_bus_stop = current_node.next.bus_stop
-
-#             edge = src_bus_stop.edges[tar_bus_stop]
-
-#             edge_records_array = get!(edge_records_dict, edge, Array(Record, 0))
-#             push!(edge_records_array, record)
-
-#             current_node = current_node.next
-#         end
-#     end
-
-#     #@printf("edges: %d\n", length(edge_records_dict))
-    
-#     squared_error = 0.0
-#     for iter=1:iterations
-
-#         @printf("Iteration: %d/%d", iter, iterations)
-#         flush(STDOUT)
-
-#         tic()
-#         # iterate through all possible edges, this is the core computation of coordinate descent
-#         for (edge, edge_records_array) in edge_records_dict
-            
-#             # for each edge, iterate through all records that goes through the edge    
-#             # numerator = number of records that contain edge * distance of edge
-
-#             sum_distances = 0.0 #length(edge_records_array) * edge.distance
-
-#             # denominator = time spent on edge
-#             sum_time = 0.0
-#             for record in edge_records_array
-#                 bus_no = record.bus_no
-#                 bus_service = bus_services[bus_no]
-                    
-#                 # get the origin and dest
-#                 origin_id = record.origin
-#                 destination_id = record.destination
-                    
-#                 # get the direction
-#                 direction = record.direction
-                    
-#                 # retrieve the list_nodes associated with them
-#                 bus_stops_dict = bus_service.bus_stops[direction]
-                    
-#                 origin_node = bus_stops_dict[ bus_stops[origin_id] ]
-#                 destination_node = bus_stops_dict[ bus_stops[destination_id] ]
-
-#                 time = record.time_taken
-
-#                 current_node = origin_node
-#                 while current_node != destination_node
-#                     src_bus_stop = current_node.bus_stop
-#                     tar_bus_stop = current_node.next.bus_stop
-
-#                     inner_edge = src_bus_stop.edges[tar_bus_stop]
-#                     if inner_edge != edge
-#                         time -= (inner_edge.distance / inner_edge.speed)
-#                     end
-
-#                     if time <= 0.0
-#                         break
-#                     end
-
-#                     current_node = current_node.next
-#                 end
-#                 if time > 0.0
-#                     sum_distances += edge.distance
-#                     sum_time += time
-#                 end
-#             end
-
-#             speed = sum_distances / sum_time
-#             if speed <= 0.0
-#                println("Violate speed constraints!")
-#                speed = 0.1
-#             end
-#             edge.speed = speed
-#         end
-#         time_elapsed = toq()
-#         @printf(", CD: %f (s)", time_elapsed)
-
-#         tic()
-#         squared_error = calculate_squared_error(records, bus_stops, bus_services)
-#         time_elapsed = toq()
-#         @printf(", Sum_Square: %f (s)", time_elapsed)
-
-#         sigma2 = squared_error / total_distance
-#         @printf(", Error: %e, Sigma2: %f\n", squared_error, sigma2)
-        
-#         flush(STDOUT)
-#     end
-#     return squared_error
-# end
 
 function get_origin_destination_nodes(record::Record, 
 	bus_stops::Dict{Int64, Bus_Stop}, 
