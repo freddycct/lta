@@ -9,7 +9,8 @@ function cmp_record_related_length(r1::Record, r2::Record)
     return isless(length(r1.related_records), length(r2.related_records))
 end
 
-function compute_std_ratio!(records::Array{Record}, sigma2::Float64)
+function compute_std_ratio!(records::Array{Record}, bus_stops::Dict{Int64, Bus_Stop}, 
+	bus_services::Dict{ASCIIString, Bus_Service}, sigma2::Float64)
     # now determine which are the anomalies
     for record in records
         origin_node, destination_node = get_origin_destination_nodes(record, bus_stops, bus_services)

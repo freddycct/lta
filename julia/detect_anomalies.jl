@@ -21,7 +21,7 @@ function main()
 	total_distance = get_total_distance(records)
 	sigma2 = sum_squared_errors / total_distance
 
-	compute_std_ratio!(records, sigma2)
+	compute_std_ratio!(records, bus_stops, bus_services, sigma2)
 
 	sort!(records, lt=cmp_record, rev=true)
 
