@@ -34,7 +34,7 @@ function main()
 		r1_origin, r1_destination = get_origin_destination_nodes(r1, bus_stops, bus_services)
 		for j=i+1:top_point_5_percent
 			r2 = records[j]
-			if is_inside(r1, r2, r1_origin, r1_destination)
+			if is_inside(r1, r2, r1_origin, r1_destination, bus_stops, bus_services)
 				push!(r1.related_records, r2)
 			end
 		end

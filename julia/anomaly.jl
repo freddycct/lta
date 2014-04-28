@@ -26,7 +26,8 @@ function compute_std_ratio!(records::Array{Record}, bus_stops::Dict{Int64, Bus_S
     end
 end
 
-function is_inside(r1::Record, r2::Record, r1_origin::List_Node, r1_destination::List_Node)
+function is_inside(r1::Record, r2::Record, r1_origin::List_Node, r1_destination::List_Node,
+	bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service})
     # tests whether r1 is inside r2
     if r1.hops >= r2.hops
         # simple test
