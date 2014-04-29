@@ -107,6 +107,13 @@ function save_edge_speeds(bus_stops::Dict{Int64, Bus_Stop}, file_name::ASCIIStri
     @save file_name edges
 end
 
+function print_edge_speeds(file_name::ASCIIString)
+    @load(file_name, edges)
+    for edge in edges
+        @printf("%d\t%d\t%f\n", edge.src, edge.tar, edge.speed)
+    end
+end
+
 function load_edge_speeds!(bus_stops::Dict{Int64, Bus_Stop}, file_name::ASCIIString)
 	@load(file_name, edges)
 	for edge in edges

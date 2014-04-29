@@ -76,7 +76,7 @@ While critical anomalies lead to catastrophic failures and cause the complete sh
 
 A more challenging \textbf{problem} which we address in our research, is to recognize the \emph{non-critical} anomalies that would result in a lower than optimal efficiency of the complex system. Such non-critical anomalies are often \emph{ignored} and its \emph{location unknown}, since the complex system can continue to function without corrections to them. But non-critical anomalies that are not corrected could aggravate over time into critical anomalies and cause catastrophic failure to the complex system in the unforeseeable future. 
 
-Before proceeding further, we would use the Figures \ref{fig:travel_graph} and \ref{fig:7} to illustrate the problem. Figure \ref{fig:travel_graph} shows a small network where information flows from nodes to nodes through the directed edges. The edges connecting nodes $\{a, b, c, d, e\}$ form a route for information to flow between them. We do not assume that $a$ and $e$ is always the origin and destination of every information flow. Users of the complex system could choose any of the intermediate nodes $\{b, c, d\}$ as origin or destination of the information journey, i,e. the rule of conservation between two nodes does not apply. The \textcolor{red}{red $- ~ \cdot \rightarrow$} line indicates the possibility of an existing anomaly that would disrupt the flow of information along this route.
+Before proceeding further, we would use the Figures \ref{fig:travel_graph} and \ref{fig:7} to illustrate the problem. Figure \ref{fig:travel_graph} shows a small network where information flows from nodes to nodes through the directed edges. The edges connecting nodes $\{a, b, c, d, e\}$ form a path for information to flow between them. We do not assume that $a$ and $e$ is always the origin and destination of every information flow, i.e. users of the complex system could choose any of the intermediate nodes $\{b, c, d\}$ as origin or destination of their information journey. The \textcolor{red}{red $- ~ \cdot \rightarrow$} line indicates the possibility of an existing anomaly that would disrupt the flow of information along this route.
 
 \begin{figure}[htb]
 	\centering
@@ -85,7 +85,7 @@ Before proceeding further, we would use the Figures \ref{fig:travel_graph} and \
 	\label{fig:travel_graph}
 \end{figure}
 
-Figures \ref{fig:7_start} and \ref{fig:7_end} show the histograms of information beginning its journey at the start node $a$, and ending its journey at the end node $e$. In the histograms, the x-axis represents the hour of the day, and each bin on the x-axis has a time interval of two minutes. The y-axis shows the number of journeys starting or ending its journey at the time corresponding to the timing of the bins. The phenomenon that we could immediately observe is that while the start node shows a \emph{regular} transmission of information, the end node receives the information at \emph{irregular} intervals. This could suggest the presence of an anomaly within the route such as the segment connecting node $b$ and $c$ as shown in Figure \ref{fig:travel_graph}.
+Figures \ref{fig:7_start} and \ref{fig:7_end} show the histograms of information beginning its journey at the start node $a$, and ending its journey at the end node $e$. In the histograms, the x-axis represents the hour of the day, and each bin on the x-axis has a time interval of two minutes. The y-axis shows the number of journeys starting or ending its journey at the time corresponding to the timing of the bins. The phenomenon that we could immediately observe is that while the start node shows a \emph{regular} transmission of information, the end node receives the information at \emph{irregular} intervals. This could suggest the presence of an anomaly within the path such as the segment connecting node $b$ and $c$, suffering from a severe network congestion as shown in Figure \ref{fig:travel_graph}.
 
 \begin{figure}[htb]
 	\centering
@@ -107,14 +107,18 @@ We propose a \emph{non-intrusive} solution to early detection of such anomalies 
 
 We formally define our problem based on the assumption that the following logged data is made available for our analysis. That is, given a set of records $R$ for a complex system, each record $r \in R$ contains the following,
 \begin{enumerate}
-	\item The origin node $x_r$, and destination node $y_r$ of information flow in $r$.
-	\item The time $t(x_r)$ when information flow begins at the origin and the time $t(y_r)$ when information flow ends at the destination.
-	\item The distance $d(x_r, y_r)$ traveled by the information, or the non-temporal cost incurred due to the information flow.
+	\item Spatial: The origin node $x_r$, and destination node $y_r$ of information flow in $r$.
+	\item Temporal: The time $t(x_r)$ when information flow begins at the origin and the time $t(y_r)$ when information flow ends at the destination.
+	%\item The distance $d(x_r, y_r)$ traveled by the information, or the non-temporal cost incurred due to the information flow.
 	\item The path $p_r$ taken by $r$. The path consists of the sequence of nodes that the information visits for it to travel from node $x_r$ to node $y_r$.
 \end{enumerate}
-A pair of consecutive nodes $i,j$ in path $p_r$, forms a segment $s_{i,j}$. We determine whether the time taken for information flow in $p_r$ deviates significantly from expectation. Then we locate the segments $s_{i,j} \in p_r$ that are likely to be the cause of the deviation. 
+A pair of consecutive nodes $i,j$ in path $p_r$, forms a segment $s_{i,j}$. We determine whether the time taken for information flow in $p_r$ deviates significantly from expectation. For all the records $r \in R$ with observed time that deviates significantly from the expected time, we locate the segments $s_{i,j} \in p_r$ that are likely to be the cause of the deviations.
 
-This task is challenging due to the lack of data on the time it takes for information to flow through the individual segments. We need to infer the expected time for each segment based on the set of available records we have. The inference is only possible if the set of records are diverse in their origins and destinations. We would elaborate the proposed model in greater detail in Section \ref{sec:model}
+This task is challenging due to the lack of data on the time it takes for information to flow through the individual segments. We need to infer the expected time for each segment based on the set of available records we have and the limited amount of data each record contains.
+
+Our technical contribution is the proposal of a model that performs the inference on spatial-temporal data where knowledge of the temporal trajectory is missing or not available. Such situations are common when it is not possible to install sensors in complex systems for monitoring the temporal trajectory. For example, in computer networks, the application layer only have knowledge of the two endpoints while remaining oblivious to the intermediate nodes. Another example is transportation networks, which only records the passengers boarding and alighting stations for the purpose of calculating their transportation fare.
+
+%The inference is only possible if the set of records are diverse in their origins and destinations. We would elaborate the proposed model in greater detail in Section \ref{sec:model}
 
 \section{Related Work}
 \label{sec:related}
