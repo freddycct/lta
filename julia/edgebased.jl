@@ -440,21 +440,17 @@ function baseline2(records::Array{Record})
     return squared_error, bus_services_speed
 end
 
+get_dist(record::Record) = record.distance
+get_time(record::Record) = record.time
+
 function get_total_distance(records::Array{Record})
-    sum_distances = 0.0
-    for record in records
-        sum_distances += record.distance
-    end
-    return sum_distances
+    return mapreduce(get_dist, +, records)
 end
 
 function baseline(records::Array{Record})
-    sum_time      = 0.0
-    sum_distances = 0.0
-    for record in records
-        sum_distances += record.distance
-        sum_time += record.time_taken
-    end
+    sum_distances = mapreduce(get_dist, +, records)
+    sum_time = mapreduce(get_time, +, records)
+
     speed = sum_distances / sum_time
 
     squared_error = 0.0

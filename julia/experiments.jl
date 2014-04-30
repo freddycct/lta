@@ -132,7 +132,7 @@ function main()
 
 	    init_edges_speed!(bus_stops, init_speed)
 	    
-	    edgebased_train_squared_error = speed_estimation(iterations, train_set, bus_stops, bus_services, learning_rate, tau, 0.0, init_sigma2, total_distance)
+	    edgebased_train_squared_error = speed_estimation!(iterations, train_set, bus_stops, bus_services, learning_rate, tau, 0.0, init_sigma2, total_distance)
 	    
 	    edgebased_train_rmse[k] = sqrt(edgebased_train_squared_error / length(train_set))
 	    @printf("Edgebased Train RMSE: %f\n", edgebased_train_rmse[k])
@@ -148,7 +148,7 @@ function main()
 
 	    init_edges_speed!(bus_stops, init_speed)
 	    
-	    smoothed_train_squared_error = speed_estimation(iterations, train_set, bus_stops, bus_services, learning_rate, tau, psi, init_sigma2, total_distance)
+	    smoothed_train_squared_error = speed_estimation!(iterations, train_set, bus_stops, bus_services, learning_rate, tau, psi, init_sigma2, total_distance)
 	    smoothed_train_rmse[k] = sqrt(smoothed_train_squared_error / length(train_set))
 	    @printf("Smoothed Train RMSE: %f\n", smoothed_train_rmse[k])
 	    
