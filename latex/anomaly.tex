@@ -10,6 +10,8 @@
 \usepackage{color}
 \usepackage{subcaption}
 
+\newdef{definition}{Definition}
+
 \begin{document}
 
 % --- Author Metadata here ---
@@ -133,7 +135,7 @@ Liu et al. \cite{Liu2011} proposed the discovery of causal interactions among tr
 
 Chawla et al. \cite{Chawla2012} proposed an algorithm to detect anomalies based Pinciple Component Analysis (PCA). Chawla et al. \cite{Chawla2012} represent the traffic data into two matrices, 1) the link-path matrix and the 2) link-time matrix. Then using PCA, Chawla et al. \cite{Chawla2012} is able to factorize the matrices into eigenvectors with its respective eigenvalues. The eigenvectors corresponding to large eigenvalues represent the norm, while those eigenvectors corresponding to lower eigenvalues represent the anomalies. Using these anomalies, Chawla et al. \cite{Chawla2012} tested their method to see if they could determine the root cause on synthetically generated data sets.
 
-\section{Model}
+\section{Network Transmission Models}
 \label{sec:model}
 
 To find anomalies in the network, we analyse the set of information flow records $R$ from a complex system. But we must first determine which recorded information flow $r \in R$ is anomalous before we could proceed further with the localization task. A record $r$ is anomalous, if the observed time $\hat{t}_r$ taken to complete the distance $d_r$ deviates significantly from the expected value $t_r$ given to us by a statistical model.
@@ -163,7 +165,7 @@ where $P$ is the set of possible paths and $R_p$ is the set of records that took
 
 \subsection{Edgebased Model}
 
-We propose the Edgebased model, that models the speed of individual edges in the network. Given that an information flow record $r$ that originates from $x$ and terminates at $y$, the path taken by $r$ is denoted as $p_r$. Within each path $p_r$, the information flows through consecutive sequences of nodes. For every pair of consecutive node $i,j \in p_r$, the segment $s_{i,j}$ connecting the pair is associated with the known distance $d_{i,j}$ and an estimated speed $c_{i,j}$.
+We propose the Edgebased model, that models the speed of individual edges in the network. Given that an information flow record $r$ that originates from $x$ and terminates at $y$, the path taken by $r$ is denoted as $p_r$. Within each path $p_r$, the information flows through consecutive sequences of nodes. For every pair of consecutive node $i,j \in p_r$, the segment $s_{i,j}$ connecting the pair is associated with the known distance $d_{i,j}$ and an estimated speed $c_{i,j}$. The time taken $t_{i,j}$ for each segment $s_{i,j}$ could then be estimated using the distance $d_{i,j}$ and speed $c_{i,j}$. Summation of the estimated time in each segment gives the expected time $t_r$ needed for $r$ to travel from $x$ to $y$.
 
 The distribution of time $t_r$ of $r$ is given by the following linear Gaussian distribution,
 \begin{gather*}
@@ -189,11 +191,11 @@ By taking partial derivative with respect to $c_{p,q}$,
 	\label{eqn:sgd_mean}
 	\frac{\partial \mathcal{L}^*_r}{\partial c_{p,q}} = - \frac{\left( \hat{t}_r - \sum_{ (i,j) \in p_r } \frac{d_{i,j}}{c_{i,j}} \right)}{d_r \sigma^2 } \cdot \frac{d_{p,q}}{c_{p,q}^2} + \frac{\tau}{c_{p,q}}
 \end{align}
-The partial derivative allows us to perform Stochastic Gradient Descent (SGD) on parameters $c_{i,j}$ as follows.
-\begin{align}
-	\label{eqn:update}
+The partial derivative allows us to perform Stochastic Gradient Descent (SGD) on parameters $c_{i,j}$ as follows,
+\begin{align*}
+	%\label{eqn:update}
 	c_{i,j} \leftarrow c_{i,j} + \eta \frac{\partial \mathcal{L}^*_r}{\partial c_{i,j}}
-\end{align}
+\end{align*}
 There are several interesting properties with the partial derivative in Equation \ref{eqn:sgd_mean}. The variance in the denominator shows that the more uncertain we are, the lesser the gradient is, hence less changes to $c_{i,j}$. The smaller $c_{i,j}$ is, the second component in Equation \ref{eqn:sgd_mean} will compensate by adding positive value to prevent $c_{i,j}$ from entering the negative region.
 
 \subsection{Smoothed Edgebased Model}
@@ -209,6 +211,61 @@ Estimation for the variance $\sigma^2$ remains the same while estimation of $c_{
 	\frac{\partial \mathcal{L}^{**}_r}{\partial c_{i,j}} &= \frac{\partial \mathcal{L}^*_r}{\partial c_{i,j}} - \psi (c_{i,j} - c_{j,k}) \\
 	c_{i,j} &\leftarrow c_{i,j} + \eta \frac{\partial \mathcal{L}^{**}_r}{\partial c_{i,j}}
 \end{align*}
+
+In Section \ref{sec:experiments}, we would evaluate which of these models is a better choice in terms of generalizing to records that are not observed during the estimation (training) phase.
+
+\section{Localization of Network Anomalies}
+\label{sec:localization}
+
+The models as described in previous section would allow us to determine whether a record $r \in R$ is anomalous by comparing the difference of the observed time and the expected time $\hat{t}_r - t_r$ with the standard deviation $\sqrt{d_r \sigma^2}$. We use the following ratio $\alpha_r$ to measure the degree of deviation.
+\begin{align*}
+	%\label{eqn:alpha_ratio}
+	\alpha_r = \frac{\hat{t}_r - t_r}{\sigma \sqrt{d_r}}
+\end{align*}
+
+For records $r \in R$ with $\alpha_r > 1$, it indicates that the time taken is longer than expected while $\alpha_r < 1$ indicates that the time taken is shorter than expected. In most complex systems, the records of interest for further investigation would be records with $\alpha_r > \delta$, where $\delta$ is a cut-off value to determine whether $r$ has a larger observed time than expected. We would be able to obtain a reduced set of records $R_{\alpha > \delta}$ such that $r \in R_{\alpha > \delta}$ has a ratio $\alpha_r > \delta$ for further investigation.
+
+But a high ratio $\alpha_r$ for record $r \in R_{\alpha > \delta}$ could be an isolated incident that does not have any significant impact on the complex system. The ratio $\alpha_r$ also does not reveal the specific segment $s_{i,j}$ in the path $p_r$ of $r$ that causes the longer observed time $\hat{t}_r$. To address these issues, we propose an algorithm that serve two purposes:
+\begin{enumerate}
+	\item Measuring how many other records $r' \in R_{\alpha > \delta}\setminus{r}$ are related to $r$ in order to determine the significance of the network congestion in the path $p_r$ taken by $r$.
+	\item Locating the segment $s_{i,j} \in p_r$ that is most likely to contribute to the high $\alpha_r$ ratio of $r$.
+\end{enumerate}
+We first define the ``relatedness'' of two records $r, r'$ in more precise terms using ``contains'' and ``within''.
+\begin{definition}
+	$r'$ contains $r$ if all of the following conditions are satisfied: 
+	\begin{enumerate}
+		\item The path $p_{r'}$ connecting the origin $x_{r'}$ and destination $y_{r'}$ of $r'$, passes through the path $p_{r}$ that connects the origin $x_{r}$ and destination $y_{r}$ of $r$. 
+		\item The time $t(x_{r'})$ when $r'$ starts at origin $x_{r'}$, is earlier than the time $t(x_{r})$ when $r$ starts at origin $x_{r}$. i.e. $t(x_{r'}) < t(x_{r})$.
+		\item The time $t(y_{r'})$ when $r'$ ends at destination $y_{r'}$, is later than the time $t(x_{r})$ when $r$ ends at destination $y_{r}$. i.e. $t(y_{r'}) > t(y_{r})$.
+	\end{enumerate}
+\end{definition}
+\begin{definition}
+	$r$ is within $r'$ if and only if $r'$ contains $r$.
+\end{definition}
+Based on the two definitions, the algorithm for localizing the anomalies in the network proceed as follows:
+\begin{enumerate}
+	\item Obtain the set of records $R_{\alpha > \delta}$ such that $r \in R_{\alpha > \delta}$ has a ratio $\alpha_r > \delta$.
+	\item For each $r \in R_{\alpha > \delta}$, obtain the set of records $R_r$,
+	\[ R_{r} := \{ r' \in R_{\alpha > \delta} | r' ~ \text{contains} ~ r \land r' \neq r \} \]
+	%such that each $r' \in R_r$ contains $r$, $r' \neq r$ and $$.
+	\item Then by sorting $r \in R_{\alpha > \delta}$ in descending order of $|R_r|$, and examining the segments $s_{i,j}$ of path $p_r$, we would be able to locate the segments $s_{i,j}$ with severe network congestion between the times of $t(x_r)$ and $t(y_r)$.
+	\item For any given $r' \in R_{\alpha > \delta}$, we would also be able to locate the congested segments of path $p_{r'}$ by using the path $p_r$ of records $r$, where $r$ is within $r'$ and $R_r = \emptyset$.
+\end{enumerate}
+
+
+
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Data Description}
+
+\subsection{Sum-of-Squares Error Convergence}
+
+\subsection{K-Fold Cross Validation}
+
+\subsection{Case Studies on Anomalies}
+
+\section{Conclusion}
 
 \bibliographystyle{abbrv}
 \bibliography{references}
