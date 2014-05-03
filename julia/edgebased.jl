@@ -441,7 +441,7 @@ function baseline2(records::Array{Record})
 end
 
 get_dist(record::Record) = record.distance
-get_time(record::Record) = record.time
+get_time(record::Record) = record.time_taken
 
 function get_total_distance(records::Array{Record})
     return mapreduce(get_dist, +, records)

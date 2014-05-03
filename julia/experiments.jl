@@ -51,6 +51,9 @@ function main()
 	records = read_all_records(prefix, date, bus_stops, bus_services)
 
 	k_fold = 5
+
+	#shuffle!(records)
+
 	validation_sets = create_k_fold_validation_sets(records, k_fold)
 
 	baseline_train_rmse = Array(Float64, 5)
@@ -67,8 +70,6 @@ function main()
 
 	cd_train_rmse = Array(Float64, 5)
 	cd_test_rmse = Array(Float64, 5)
-
-	shuffle!(records)
 
 	for k=1:k_fold
 	    @printf("Fold %d\n", k)
