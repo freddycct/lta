@@ -167,10 +167,14 @@ where $P$ is the set of possible paths and $R_p$ is the set of records that took
 
 We propose the Edgebased model, that models the speed of individual edges in the network. Given that an information flow record $r$ that originates from $x$ and terminates at $y$, the path taken by $r$ is denoted as $p_r$. Within each path $p_r$, the information flows through consecutive sequences of nodes. For every pair of consecutive node $i,j \in p_r$, the segment $s_{i,j}$ connecting the pair is associated with the known distance $d_{i,j}$ and an estimated speed $c_{i,j}$. The time taken $t_{i,j}$ for each segment $s_{i,j}$ could then be estimated using the distance $d_{i,j}$ and speed $c_{i,j}$. Summation of the estimated time in each segment gives the expected time $t_r$ needed for $r$ to travel from $x$ to $y$.
 
+The distribution of time for each segment $s_{i,j}$ is given by the following Gaussian distribution,
+\[ t_{i,j} \sim \mathcal{N} \left( \frac{d_{i,j}}{c_{i,j}}, d_{i,j} \sigma^2 \right) \]
+
 The distribution of time $t_r$ of $r$ is given by the following linear Gaussian distribution,
-\begin{gather*}
-	t_r \sim \mathcal{N} \left( \sum_{ (i,j) \in p_r } \frac{ d_{i,j} }{ c_{i,j} }, d_r \sigma^2 \right)
-\end{gather*}
+\begin{align*}
+	t_r &= \sum_{ (i,j) \in p_r } t_{i,j} \\
+	t_r &\sim \mathcal{N} \left( \sum_{ (i,j) \in p_r } \frac{ d_{i,j} }{ c_{i,j} }, d_r \sigma^2 \right)
+\end{align*}
 To estimate the variance $\sigma^2$,
 \begin{align*}
 	\sigma^2 = \frac{ \sum_{r \in R} \left( \hat{t}_r - \sum_{ (i,j) \in p_r } \frac{d_{i,j}}{c_{i,j}} \right)^2}{\sum_{r \in R} d_r}
@@ -259,9 +263,68 @@ Based on the two definitions, the algorithm for localizing the anomalies in the 
 
 \subsection{Data Description}
 
-%\subsection{Sum-of-Squares Error Convergence}
+\subsection{Sum-of-Squares Error Convergence}
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=3.3in]{convergence}
+	\caption{Stochastic Gradient Descent Convergence rate for Sum of Squared Error}
+	\label{fig:convergence}
+\end{figure}
 
 \subsection{K-Fold Cross Validation}
+
+\begin{figure}[htb]
+	\centering
+	\begin{subfigure}{1.6in}
+		\includegraphics[width=1.6in]{20111208_train} %3.3in is max!
+		\caption{Dec 8th 2011}
+		\label{fig:20111208_train}
+	\end{subfigure}
+	\begin{subfigure}{1.6in}
+		\includegraphics[width=1.6in]{20111216_train} %3.3in is max!
+		\caption{Dec 16th 2011}
+		\label{fig:20111216_train}
+	\end{subfigure}
+	\begin{subfigure}{1.6in}
+		\includegraphics[width=1.6in]{20111222_train} %3.3in is max!
+		\caption{Dec 22nd 2011}
+		\label{fig:20111222_train}
+	\end{subfigure}
+	\begin{subfigure}{1.6in}
+		\includegraphics[width=1.6in]{legend} %3.3in is max!
+		\caption{Legend}
+		\label{fig:legend_train}
+	\end{subfigure}
+	\caption{Training Set: 5 Fold Cross Validation}
+	\label{fig:5_fold_train}
+\end{figure}
+
+\begin{figure}[htb]
+	\centering
+	\begin{subfigure}{1.6in}
+		\includegraphics[width=1.6in]{20111208_test} %3.3in is max!
+		\caption{Dec 8th 2011}
+		\label{fig:20111208_test}
+	\end{subfigure}
+	\begin{subfigure}{1.6in}
+		\includegraphics[width=1.6in]{20111216_test} %3.3in is max!
+		\caption{Dec 16th 2011}
+		\label{fig:20111216_test}
+	\end{subfigure}
+	\begin{subfigure}{1.6in}
+		\includegraphics[width=1.6in]{20111222_test} %3.3in is max!
+		\caption{Dec 22nd 2011}
+		\label{fig:20111222_test}
+	\end{subfigure}
+	\begin{subfigure}{1.6in}
+		\includegraphics[width=1.6in]{legend} %3.3in is max!
+		\caption{Legend}
+		\label{fig:legend_test}
+	\end{subfigure}
+	\caption{Testing Set: 5 Fold Cross Validation}
+	\label{fig:5_fold_test}
+\end{figure}
 
 \subsection{Case Studies on Anomalies}
 

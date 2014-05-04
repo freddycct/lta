@@ -1,5 +1,23 @@
 require("data_structures.jl")
 
+function date_postfix(day::Int32)
+    day = day % 10
+    if day == 1
+        return "st"
+    elseif day == 2
+        return "nd"
+    elseif day == 3
+        return "rd"
+    else
+        return "th"
+    end
+end
+
+function date_string(date_tmstruct::TmStruct)
+    string(strftime("%b %e", date_tmstruct), date_postfix(date_tmstruct.mday), 
+        strftime(" %Y", date_tmstruct))
+end
+
 function get_index(tuples::Array{(Float64, Float64)}, index::Int64)
     arr = Array(Float64, 0)
     for tuple in tuples

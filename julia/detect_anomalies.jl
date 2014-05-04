@@ -25,14 +25,18 @@ function main()
 
 	sort!(records, lt=cmp_record, rev=true)
 
-	top_point_5_percent = int(round(0.005 * length(records)))
+	#top_point_5_percent = int(round(0.005 * length(records)))
+	top_1_percent = int(round(0.01 * length(records)))
 
 	# this is to relate the abnormal records to one another
-	for i=1:top_point_5_percent
+	for i=1:top_1_percent
 		r1 = records[i]
 		r1.related_records = Array(Record, 0)
 		r1_origin, r1_destination = get_origin_destination_nodes(r1, bus_stops, bus_services)
-		for j=i+1:top_point_5_percent
+		for j=1:top_1_percent
+			if i == j
+				continue
+			end
 			r2 = records[j]
 			if is_inside(r1, r2, r1_origin, r1_destination, bus_stops, bus_services)
 				push!(r1.related_records, r2)
@@ -40,7 +44,7 @@ function main()
 		end
 	end
 
-	abnormal_records = records[1:top_point_5_percent]
+	abnormal_records = records[1:top_1_percent]
 	sort!(abnormal_records, lt=cmp_record_related_length, rev=true)
 
 	read_bus_stop_id_mapping!(prefix, bus_stops)
