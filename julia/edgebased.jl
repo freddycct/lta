@@ -321,7 +321,7 @@ function speed_estimation!(iterations::Int64, records::Array{Record},
 
     for iter=1:iterations
         # shuffle it
-        adjusted_learning_rate = learning_rate / sqrt(iter) # * iter)
+        adjusted_learning_rate = learning_rate # / sqrt(iter) # * iter)
 
         @printf("Iteration: %d/%d", iter, iterations)
         

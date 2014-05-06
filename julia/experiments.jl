@@ -19,7 +19,7 @@ function main()
 	if isdefined(ARGS, 3)
 	    learning_rate = parsefloat(ARGS[3])
 	else
-	    learning_rate = 1e-3
+	    learning_rate = 1e-4
 	end
 
 	if isdefined(ARGS, 4)
@@ -37,7 +37,7 @@ function main()
 	if isdefined(ARGS, 6)
 	    iterations = parseint(ARGS[6])
 	else
-	    iterations = 100
+	    iterations = 200
 	end
 
 	# first step would be to read in success and store the routes of each bus service in memory

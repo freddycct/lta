@@ -10,10 +10,10 @@ function main()
 	else
 		date = "20111101"
 	end
-	learning_rate = 1e-3
+	learning_rate = 1e-4
 	tau = 1e-4
 	psi = 0.01
-	iterations = 100
+	iterations = 200
 
 	bus_stops, bus_services = read_bus_routes(prefix, date)
 
@@ -37,11 +37,11 @@ function main()
 	
 	#edgebased_speeds = get_edge_speeds(bus_stops, bus_services)
 
-	init_edges_speed!(bus_stops, init_speed)
-	smoothed_train_squared_error = speed_estimation!(iterations, records, bus_stops, bus_services, learning_rate, tau, psi, init_sigma2, total_distance)
-	smoothed_train_rmse = sqrt(smoothed_train_squared_error[end, 2] / length(records))
-	@printf("Smoothed Train RMSE: %f\n", smoothed_train_rmse)
-	save_edge_speeds(bus_stops, @sprintf("%s/%s/jld/smoothed_edges.jld", prefix, date))
+	# init_edges_speed!(bus_stops, init_speed)
+	# smoothed_train_squared_error = speed_estimation!(iterations, records, bus_stops, bus_services, learning_rate, tau, psi, init_sigma2, total_distance)
+	# smoothed_train_rmse = sqrt(smoothed_train_squared_error[end, 2] / length(records))
+	# @printf("Smoothed Train RMSE: %f\n", smoothed_train_rmse)
+	# save_edge_speeds(bus_stops, @sprintf("%s/%s/jld/smoothed_edges.jld", prefix, date))
 	
 	#smoothed_speeds = get_edge_speeds(bus_stops, bus_services)
 

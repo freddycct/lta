@@ -10,10 +10,10 @@ function main()
 	else
 		date = "20111101"
 	end
-	learning_rate = 1e-3
+	learning_rate = 1e-4
 	tau = 1e-4
 	psi = 0.01
-	iterations = 100
+	iterations = 200
 
 	bus_stops, bus_services = read_bus_routes(prefix, date)
 
