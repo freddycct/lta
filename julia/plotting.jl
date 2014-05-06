@@ -44,6 +44,51 @@ end
 
 function plot_edge_speeds(bus_no::ASCIIString, direction::Int64, 
     speed_dict_1::Dict{ASCIIString, Array{Array{(Float64, Float64)}}}, 
+    bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, fontsize::Float64)
+
+    bus_service = bus_services[bus_no]
+
+    # check whether direction is valid for this bus service
+    if !isdefined(bus_service.routes, direction)
+        return
+    end
+
+    # first get the list of bus stops
+    bus_stop_names = Array(ASCIIString, 0)
+
+    route = bus_service.routes[direction] # route is List
+    node = route.head # obtained linked list node that contains bus stops
+    
+    push!(bus_stop_names, node.bus_stop.name)
+
+    while node != node.next
+        node = node.next
+        push!(bus_stop_names, node.bus_stop.name)
+    end
+
+    assert(length(bus_stop_names) == length(speed_dict_1[bus_no][direction]) + 1)
+
+    figure(figsize=(8,4))
+
+    plot([1:length(speed_dict_1[bus_no][direction])] .+ 0.5, 
+        get_index(speed_dict_1[bus_no][direction], 2), "ro-")
+
+    locs = [1:length(bus_stop_names)]
+    xticks(locs, bus_stop_names, fontsize=fontsize, rotation=45, ha="right")
+    xlim(1, length(bus_stop_names))
+    
+    grid(true, axis="x")
+
+    ylabel("Speed of Segments (m/s)")
+    xlabel("Bus Stops")
+    title(@sprintf("Speeds inferred for Bus %s in Direction %d", bus_no, direction))
+    tight_layout()
+    file_name = @sprintf("%s/%s/bus_speed_%s_%d.pdf", prefix, date, bus_no, direction)
+    savefig(file_name, transparent=true)
+end
+
+function plot_edge_speeds(bus_no::ASCIIString, direction::Int64, 
+    speed_dict_1::Dict{ASCIIString, Array{Array{(Float64, Float64)}}}, 
     speed_dict_2::Dict{ASCIIString, Array{Array{(Float64, Float64)}}},
     bus_stops::Dict{Int64, Bus_Stop}, bus_services::Dict{ASCIIString, Bus_Service}, 
     sigma2_1::Float64, sigma2_2::Float64, fontsize::Float64)
@@ -75,8 +120,8 @@ function plot_edge_speeds(bus_no::ASCIIString, direction::Int64,
 
     plot([1:length(speed_dict_1[bus_no][direction])] .+ 0.5, 
         get_index(speed_dict_1[bus_no][direction], 2), "ro-")
-    #plot([1:length(speed_dict_2[bus_no][direction])] .+ 0.5, 
-    #    get_index(speed_dict_2[bus_no][direction], 2), "bx--")
+    plot([1:length(speed_dict_2[bus_no][direction])] .+ 0.5, 
+        get_index(speed_dict_2[bus_no][direction], 2), "bx--")
 
     locs = [1:length(bus_stop_names)]
     xticks(locs, bus_stop_names, fontsize=fontsize, rotation=45, ha="right")
@@ -84,7 +129,7 @@ function plot_edge_speeds(bus_no::ASCIIString, direction::Int64,
     
     grid(true, axis="x")
 
-    #legend(("Edgebased", "Smoothed"), loc=0)
+    legend(("Edgebased", "Smoothed"), loc=0)
     ylabel("Speed of Segments (m/s)")
     xlabel("Bus Stops")
     title(@sprintf("Speeds inferred for Bus %s in Direction %d", bus_no, direction))

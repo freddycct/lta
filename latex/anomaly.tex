@@ -320,7 +320,8 @@ We would first like to verify that the Stochastic Gradient Descent (SGD) algorit
 	\label{eqn:sum_of_squares}
 	\text{Sum-of-Squares Error} = \sum_{r \in R} (t_r - \hat{t}_r)^2 
 \end{align}
-Figure \ref{fig:convergence} shows the convergence of SSE with respect to time, and each point (\textcolor{red}{red $\times$}/\textcolor{blue}{blue $\bullet$}) gives the (SSE, time) of each iteration. As observed in Figure \ref{fig:convergence}, the SGD algorithm decreases the SSE over time with the Edgebased model having a lower SSE than Smoothed Edgebased model. This is expected due to the additional smoothing constraints we have imposed on the Smoothed Edgebased model. The change in SSE decreases over time which suggests that the SGD algorithm converges for our proposed model, resulting in marginally improvement in the SSE.
+
+Figure \ref{fig:convergence} shows the convergence of SSE with respect to time, and each point (\textcolor{red}{red $\times$}/\textcolor{blue}{blue $\bullet$}) gives the (SSE, time) of each iteration. As observed in Figure \ref{fig:convergence}, the SGD algorithm decreases the SSE over time with the Edgebased model having a lower SSE than Smoothed Edgebased model. This is expected due to the additional smoothing constraints we have imposed on the Smoothed Edgebased model. The change in SSE decreases over time which suggests that the SGD algorithm converges for our proposed model, resulting in marginally improvement in the SSE with increasing number of iterations.
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=3.3in]{convergence}
@@ -329,6 +330,8 @@ Figure \ref{fig:convergence} shows the convergence of SSE with respect to time, 
 \end{figure}
 
 \subsection{K-Fold Cross Validation}
+
+
 Figure \ref{fig:5_fold_train} and \ref{fig:5_fold_test}.
 \begin{figure}[htb]
 	\centering
