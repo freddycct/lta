@@ -75,8 +75,8 @@ function plot_edge_speeds(bus_no::ASCIIString, direction::Int64,
 
     plot([1:length(speed_dict_1[bus_no][direction])] .+ 0.5, 
         get_index(speed_dict_1[bus_no][direction], 2), "ro-")
-    plot([1:length(speed_dict_2[bus_no][direction])] .+ 0.5, 
-        get_index(speed_dict_2[bus_no][direction], 2), "bx--")
+    #plot([1:length(speed_dict_2[bus_no][direction])] .+ 0.5, 
+    #    get_index(speed_dict_2[bus_no][direction], 2), "bx--")
 
     locs = [1:length(bus_stop_names)]
     xticks(locs, bus_stop_names, fontsize=fontsize, rotation=45, ha="right")
@@ -84,7 +84,7 @@ function plot_edge_speeds(bus_no::ASCIIString, direction::Int64,
     
     grid(true, axis="x")
 
-    legend(("Edgebased", "Smoothed"), loc=0)
+    #legend(("Edgebased", "Smoothed"), loc=0)
     ylabel("Speed of Segments (m/s)")
     xlabel("Bus Stops")
     title(@sprintf("Speeds inferred for Bus %s in Direction %d", bus_no, direction))

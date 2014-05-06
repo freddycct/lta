@@ -144,7 +144,7 @@ To find anomalies in the network, we analyse the set of information flow records
 
 For our first baseline, we assume that every recorded information flow $r$ travels at a constant speed $c$ to cover the total distance $d_r$ required to reach its destination. The distribution of time taken $t_r$ for record $r$ is given by the following Gaussian distribution,
 \[ t_r \sim \mathcal{N} \left( \frac{d_r}{c}, d_r \sigma^2 \right) \]
-The unknown value of $c$ can be obtained by minimizing the following least squares error,
+The unknown value of $c$ can be obtained by minimizing the following Sum-of-Squares error,
 \[ \sum_{r \in R} (t_r - \hat{t}_r)^2 \]
 Thus allowing us to obtain,
 \begin{gather*}
@@ -293,35 +293,38 @@ Then by combining the inferred routes of various bus services, we would be able 
 
 \subsubsection{Statistics}
 
-We performed our analysis on three days of data, December 8th 2011, December 15th 2011 and December 22nd 2011. These three days are spaced one week apart and falls on Thursday of the week, which is a typical working day. The reason for choosing these specific days is because of the occurrence of an event (external to the bus system) on December 15th 2011 which affected the transportation system of the city. The choice of December 8th and December 22nd is to show that the anomalies present on December 15th, is absent one week before and one week after. 
-
+We performed our analysis on three days of data, December 8th 2011, December 15th 2011 and December 22nd 2011. These three days are spaced one week apart and falls on Thursday of the week, which is a typical working day. The reason for choosing these specific days is because of the occurrence of an event (external to the bus system) on December 15th 2011 which affected the transportation system of the city. The choice of December 8th and December 22nd is to show that the anomalies present on December 15th, is absent one week before and one week after. We perform the bus route inference on the records of these three days and obtained the respective transportation network for each day. Statistics of the transportation network is shown in Table \ref{tbl:statistics}. While most of the transportation network remains fairly static, there are minor fluctuations in the size of the network due to several reasons: 1) The city of Singapore constantly performs road maintenance resulting in temporary changes in routes of bus services. 2) The bus company provides temporary services to cater for special events. 3) We only retain the data of bus routes that we are able to infer without any errors.
 \begin{table}[htb]
 	\centering
-	\caption{Size of data set for each day}
+	\caption{Statistics of Transportation Network}
 	\label{tbl:statistics}
-	\begin{tabular}{|p{1in}|r|r|r|}
+	\begin{tabular}{|p{2.1cm}|r|r|r|}
 		\hline
 			& Dec 8th & Dec 15th & Dec 22nd \\
 		\hline
-		No. of records & 3,137,469 & 3,176,830 & 3,162,985\\
+		No. of records & 3,137,469 & 3,176,830 & 3,162,985 \\
 		\hline
-		No. of inferred bus routes & 288 & 285 & 287\\
+		No. of inferred bus routes & 288 & 285 & 287 \\
 		\hline
-		No. of nodes & & &\\
+		No. of nodes & 4497 & 4492 & 4514 \\
 		\hline
-		No. of edges & & &\\
+		No. of edges & 6176 & 6151 & 6195 \\
 		\hline
 	\end{tabular}
 \end{table}
 
-
-
 \subsection{Sum-of-Squares Error Convergence}
-Figure \ref{fig:convergence}.
+
+We would first like to verify that the Stochastic Gradient Descent (SGD) algorithm converges for our proposed model in Section \ref{sec:models}. The SGD algorithm is supposed to reduce the error between the expected time given by the models and observed time as reflected in the records $r \in R$. The error for all records $r \in R$ is given by the Sum-of-Squares Error (SSE) as shown in Equation \ref{eqn:sum_of_squares}. A lower SSE value suggest a better fit of the model to the observed data.
+\begin{align}
+	\label{eqn:sum_of_squares}
+	\text{Sum-of-Squares Error} = \sum_{r \in R} (t_r - \hat{t}_r)^2 
+\end{align}
+Figure \ref{fig:convergence} shows the convergence of SSE with respect to time, and each point (\textcolor{red}{red $\times$}/\textcolor{blue}{blue $\bullet$}) gives the (SSE, time) of each iteration. As observed in Figure \ref{fig:convergence}, the SGD algorithm decreases the SSE over time with the Edgebased model having a lower SSE than Smoothed Edgebased model. This is expected due to the additional smoothing constraints we have imposed on the Smoothed Edgebased model. The change in SSE decreases over time which suggests that the SGD algorithm converges for our proposed model, resulting in marginally improvement in the SSE.
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=3.3in]{convergence}
-	\caption{Stochastic Gradient Descent Convergence rate for Sum of Squared Error}
+	\caption{Stochastic Gradient Descent Convergence rate for Sum-of-Squares Error}
 	\label{fig:convergence}
 \end{figure}
 

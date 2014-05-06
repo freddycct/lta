@@ -7,14 +7,15 @@ type Edge
 	distance::Float64
 	#intensity::Int64
 
-	function Edge(src::Int64, tar::Int64, distance::Float64, speed::Float64)
-		edge = new()
-		edge.src = src
-		edge.tar = tar
-		edge.distance = distance
-		edge.speed = speed
-		edge
-	end
+	# This constructor exists by default, no need to define it.
+	# function Edge(src::Int64, tar::Int64, distance::Float64, speed::Float64)
+	# 	edge = new()
+	# 	edge.src = src
+	# 	edge.tar = tar
+	# 	edge.distance = distance
+	# 	edge.speed = speed
+	# 	edge
+	# end
 end
 
 type Bus_Stop
