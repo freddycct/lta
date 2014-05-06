@@ -53,8 +53,8 @@ function main()
 		write(fid, string(i, " ", record.bus_no, " |R_", i, "|=", length(record.related_records), " ",
 			bus_stops[record.origin].name, " -", record.distance, "-> ", 
 			bus_stops[record.destination].name, " between ", strftime(record.datetime_board), 
-			" and ", strftime(record.datetime_alight), " expected=", record.time_predicted, 
-			" observed=", record.time_taken, "\n"))
+			" and ", strftime(record.datetime_alight), " expected=", record.time_predicted/60, 
+			" observed=", record.time_taken/60, "\n"))
 	end
 	close(fid)
 end
