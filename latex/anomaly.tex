@@ -67,7 +67,7 @@ Abstract...
 %\keywords{ACM proceedings, \LaTeX, text tagging}
 
 \section{Introduction}
-
+\label{sec:intro}
 % The first paragraph of a research paper is always the hardest to write. Just write and ideas will flow while writing. (Writers' block)
 
 In our increasingly complex world, networks offer an abstract representation for organizing the relationships between entities of interest in a complex system. The entities are represented as nodes while edges connecting pairs of nodes represent the existence of relationship between the entities. Examples of networks pervasive in our lives are social networks \cite{Wu2004}, protein networks, computer networks, transportation networks, neurological networks, organizational networks \cite{Mihm2010}, wireless sensor networks\footnote{Internet of Things}, electrical networks, etc. 
@@ -136,7 +136,7 @@ Liu et al. \cite{Liu2011} proposed the discovery of causal interactions among tr
 Chawla et al. \cite{Chawla2012} proposed an algorithm to detect anomalies based Pinciple Component Analysis (PCA). Chawla et al. \cite{Chawla2012} represent the traffic data into two matrices, 1) the link-path matrix and the 2) link-time matrix. Then using PCA, Chawla et al. \cite{Chawla2012} is able to factorize the matrices into eigenvectors with its respective eigenvalues. The eigenvectors corresponding to large eigenvalues represent the norm, while those eigenvectors corresponding to lower eigenvalues represent the anomalies. Using these anomalies, Chawla et al. \cite{Chawla2012} tested their method to see if they could determine the root cause on synthetically generated data sets.
 
 \section{Network Transmission Models}
-\label{sec:model}
+\label{sec:models}
 
 To find anomalies in the network, we analyse the set of information flow records $R$ from a complex system. But we must first determine which recorded information flow $r \in R$ is anomalous before we could proceed further with the localization task. A record $r$ is anomalous, if the observed time $\hat{t}_r$ taken to complete the distance $d_r$ deviates significantly from the expected value $t_r$ given to us by a statistical model.
 
@@ -256,15 +256,68 @@ Based on the two definitions, the algorithm for localizing the anomalies in the 
 	\item For any given $r' \in R_{\alpha > \delta}$, we would also be able to locate the congested segments of path $p_{r'}$ by using the path $p_r$ of records $r$, where $r$ is within $r'$ and $R_r = \emptyset$.
 \end{enumerate}
 
-
-
 \section{Experiments}
 \label{sec:experiments}
 
+We first apply the models from Section \ref{sec:models} on the data set of a complex system to test the generalization performance. The model that has the best generalization performance would have the lowest prediction error for unobserved data. We then select the best model to use for detection and localization of network anomalies in the complex system by applying the algorithm as described in Section \ref{sec:localization}. To evaluate on the reliability of the detected and localized anomalies, we examine the Twitter records of the same period to check whether users of the complex system expressed their frustrations by tweeting (complaining) on Twitter.
+
 \subsection{Data Description}
 
-\subsection{Sum-of-Squares Error Convergence}
+We test our models on a data set that contains the passengers' travel records on the Public Transportation System (PTS) of Singapore\footnote{http://en.wikipedia.org/wiki/Singapore}, a highly urbanized sovereign city-state located in Southeast Asia. The PTS consists of the railway system\footnote{http://en.wikipedia.org/wiki/SMRT\_Corporation} and the public buses\footnote{http://en.wikipedia.org/wiki/SBS\_Transit}, operated by two public listed corporations. The PTS data set is provided by the city's transportation authority\footnote{http://en.wikipedia.org/wiki/Land\_Transport\_Authority} that monitors the transportation needs of the city for her economic activities.
 
+Each passenger in Singapore carries a payment card containing a RFID chip. The RFID chip allows the companies to identify the passenger and charge the transportation fare to their account. The passengers boarding and alighting geo-locations are recorded for each travel trip in order to charge the appropriate amount based on the distance traveled. The time boarded and time alighted are also recorded, which makes it possible to calculate the time taken for the travel.
+
+Singapore being one of the most densely populated city in the world, have majority of her population commuting via the PTS, as opposed to driving in privately owned vehicles. The data set thus represent an almost complete usage of a real and large-scale complex system, which would allow us to utilize it for verifying our proposed models and algorithms.
+
+We mentioned in Section \ref{sec:intro} that we wanted to detect non-critical anomalies because it is less noticeable than critical anomalies. The transportation network of bus routes would contain many of these non-critical anomalies because traffic in congested road segments can be diverted to other roads. On the other hand, anomalies in the railway system are easily detected because trains in the same direction travel on a single railway track. For the purpose of verifying our models and algorithms, we only focus on the bus records for the rest of this paper. Each record $r$ contains the following information of a passenger's journey:
+\begin{enumerate}
+	\item Bus stop ID of boarding, $x_r$.
+	\item Bus stop ID of alighting, $y_r$.
+	\item Date and time of boarding, $t(x_r)$.
+	\item Date and time of alighting, $t(y_r)$.
+	\item Distance traveled between boarding and alighting, $d_r$.
+	\item Bus service: The bus service is a number, which represents the unique route taken by the bus. Many different buses operate using the same service number so that different buses can pick up or alight passengers at various bus stops with regular intervals. Using the bus service number, the bus stop ID of boarding and alighting, we are able to obtain the path $p_r$ traveled by the passenger of this record $r$.
+\end{enumerate}
+The bus routes remain relatively static but may change due to road maintenance and repairs. To ensure that we always have the correct bus routes for each specific bus service, we perform a simple bus route inference step in the next section.
+
+\subsubsection{Bus Route Inference}
+
+Figure \ref{fig:trip_example} shows an example of three records for the \emph{same} bus service number. We have the time and location of the passenger boarding and alighting from the bus for each of their journeys. The nodes in Figure \ref{fig:trip_example} represent the bus stops while the number in the connecting edges represent the distance between two bus stops. By using different records of the same bus service, we are able to construct the route that the bus service takes, as shown in Figure \ref{fig:trip_example}. For example, from Figure \ref{fig:trip_example}, we can infer that $b$ should be between $a$ and $c$ because $b$ is nearer to $c$ compared to $a$, and $c$ is nearer to $b$ than $d$ so $d$ should come after $c$.
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=3.3in]{trip_example}
+	\caption{Examples of the trip records in the data set for a specific bus service}
+	\label{fig:trip_example}
+\end{figure}
+Then by combining the inferred routes of various bus services, we would be able to obtain a transportation network as shown in Figure \ref{fig:travel_graph} of Section \ref{sec:intro}. %Using the time information in the data set, our proposed models in Section \ref{sec:models} and the localization algorithm in Section \ref{sec:localization}, we would be able to obtain the edges in red, which represent the roads that contain anomalies, resulting in the longer than expected timings of bus arrivals at bus stops. %Because of the time information in the data set, we would have a continuous snapshot of the traffic graph at different times.
+
+\subsubsection{Statistics}
+
+We performed our analysis on three days of data, December 8th 2011, December 15th 2011 and December 22nd 2011. These three days are spaced one week apart and falls on Thursday of the week, which is a typical working day. The reason for choosing these specific days is because of the occurrence of an event (external to the bus system) on December 15th 2011 which affected the transportation system of the city. The choice of December 8th and December 22nd is to show that the anomalies present on December 15th, is absent one week before and one week after. 
+
+\begin{table}[htb]
+	\centering
+	\caption{Size of data set for each day}
+	\label{tbl:statistics}
+	\begin{tabular}{|p{1in}|r|r|r|}
+		\hline
+			& Dec 8th & Dec 15th & Dec 22nd \\
+		\hline
+		No. of records & 3,137,469 & 3,176,830 & 3,162,985\\
+		\hline
+		No. of inferred bus routes & 288 & 285 & 287\\
+		\hline
+		No. of nodes & & &\\
+		\hline
+		No. of edges & & &\\
+		\hline
+	\end{tabular}
+\end{table}
+
+
+
+\subsection{Sum-of-Squares Error Convergence}
+Figure \ref{fig:convergence}.
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=3.3in]{convergence}
@@ -273,7 +326,7 @@ Based on the two definitions, the algorithm for localizing the anomalies in the 
 \end{figure}
 
 \subsection{K-Fold Cross Validation}
-
+Figure \ref{fig:5_fold_train} and \ref{fig:5_fold_test}.
 \begin{figure}[htb]
 	\centering
 	\begin{subfigure}{1.6in}
@@ -282,9 +335,9 @@ Based on the two definitions, the algorithm for localizing the anomalies in the 
 		\label{fig:20111208_train}
 	\end{subfigure}
 	\begin{subfigure}{1.6in}
-		\includegraphics[width=1.6in]{20111216_train} %3.3in is max!
-		\caption{Dec 16th 2011}
-		\label{fig:20111216_train}
+		\includegraphics[width=1.6in]{20111215_train} %3.3in is max!
+		\caption{Dec 15th 2011}
+		\label{fig:20111215_train}
 	\end{subfigure}
 	\begin{subfigure}{1.6in}
 		\includegraphics[width=1.6in]{20111222_train} %3.3in is max!
@@ -308,9 +361,9 @@ Based on the two definitions, the algorithm for localizing the anomalies in the 
 		\label{fig:20111208_test}
 	\end{subfigure}
 	\begin{subfigure}{1.6in}
-		\includegraphics[width=1.6in]{20111216_test} %3.3in is max!
-		\caption{Dec 16th 2011}
-		\label{fig:20111216_test}
+		\includegraphics[width=1.6in]{20111215_test} %3.3in is max!
+		\caption{Dec 15th 2011}
+		\label{fig:20111215_test}
 	\end{subfigure}
 	\begin{subfigure}{1.6in}
 		\includegraphics[width=1.6in]{20111222_test} %3.3in is max!
