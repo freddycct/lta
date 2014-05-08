@@ -83,7 +83,8 @@ function plot_edge_speeds(bus_no::ASCIIString, direction::Int64,
     xlabel("Bus Stops")
     title(@sprintf("Speeds inferred for Bus %s in Direction %d", bus_no, direction))
     tight_layout()
-    file_name = @sprintf("%s/%s/bus_speed_%s_%d.pdf", prefix, date, bus_no, direction)
+    #file_name = @sprintf("%s/%s/bus_speed_%s_%d.pdf", prefix, date, bus_no, direction)
+    file_name = @sprintf("../latex/eps/%s_%d_speed.eps", bus_no, direction)
     savefig(file_name, transparent=true)
 end
 

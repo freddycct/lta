@@ -70,7 +70,7 @@ Abstract...
 \label{sec:intro}
 % The first paragraph of a research paper is always the hardest to write. Just write and ideas will flow while writing. (Writers' block)
 
-In our increasingly complex world, networks offer an abstract representation for organizing the relationships between entities of interest in a complex system. The entities are represented as nodes while edges connecting pairs of nodes represent the existence of relationship between the entities. Examples of networks pervasive in our lives are social networks \cite{Wu2004}, protein networks, computer networks, transportation networks, neurological networks, organizational networks \cite{Mihm2010}, wireless sensor networks\footnote{Internet of Things}, electrical networks, etc. 
+In our increasingly complex world, networks offer an abstract representation for organizing the relationships between entities of interest in a complex system. The entities are represented as nodes while edges connecting pairs of nodes represent the existence of relationship between the entities. Examples of networks pervasive in our lives are social networks \cite{Wu2004}, protein networks, computer networks, transportation networks, logistical networks, neurological networks, organizational networks \cite{Mihm2010}, wireless sensor networks\footnote{Internet of Things}, electrical networks, etc. 
 
 In these complex systems, a functional network that facilitates reliable flow of information through the edges is necessary for the complex system to achieve its objectives. However, it is inevitable that complex systems are subjected to wear and tear, leading to occasional anomalous behavior in certain parts of the system. Anomalies in the system would disrupt normal operations, and prevent the complex system from meeting its objectives.
 
@@ -125,7 +125,7 @@ Our technical contribution is the proposal of a model that performs the inferenc
 \section{Related Work}
 \label{sec:related}
 
-\subsection{Traffic Anomalies Detection}
+%\subsection{Traffic Anomalies Detection}
 
 Pan et al. \cite{Pan2013} address the problem of detecting and describing traffic anomalies using crowd sensing with Beijing's taxis' GPS data and China's ``Weibo''\footnote{This service resembles Twitter but is catered for the Chinese population in Chinese language.} social media data. The anomaly which Pan et al. \cite{Pan2013} identifies is the deviance in traffic volume on segments of road during some special events. The detection of anomaly is relatively direct and the focus is on increasing the efficiency of the algorithm based on two special indexing structure for the detection algorithm.
 
@@ -236,7 +236,7 @@ But a high ratio $\alpha_r$ for record $r \in R_{\alpha > \delta}$ could be an i
 \end{enumerate}
 We first define the ``relatedness'' of two records $r, r'$ in more precise terms using ``contains'' and ``within''.
 \begin{definition}
-	$r'$ contains $r$ if all of the following conditions are satisfied: 
+	$r'$ \emph{contains} $r$ if all of the following conditions are satisfied: 
 	\begin{enumerate}
 		\item The path $p_{r'}$ connecting the origin $x_{r'}$ and destination $y_{r'}$ of $r'$, passes through the path $p_{r}$ that connects the origin $x_{r}$ and destination $y_{r}$ of $r$. 
 		\item The time $t(x_{r'})$ when $r'$ starts at origin $x_{r'}$, is earlier than the time $t(x_{r})$ when $r$ starts at origin $x_{r}$. i.e. $t(x_{r'}) < t(x_{r})$.
@@ -244,7 +244,7 @@ We first define the ``relatedness'' of two records $r, r'$ in more precise terms
 	\end{enumerate}
 \end{definition}
 \begin{definition}
-	$r$ is within $r'$ if and only if $r'$ contains $r$.
+	$r$ is \emph{within} $r'$ if and only if $r'$ contains $r$.
 \end{definition}
 Based on the two definitions, the algorithm for localizing the anomalies in the network proceed as follows:
 \begin{enumerate}
@@ -263,11 +263,18 @@ We first apply the models from Section \ref{sec:models} on the data set of a com
 
 \subsection{Data Description}
 
-We test our models on a data set that contains the passengers' travel records on the Public Transportation System (PTS) of Singapore\footnote{http://en.wikipedia.org/wiki/Singapore}, a highly urbanized sovereign city-state located in Southeast Asia. The PTS consists of the railway system\footnote{http://en.wikipedia.org/wiki/SMRT\_Corporation} and the public buses\footnote{http://en.wikipedia.org/wiki/SBS\_Transit}, operated by two public listed corporations. The PTS data set is provided by the city's transportation authority\footnote{http://en.wikipedia.org/wiki/Land\_Transport\_Authority} that monitors the transportation needs of the city for her economic activities.
+We test our models on a data set that contains the passengers' travel records on the Public Transportation System (PTS) of an urbanized city. The PTS consists of the railway system and the public bus system.
 
-Each passenger in Singapore carries a payment card containing a RFID chip. The RFID chip allows the companies to identify the passenger and charge the transportation fare to their account. The passengers boarding and alighting geo-locations are recorded for each travel trip in order to charge the appropriate amount based on the distance traveled. The time boarded and time alighted are also recorded, which makes it possible to calculate the time taken for the travel.
+%Singapore\footnote{http://en.wikipedia.org/wiki/Singapore}, a highly urbanized sovereign city-state located in Southeast Asia.
+%, operated by two public listed corporations. 
+%The PTS data set is provided by the city's transportation authority\footnote{http://en.wikipedia.org/wiki/Land\_Transport\_Authority} that monitors the transportation needs of the city for her economic activities.
+%\footnote{http://en.wikipedia.org/wiki/SMRT\_Corporation} 
+%\footnote{http://en.wikipedia.org/wiki/SBS\_Transit}
+%in Singapore 
 
-Singapore being one of the most densely populated city in the world, have majority of her population commuting via the PTS, as opposed to driving in privately owned vehicles. The data set thus represent an almost complete usage of a real and large-scale complex system, which would allow us to utilize it for verifying our proposed models and algorithms.
+Each passenger carries a payment card containing a RFID chip. The RFID chip allows the companies to identify the passenger and charge the transportation fare to their account. The passengers boarding and alighting geo-locations are recorded for each travel trip in order to charge the appropriate amount based on the distance traveled. The time boarded and time alighted are also recorded, which makes it possible to calculate the time taken for the travel.
+
+Being a densely populated city, majority of the city's population commute via the PTS, instead of driving in privately owned vehicles. The data set thus represent an almost complete usage of a real and large-scale complex system, which would allow us to utilize it for verifying our proposed models and algorithms.
 
 We mentioned in Section \ref{sec:intro} that we wanted to detect non-critical anomalies because it is less noticeable than critical anomalies. The transportation network of bus routes would contain many of these non-critical anomalies because traffic in congested road segments can be diverted to other roads. On the other hand, anomalies in the railway system are easily detected because trains in the same direction travel on a single railway track. For the purpose of verifying our models and algorithms, we only focus on the bus records for the rest of this paper. Each record $r$ contains the following information of a passenger's journey:
 \begin{enumerate}
@@ -293,7 +300,7 @@ Then by combining the inferred routes of various bus services, we would be able 
 
 \subsubsection{Statistics}
 
-We performed our analysis on three days of data, December 8th 2011, December 15th 2011 and December 22nd 2011. These three days are spaced one week apart and falls on Thursday of the week, which is a typical working day. The reason for choosing these specific days is because of the occurrence of an event (external to the bus system) on December 15th 2011 which affected the transportation system of the city. The choice of December 8th and December 22nd is to show that the anomalies present on December 15th, is absent one week before and one week after. We perform the bus route inference on the records of these three days and obtained the respective transportation network for each day. Statistics of the transportation network is shown in Table \ref{tbl:statistics}. While most of the transportation network remains fairly static, there are minor fluctuations in the size of the network due to several reasons: 1) The city of Singapore constantly performs road maintenance resulting in temporary changes in routes of bus services. 2) The bus company provides temporary services to cater for special events. 3) We only retain the data of bus routes that we are able to infer without any errors.
+We performed our analysis on three days of data, December 8th 2011, December 15th 2011 and December 22nd 2011. These three days are spaced one week apart and falls on Thursday of the week, which is a typical working day. The reason for choosing these specific days is because of the occurrence of an event (external to the bus system) on December 15th 2011 which affected the transportation system of the city. The choice of December 8th and December 22nd is to show that the anomalies present on December 15th, is absent one week before and one week after. We perform the bus route inference on the records of these three days and obtained the respective transportation network for each day. Statistics of the transportation network is shown in Table \ref{tbl:statistics}. While most of the transportation network remains fairly static, there are minor fluctuations in the size of the network due to several reasons: 1) The city performs road maintenance frequently, resulting in temporary changes in routes of some bus services. 2) The bus company temporarily provides additional bus services to cater for special events. 3) We only retain the data of bus routes that we are able to infer without any errors.
 \begin{table}[htb]
 	\centering
 	\caption{Statistics of Transportation Network}
@@ -321,7 +328,8 @@ We would first like to verify that the Stochastic Gradient Descent (SGD) algorit
 	\text{Sum-of-Squares Error} = \sum_{r \in R} (t_r - \hat{t}_r)^2 
 \end{align}
 
-Figure \ref{fig:convergence} shows the convergence of SSE with respect to time, and each point (\textcolor{red}{red $\times$}/\textcolor{blue}{blue $\bullet$}) gives the (SSE, time) of each iteration. As observed in Figure \ref{fig:convergence}, the SGD algorithm decreases the SSE over time with the Edgebased model having a lower SSE than Smoothed Edgebased model. This is expected due to the additional smoothing constraints we have imposed on the Smoothed Edgebased model. The change in SSE decreases over time which suggests that the SGD algorithm converges for our proposed model, resulting in marginally improvement in the SSE with increasing number of iterations.
+Figure \ref{fig:convergence} shows the convergence of SSE with respect to the number of iterations we ran for the SGD algorithm. %Each point (\textcolor{red}{red $\times$}/\textcolor{blue}{blue $\bullet$}) on Figure \ref{fig:convergence} gives the (SSE, time) of each iteration. 
+As observed in Figure \ref{fig:convergence}, the SGD algorithm decreases the SSE over multiple iterations with the Edgebased model having a lower SSE than Smoothed Edgebased model. This is expected due to the additional smoothing constraints we have imposed on the Smoothed Edgebased model. The change in SSE decreases as number of iterations increase, which suggests that the SGD algorithm converges for our two proposed models, resulting in marginally improvement in the SSE with increasing number of iterations.
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=3.3in]{convergence}
@@ -331,8 +339,12 @@ Figure \ref{fig:convergence} shows the convergence of SSE with respect to time, 
 
 \subsection{K-Fold Cross Validation}
 
+We evaluate the two models proposed in Section \ref{sec:models} on how well they generalize to data that is not seen during the training (inference and estimation) phase. We perform a K-fold cross validation evaluation on each day of data. The procedure for K-fold cross validation first uniformly and randomly divide the data set into $K$ number of smaller data sets called folds. We choose $K-1$ of these folds to represent the observed data $R_{train}$ for training, while the remaining fold is used as the unseen data $R_{test}$ for testing the goodness-of-fit using the estimated parameters from training. The goodness-of-fit we used in this part of the experiments is the Root-Mean-Squared-Error (RMSE).
+\begin{align*}
+	\text{Root-Mean-Squared-Error of data} = \sqrt{\frac{\sum_{r \in R_{data}} (t_r - \hat{t}_r)^2}{|R_{data}|}}
+\end{align*}
 
-Figure \ref{fig:5_fold_train} and \ref{fig:5_fold_test}.
+The experiment is repeated for $K$ number of trials, by cycling the test set through each of the $K$ folds. We performed the K-fold cross validation independently on three days of data and obtain the results as shown in Figures \ref{fig:5_fold_train} and \ref{fig:5_fold_test}. 
 \begin{figure}[htb]
 	\centering
 	\begin{subfigure}{1.6in}
@@ -359,6 +371,7 @@ Figure \ref{fig:5_fold_train} and \ref{fig:5_fold_test}.
 	\label{fig:5_fold_train}
 \end{figure}
 
+Figures \ref{fig:20111208_train} to \ref{fig:20111222_train} show the RMSE of the data set $R_{train}$ used for estimating the parameters of the models in Section \ref{sec:models}. Using the estimated parameters, we proceed to obtain the expected time taken for the records $r \in R_{test}$, and obtain the respective RMSE of the test data, shown in Figures \ref{fig:20111208_test} to \ref{fig:20111222_test}.
 \begin{figure}[htb]
 	\centering
 	\begin{subfigure}{1.6in}
@@ -385,7 +398,38 @@ Figure \ref{fig:5_fold_train} and \ref{fig:5_fold_test}.
 	\label{fig:5_fold_test}
 \end{figure}
 
+In all of these Figures, with reference to the legend shown in Figures \ref{fig:legend_train} and \ref{fig:legend_test}, we illustrate the RMSE given by various models for each trials. The results consistently show that the Edgebased model has the best performance, follow by Smoothed Edgebased, then Baseline 2 and finally Baseline 1. This suggests that two of our proposed models outperform the baselines and the speeds we have inferred for the segments are accurate in estimating the expected times of the journeys. Given that Edgebased model outperforms Smoothed Edgebased model, we will use the results of the Edgebased model for the rest of our analysis and ignore the smoothing constraints of the Smoothed Edgebased model.
+
+We also observed that the RMSE of all four models in Figures \ref{fig:20111215_train} and \ref{fig:20111215_test} for Dec 15th 2011 is higher than the RMSE shown the Figures representing Dec 8th 2011 (Figures \ref{fig:20111208_train}, \ref{fig:20111208_test}) and Dec 22nd 2011 (Figures \ref{fig:20111222_train} and \ref{fig:20111222_test}). This is an indication that a significant anomaly is present on the day of Dec 15th 2011, which causes the RMSE goodness-of-fit for our proposed model to differ from other normal days. In the next section, we will give a case study of identifying the anomalies using the algorithm we proposed in Section \ref{sec:localization}.
+
 \subsection{Case Studies on Anomalies}
+Table \ref{tbl:anomalies}. Figure \ref{fig:190_2_speed}
+
+\begin{table*}[htb]
+	\small
+	\centering
+	\caption{Summary of Anomalies on Dec 15th 2011}
+	\label{tbl:anomalies}
+	\begin{tabular}{|c|c|c|c|c|c|c|p{1.5cm}|p{1.5cm}|}
+		\hline
+		%Date & 
+		Bus Svc & $|R_r|$ & Origin & Destination & Distance (m) & Time Boarded & Time Alighted & Observed Time Taken (m) & Expected Time Taken (m) \\
+		\hline
+		%Dec 15th 2011 & 
+		190 & 606 & Dhoby Ghaut & Somerset Station & 800 & 10:27:49 PM & 10:41:04 PM & 13.25 & 4.92 \\
+		\hline
+		%Dec 15th 2011 & 
+		190 & 594 & Dhoby Ghaut & Winsland House & 500 & 10:47:35 PM & 11:04:49 PM & 17.23 & 2.40 \\
+		\hline
+	\end{tabular}
+\end{table*}
+
+\begin{figure*}[htb]
+	\centering
+	\includegraphics[width=6.5in]{190_2_speed}
+	\caption{Speed along Path of Bus Service 190}
+	\label{fig:190_2_speed}
+\end{figure*}
 
 \section{Conclusion}
 
