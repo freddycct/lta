@@ -50,11 +50,19 @@ function main()
 	read_bus_stop_id_mapping!(prefix, bus_stops)
 	fid = open(@sprintf("%s/%s/anomalies.txt", prefix, date), "w")
 	for (i, record) in enumerate(abnormal_records)
-		write(fid, string(i, " ", record.bus_no, " |R_", i, "|=", length(record.related_records), " ",
-			bus_stops[record.origin].name, " -", record.distance, "-> ", 
-			bus_stops[record.destination].name, " between ", strftime(record.datetime_board), 
-			" and ", strftime(record.datetime_alight), " expected=", record.time_predicted/60, 
-			" observed=", record.time_taken/60, "\n"))
+		write(fid, string(i, 
+			",bus_no=", record.bus_no, 
+			",|R_", i, "|=", length(record.related_records), 
+			",origin=", bus_stops[record.origin].name, 
+			",destination=", bus_stops[record.destination].name, 
+			",distance=", record.distance, 
+			",start_time=", strftime(record.datetime_board), 
+			",end_time=",   strftime(record.datetime_alight), 
+			",expected=", record.time_predicted/60, 
+			",observed=", record.time_taken/60, 
+			",ratio=", record.ratio, 
+			"\n")
+		)
 	end
 	close(fid)
 end
