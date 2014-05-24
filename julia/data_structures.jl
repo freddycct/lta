@@ -1,5 +1,11 @@
 # This file defines some of the data sructures used in various Julia script. It is usually included or required for many other Julia scripts.
 
+immutable Tweet
+	status_url::ASCIIString
+	content::UTF8String
+	date_sgt::TmStruct
+end
+
 type Edge
 	src::Int64
 	tar::Int64

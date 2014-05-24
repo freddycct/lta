@@ -2,6 +2,29 @@ using HDF5, JLD
 
 require("data_structures.jl")
 
+function sort_tweet_date(t1::Tweet, t2::Tweet)
+    return isless(time(t1.date_sgt), time(t2.date_sgt))
+end
+
+function read_twitter_data(file_name::String)
+    fid = open(file_name, "r")
+    tweets = Array(Tweet, 0)
+    while !eof(fid)
+        line = readline(fid)
+        fields = split(line, '\t', false)
+
+        status_url = ascii(fields[1])
+        content = utf8(fields[2])
+        date_gmt = strptime("%Y-%m-%d %H:%M:%S", fields[3])
+        date_sgt = TmStruct(time(date_gmt) + 15*60*60)
+        tweet = Tweet(status_url, content, date_sgt)
+
+        push!(tweets, tweet)
+    end
+    close(fid)
+    return tweets
+end
+
 function read_bus_routes(prefix::ASCIIString, date::ASCIIString)
     # Create the Hash Table to store the bus stops
     bus_stops = Dict{Int64, Bus_Stop}()

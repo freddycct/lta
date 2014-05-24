@@ -60,6 +60,8 @@ function main()
 			",end_time=",   strftime(record.datetime_alight), 
 			",expected=", record.time_predicted/60, 
 			",observed=", record.time_taken/60, 
+			",est_sigma=", record.estimated_sigma,
+			",obs_sigma=", record.observed_sigma,
 			",ratio=", record.ratio, 
 			"\n")
 		)
