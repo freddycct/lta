@@ -70,6 +70,7 @@ function main()
 			",est_sigma=", record.estimated_sigma,
 			",obs_sigma=", record.observed_sigma,
 			",ratio=", record.ratio, 
+			",|R2_", i, "|=", length(record.contain_records), 
 			"\n")
 		)
 	end
