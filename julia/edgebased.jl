@@ -28,6 +28,7 @@ type Record
     ratio::Float64
 
     related_records::Array{Record}
+    contain_records::Array{Record}
 
     function Record(bus_no::ASCIIString, datetime_board::TmStruct, datetime_alight::TmStruct, 
         origin::Int64, destination::Int64, direction::Int64, distance::Float64, time_taken::Float64)

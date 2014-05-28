@@ -1,7 +1,8 @@
 % This is "sig-alternate.tex" V2.0 May 2012
 % This file should be compiled with V2.5 of "sig-alternate.cls" May 2012
 
-\documentclass[draft]{sig-alternate}
+%\documentclass[draft]{sig-alternate}
+\documentclass{sig-alternate}
 
 \graphicspath{{./eps/}}
 \DeclareGraphicsExtensions{.eps}
@@ -230,7 +231,7 @@ The models as described in previous section would allow us to determine whether 
 	\alpha_r = \frac{\hat{t}_r - t_r}{\sigma \sqrt{d_r}}
 \end{align}
 
-For records $r \in R$ with $\alpha_r > 1$, it indicates that the time taken is longer than expected while $\alpha_r < 1$ indicates that the time taken is shorter than expected. In most complex systems, the records of interest for further investigation would be records with $\alpha_r > \delta$, where $\delta$ is a cut-off value to determine whether $r$ has a larger observed time than expected. We would be able to obtain a reduced set of records $R_{\alpha > \delta}$ such that $r \in R_{\alpha > \delta}$ has a ratio $\alpha_r > \delta$ for further investigation.
+For records $r \in R$ with $\alpha_r > 1$, it indicates that the time taken is longer than expected while $\alpha_r < 1$ indicates that the time taken is shorter than expected. In most complex systems, the records of interest for further investigation would be records with $\alpha_r > \delta$, where $\delta$ is a cut-off value to determine whether $r$ has a larger observed time than expected. We would be able to obtain a reduced set of records $R_{\alpha > \delta}$ such that $r \in R_{\alpha > \delta}$ has a ratio $\alpha_r > \delta$ for further determination of where the anomalies are located.
 
 But a high ratio $\alpha_r$ for record $r \in R_{\alpha > \delta}$ could be an isolated incident that does not have any significant impact on the complex system. The ratio $\alpha_r$ also does not reveal the specific segment $s_{i,j}$ in the path $p_r$ of $r$ that causes the longer observed time $\hat{t}_r$. To address these issues, we propose an algorithm that serve two purposes:
 \begin{enumerate}
@@ -251,11 +252,12 @@ We first define the ``relatedness'' of two records $r, r'$ in more precise terms
 \end{definition}
 Based on the two definitions, the algorithm for localizing the anomalies in the network proceed as follows:
 \begin{enumerate}
-	\item Obtain the set of records $R_{\alpha > \delta}$ such that $r \in R_{\alpha > \delta}$ has a ratio $\alpha_r > \delta$.
-	\item For each $r \in R_{\alpha > \delta}$, obtain the set of records $R_r$,
+	\item Obtain the set of records $R_{\alpha > \delta}$ such that $r \in R_{\alpha > \delta}$ has a ratio $\alpha_r > \delta$. This gives us the set of records $R_{\alpha > \delta}$ with observed travel time that is significantly larger than the expected travel time.
+	\item For each $r \in R_{\alpha > \delta}$, obtain the set of records $R_r$, where
 	\[ R_{r} := \{ r' \in R_{\alpha > \delta} | r' ~ \text{contains} ~ r \land r' \neq r \} \]
+	That is, $R_r$ is the set of records that contains $r$. The value of $|R_r|$ has a positive correlation on the importance of path $p_r$ to other records and traffic.
 	%such that each $r' \in R_r$ contains $r$, $r' \neq r$ and $$.
-	\item Then by sorting $r \in R_{\alpha > \delta}$ in descending order of $|R_r|$, and examining the segments $s_{i,j}$ of path $p_r$, we would be able to locate the segments $s_{i,j}$ with severe network congestion between the times of $t(x_r)$ and $t(y_r)$.
+	\item Then by sorting the set of records $R_{\alpha > \delta}$ in descending order of $|R_r|, \forall r \in R_{\alpha > \delta}$, and examining the segments $s_{i,j}$ of path $p_r$, we would be able to locate the segments $s_{i,j}$ with severe network congestion between the times of $t(x_r)$ and $t(y_r)$.
 	\item For any given $r' \in R_{\alpha > \delta}$, we would also be able to locate the congested segments of path $p_{r'}$ by using the path $p_r$ of records $r$, where $r$ is within $r'$ and $R_r = \emptyset$.
 \end{enumerate}
 
@@ -405,36 +407,75 @@ In all of these Figures, with reference to the legend shown in Figures \ref{fig:
 
 We also observed that the RMSE of all four models in Figures \ref{fig:20111215_train} and \ref{fig:20111215_test} for Dec 15th 2011 is higher than the RMSE shown the Figures representing Dec 8th 2011 (Figures \ref{fig:20111208_train}, \ref{fig:20111208_test}) and Dec 22nd 2011 (Figures \ref{fig:20111222_train} and \ref{fig:20111222_test}). This is an indication that a significant anomaly is present on the day of Dec 15th 2011, which causes the RMSE goodness-of-fit for our proposed model to differ from other normal days. In the next section, we will give a case study of identifying the anomalies using the algorithm we proposed in Section \ref{sec:localization}.
 
-\subsection{Case Studies on Anomalies using Twitter}
+\subsection{Evaluation of Anomalies using Twitter}
 
 The main objective which motivates our research is to detect and localize the network anomalies in the complex system. Given that in comparison to other models, the Edgebased model gives a more accurate estimation of how long a journey should take, we use the estimation of Edgebased model as inputs to the algorithm described in Section \ref{sec:localization} to detect and localize the network anomalies.
 
 We mentioned in Section \ref{sec:intro} that we focus on non-critical anomalies which are elusive and difficult to detect in real usage of complex systems. As a result of this elusive property of non-critical anomalies, our detection and localization algorithm does not have sufficient labeled data to evaluate its accuracy in a quantitative manner. In fact, there would be no research problem to address if such anomalies are easily observed for us to perform our experiments.
 
-Fortunately, since we use the Public Transportation System (PTS) of an urbanized city, we are able to tally the detected anomalies with the tweets of the city's residents. We use the Twitter data set that was formerly used to analyze political sentiments in Hoang and Lim \cite{Hoang2012}, to perform a qualitative comparison of our detected anomalies with the tweets that comment on the traffic conditions. %The  The PTS is used by most residents of the city, which generates a lot of political discussions in the social media space.
+Fortunately, since we use the Public Transportation System (PTS) of an urbanized city, we are able to compare the detected anomalies with the tweets of the city's residents. We use the Twitter data set that was formerly used to analyze political sentiments in Hoang and Lim \cite{Hoang2012}, to perform a qualitative comparison of our detected anomalies with the tweets that comment on the traffic conditions. We use the Twitter data set $\mathcal{T}$, and the PTS records between the periods of November 1st 2011 and January 31st 2012 for comparison. 
 
-The PTS of the city is supported by two core complex systems, the railway system and the public bus system. When the railway system breaks down, the remaining transportation options in the city has to bear the load of transporting the passengers. These other transportation options which include taxis and privately owned motorized vehicles share the well-connected road network with the public bus system. The sharing of physical road space causes delay in the speeds of bus during the breakdown of the railway system. 
+We described in Section \ref{sec:localization} that the detection algorithm first obtain the set of records $R_{\alpha > \delta}$, where each record $r \in R_{\alpha > \delta}$ has a larger observed travel time than the expected travel time, i.e. $\alpha_r > \delta$. We set $\delta$, the cut-off value of determining whether a record deviates significantly as the top 1\% of the ratio values $\alpha_r$, for all $r \in R$. The records $R_{\alpha > \delta}$ are then sorted in descending order of $|R_r|$, so that records $r \in R_{\alpha > \delta}$ with most important path $p_r$ are ranked first. 
+
+\subsubsection{Evaluation of $|R_r|$ vs $\alpha_r$}
+
+We evaluate the use of $|R_r|$ vs $\alpha_r$ as a ranking metric by comparing with the number of tweets in $\mathcal{T}$ that mention the keywords (ignoring case) $\mathcal{K}$, 
+\begin{center}
+	$\mathcal{K}$ := \{ ``traffic'' $\land$ (``jam'' $\lor$ ``jams'') \}.
+\end{center}
+%The set of tweets with keywords $\mathcal{K}$ is denoted as $\mathcal{T}_{\mathcal{K}}$. 
+Table \ref{tbl:twitter} provides the statistics of the Twitter data $\mathcal{T}$ and the tweets $\mathcal{T}_{\mathcal{K}}$ with the keywords $K$ for each month. Table \ref{tbl:twitter} also show the number of tweets $\mathcal{T}_{\mathcal{M}}$ containing keywords $\mathcal{M}$, which we will elaborate in later part of this section.
 
 \begin{table}[htb]
 	\centering
 	\caption{Statistics of Twitter Data}
 	\label{tbl:twitter}
-	\begin{tabular}{|l|r|r|}
+	\begin{tabular}{|l|r|r|r|}
 		\hline
-			Period & |$\mathcal{T}$|  & |$\mathcal{T}_{\mathcal{K}}$| \\
+			Period & |$\mathcal{T}$| & |$\mathcal{T}_{\mathcal{K}}$| & |$\mathcal{T}_{\mathcal{M}}$| \\
 		\hline
-			Nov 2011 & 17,421,755 & 35 \\
+			Nov 2011 & 17,421,755 & 1,330 & 36 \\
 		\hline
-			Dec 2011 & 19,216,767 & 7,774 \\
+			Dec 2011 & 19,216,767 & 1,829 & 8,247 \\
 		\hline
-			Jan 2012 &  19,565,979 & 818 \\
+			Jan 2012 &  19,565,979 & 1,891 & 847 \\
 		\hline
 	\end{tabular}	
 \end{table}
 
-In order to determine when the railway system breaks down, we search the set of tweets between the periods of November 1st 2011 to January 31st 2012 for the keywords (ignoring case) $\mathcal{K}$ := \{ mrt\footnote{MRT is the acronym of the railway system and it stands for Mass Rapid Transit.} $\land$ (break down $\lor$ breakdown) \}. Table \ref{tbl:twitter} provides the statistics of the Twitter data $\mathcal{T}$ and the tweets with the keywords $\mathcal{T}_{\mathcal{K}}$.
+Figure \ref{fig:twitter_traffic_jam} shows the histogram of tweets $\mathcal{T}_{\mathcal{K}}$ containing keywords $\mathcal{K}$. The width of the bins in Figure \ref{fig:twitter_traffic_jam} is chosen to represent the duration of one day, so that the frequency (y-axis) shown in the histogram represents the number of tweets that contain keywords $\mathcal{K}$ for the specific day (x-axis).
 
-We use Figures \ref{fig:twitter_mrt_breakdown} and \ref{fig:twitter_mrt_breakdown_log} to show the number of tweets generated for each day. Figure \ref{fig:twitter_mrt_breakdown} shows that there are two days, May 15th 2011 and May 17th 2011 with many tweets containing the keywords $\mathcal{K}$.
+We used the Edgebased model of Section \ref{sec:models} and the anomalies localization algorithm of Section \ref{sec:localization} on the records of each day between the periods of November 1st 2011 to January 1st 2012. For each day, we derive $\alpha_r$ of every record $r$ in that day using Equation \ref{eqn:alpha_ratio}, then we obtain the set of records $R_{\alpha > \delta}$, and derive the set of $R_r, \forall r \in R_{\alpha > \delta}$. Next, we obtain the mean and median values of $|R_r|, \alpha_r, \forall r \in R_{\alpha > \delta}$ of each day and derive the plots shown in Figures \ref{fig:Rr_mean_median} and \ref{fig:alpha_r_mean_median}. 
+
+Upon visual inspection, the patterns of the histogram in Figure \ref{fig:twitter_traffic_jam} appear to correlate better with the plots in Figure \ref{fig:Rr_mean_median} compared to the plots in Figure \ref{fig:alpha_r_mean_median}, especially for the two dates marked in Figure \ref{fig:Rr_mean_median}. We calculated the Pearson correlation of the frequencies in Figure \ref{fig:twitter_traffic_jam} with the mean values in Figure \ref{fig:Rr_mean_median} and obtain the value of 0.64. On the other hand, the Pearson correlation between the frequencies of Figure \ref{fig:twitter_traffic_jam} and mean values of Figure \ref{fig:alpha_r_mean_median} is only 0.20. This confirms that our proposed metric of $|R_r|$ is better than $\alpha_r$ for ranking the anomalies in the set of records $R_{\alpha > \delta}$.
+\begin{figure}[htb]
+	\centering
+	\begin{subfigure}{3.3in}
+		\includegraphics[width=3.3in]{twitter_traffic_jam}
+		\caption{Histograms of $\mathcal{T}_{\mathcal{K}}$ that mention ``traffic jam(s)''}
+		\label{fig:twitter_traffic_jam}
+	\end{subfigure}
+	\begin{subfigure}{3.3in}
+		\includegraphics[width=3.3in]{Rr_mean_median} %3.3in is max!
+		\caption{$|R_r|$: Mean values has 0.64 Pearson correlation with frequencies.}
+		\label{fig:Rr_mean_median}
+	\end{subfigure}
+	\begin{subfigure}{3.3in}
+		\includegraphics[width=3.3in]{alpha_r_mean_median} %3.3in is max!
+		\caption{$\alpha_r$: Mean values has 0.20 Pearson correlation with frequencies.}
+		\label{fig:alpha_r_mean_median}
+	\end{subfigure}
+	\caption{Comparision of Anomaly Ranking Metric between $|R_r|$ and $\alpha_r$ for the period between Nov 1st 2011 and Jan 1st 2012.}
+	\label{fig:Rr_vs_alpha_r}
+\end{figure}
+
+\subsubsection{Case studies of the location for the detected\\anomalies}
+
+In this final section of our evaluation on the detected anomalies, we describe the details of evaluating the location and time of our detected anomalies through qualitative comparison with the contents of the tweets. From Figure \ref{fig:twitter_traffic_jam}, we have marked December 15th and 17th of 2014 which shows significant spike in the number of tweets mentioning ``traffic jam(s)''. Based on prior knowledge, we are aware of the existence of an external event that causes the congestion on these two days. The external event is the breakdown of the railway system that caused temporary disruption to the railway services.
+
+The city is supported by two core complex systems, the railway system (MRT\footnote{MRT is the acronym of the railway system and it stands for Mass Rapid Transit.}) and the public bus system. When the railway system breaks down, the remaining transportation options in the city has to bear the load of transporting the passengers. These other transportation options which include taxis and privately owned motorized vehicles share the well-connected road network with the public bus system. The sharing of physical road space causes delay in the speeds of bus during the breakdown of the railway system. 
+
+In order to determine when the railway system breaks down, we search the set of tweets $\mathcal{T}$ between the periods of November 1st 2011 to January 31st 2012 for the keywords (ignoring case) $\mathcal{M}$ := \{ mrt $\land$ (break down $\lor$ breaks down $\lor$ breakdown) \}, and obtain the subset of tweets $\mathcal{T}_\mathcal{M}$. Table \ref{tbl:twitter} shows statistics of $\mathcal{T}_\mathcal{M}$ for each month. We use Figures \ref{fig:twitter_mrt_breakdown} and \ref{fig:twitter_mrt_breakdown_log} to show the number of tweets generated for each day. Figure \ref{fig:twitter_mrt_breakdown} shows that there are two days, May 15th 2011 and May 17th 2011 with many tweets containing the keywords $\mathcal{K}$. These two days also correlate with the frequencies as seen in Figure \ref{fig:twitter_traffic_jam}.
 
 \begin{figure}[htb]
 	\centering
@@ -448,70 +489,74 @@ We use Figures \ref{fig:twitter_mrt_breakdown} and \ref{fig:twitter_mrt_breakdow
 		\caption{Log(Frequency) for each Day}
 		\label{fig:twitter_mrt_breakdown_log}
 	\end{subfigure}
-	\caption{Histograms of Tweets that Mention ``MRT Breakdown''}
+	\caption{Histograms of tweets that mention ``mrt breakdown'' or ``mrt break(s) down''}
 	\label{fig:twitter_histograms}
 \end{figure}
 
+Table \ref{tbl:tweets} shows examples of tweets that comment on the traffic conditions whenever the railway system breaks down, with Tweets \#3 and \#5 of Table \ref{tbl:tweets} showing passengers' feedback that the breakdown of railway system also affects the bus travel times. At the time of this writing, all the URLs as shown, link to the publicly available tweets on Twitter website. In each of these tweets, the railway stations affected by the breakdown that are mentioned by the users are highlighted in \textbf{bolded font}.
+
 \begin{table*}[htb]
 	\centering
-	\caption{Examples of tweets commenting on the traffic after railway system (MRT) breaks down}
+	\caption{Examples of tweets from $\mathcal{T}_{\mathcal{K}}$, commenting on the traffic after railway system (MRT) breaks down}
 	\label{tbl:tweets}
 	\begin{tabular}{|r|p{5.5cm}|p{8.1cm}|p{2.1cm}|}
 		\hline
 		\# & URL & Content & Time GMT+8 \\
 		\hline
-		1 & \url{http://twitter.com/tickingbombs/status/131164834623524864} & Train breakdown at Dover MRT. Whats the fare hike for again? & 2011-11-01 7:25:08  \\
+		1 & \url{http://twitter.com/tickingbombs/status/131164834623524864} & Train breakdown at \textbf{Dover MRT}. Whats the fare hike for again? & 2011-11-01 7:25:08  \\
 		\hline
-		2 & \url{http://twitter.com/mrbrown/status/146756643298877440} & Circle Line breakdown pic \#smrt RT @hai\_ren: The crowd at Paya Lebar. \#SMRTruinslives \url{http://t.co/RGQwSp3s} & 2011-12-14 8:01:25 \\
+		2 & \url{http://twitter.com/mrbrown/status/146756643298877440} & Circle Line breakdown pic \#smrt RT @hai\_ren: The crowd at \textbf{Paya Lebar}. \#SMRTruinslives \url{http://t.co/RGQwSp3s} & 2011-12-14 8:01:25 \\
 		\hline
-		3 & \url{http://twitter.com/mac_beno_l/status/147304462514520064} & Major MRT break down, causing MAJOR traffic jam along Orchard road. Feeling very sick :( & 2011-12-15 20:18:15 \\
+		3 & \url{http://twitter.com/mac_beno_l/status/147304462514520064} & Major MRT break down, causing MAJOR traffic jam along \textbf{Orchard road}. Feeling very sick :( & 2011-12-15 20:18:15 \\
 		\hline
-		4 & \url{http://twitter.com/true_joygiver/status/147319951831736320} & I'm a victim of the serious MRT breakdown! Stuck in Somerset 4 hours \& forced to miss a dinner gathering! =( & 2011-12-15 21:19:48 \\
+		4 & \url{http://twitter.com/true_joygiver/status/147319951831736320} & I'm a victim of the serious MRT breakdown! Stuck in \textbf{Somerset} 4 hours \& forced to miss a dinner gathering! =( & 2011-12-15 21:19:48 \\
 		\hline
-		5 & \url{http://twitter.com/ONGLSD/status/147323153243324418} & The train breakdown isn't just affecting SMRT's traffic, it's causing a major killer jam from Stamford Rd all the way to Orchard Rd. AVOID!! & 2011-12-15 21:32:31 \\
+		5 & \url{http://twitter.com/ONGLSD/status/147323153243324418} & The train breakdown isn't just affecting SMRT's traffic, it's causing a major killer jam from \textbf{Stamford Rd} all the way to \textbf{Orchard Rd}. AVOID!! & 2011-12-15 21:32:31 \\
 		\hline
-		6 & \url{http://twitter.com/CUNTDOIT/status/147335571742789633} & @ShaunLWS relax first, I haven't even reach home. Stuck at town, mrt break down plus bus jam. On 190 & 2011-12-15 22:21:52 \\
+		6 & \url{http://twitter.com/afiqahmauwan/status/147367254059782144}	& That MRT breakdown took me 2.5 hours to reach home from \textbf{dhoby ghaut} to \textbf{yishun}. & 2011-12-16 00:27:45 \\
 		\hline
-		7 & \url{http://twitter.com/afiqahmauwan/status/147367254059782144}	& That MRT breakdown took me 2.5 hours to reach home from dhoby ghaut to yishun. & 2011-12-16 00:27:45 \\
-		\hline
-		8 & \url{http://twitter.com/glavoynneeee/status/147455276063260672} & Heard that MRT break down in Dhoby Ghaut...? & 2011-12-16 6:17:32 \\
-		\hline
-		9 & \url{http://twitter.com/aidah/status/147824290526535681} & MRT breakdown this morning between Marina Bay and Newton MRT \#fb \#north-south line. Frustrating. & 2011-12-17 6:43:51 \\
-		\hline
-		10 & \url{http://twitter.com/Sa_Bun/status/148244315439771648} & Ok, traffic is only bad near the MRT stations.. Most probably due to the shuttle busses provided due to the \#smrtbreakdown & 2011-12-18 10:32:53 \\
-		%10 & \emph{No longer accessible} & Slow-moving traffic now on roads that don't usually get jammed up. All because of the recent MRT breakdown. Running late for my appointment! & 2011-12-18 10:57:30 \\
+		7 & \url{http://twitter.com/aidah/status/147824290526535681} & MRT breakdown this morning between \textbf{Marina Bay} and \textbf{Newton MRT} \#fb \#north-south line. Frustrating. & 2011-12-17 6:43:51 \\
 		\hline
 	\end{tabular}
 \end{table*}
 
+Although we have the complete record of passengers travel for the three months listed, we do not have the complete set of tweets during this period. We also do not assume that Twitter is able to capture all the passengers feedback about the usage of the public bus system during this period of time. It is therefore not possible to obtain a quantitative correlation between the ranking of anomalies detected by our algorithm and the number of tweets mentioning the location of the congested areas. But from the content of tweets shown in Table \ref{tbl:tweets}, we can find specific records with ratio $\alpha_r$ that belong to the top 1\% and match the description of the tweets. 
 
-Some small examples. Table \ref{tbl:anomalies}. Figure \ref{fig:190_2_speed}
+We use Table \ref{tbl:anomalies} to show examples of records that correspond in terms of location, date and time to the traffic congestions as mentioned by Twitter users in Table \ref{tbl:tweets}. Each record \# in Table \ref{tbl:anomalies} corresponds to the tweet \# in Table \ref{tbl:tweets}. One may notice that either the origin or destination for each record in Table \ref{tbl:anomalies} is related to the bolded location of the tweets in Table \ref{tbl:tweets}, while N.A. indicates that it is not related. The times of the record are also very close to the tweets and we could assume that passengers\footnote{Disclaimer: The passengers in the records of Table \ref{tbl:anomalies} are not the same people as the Twitter users of Table \ref{tbl:tweets}.} tweet about their frustration during or after the journey. The only exception is \# 7 that has a huge difference in times because Dec 17 is a Saturday (non-working day) and passengers only commute later in the day. The records in Table \ref{tbl:anomalies} show that the observed time taken to reach the destination is much longer than the expect time.
 
 \begin{table*}[htb]
 	\small
 	\centering
-	\caption{Summary of Anomalies on Dec 15th 2011}
+	\caption{Summary of Anomalies}
 	\label{tbl:anomalies}
-	\begin{tabular}{|c|c|c|c|c|c|c|p{1.5cm}|p{1.5cm}|}
+	\begin{tabular}{|r|r|r|p{2.3cm}|p{2.3cm}|p{1.2cm}|p{1.6cm}|p{1.6cm}|p{1.4cm}|p{1.4cm}|}
 		\hline
-		%Date & 
-		Bus Svc & $|R_r|$ & Origin & Destination & Distance (m) & Time Boarded & Time Alighted & Observed Time Taken (m) & Expected Time Taken (m) \\
+		\# & $|R_r|$ & $\alpha_r$ & Origin & Destination & Distance (meters) & Time Boarded & Time Alighted & Observed (mins) & Expected (mins) \\
 		\hline
-		%Dec 15th 2011 & 
-		190 & 606 & Dhoby Ghaut & Somerset Station & 800 & 10:27:49 PM & 10:41:04 PM & 13.25 & 4.92 \\
+		1 & 46 & 3.89 & N.A. & Dover Station & 2,900 & Nov 1 2011 08:04:37 & Nov 1 2011 08:23:34 & 18.95 & 9.11 \\
 		\hline
-		%Dec 15th 2011 & 
-		190 & 594 & Dhoby Ghaut & Winsland House & 500 & 10:47:35 PM & 11:04:49 PM & 17.23 & 2.40 \\
+		2 & 69 & 3.16 & Opp Trinity @ Paya Lebar & N.A & 600 & Dec 14 2011 08:43:35 & Dec 14 2011 08:49:57 &6.37 & 3.11\\
+		\hline
+		3 & 483 & 5.79 & Somerset Station & Orchard Station & 1,000 & Dec 15 2011 20:54:01 & Dec 15 2011 21:15:04 & 21.05 & 10.22 \\
+		\hline
+		4 & 181 & 25.27 & Stamford Court (near Stamford Road) & Somerset Station & 1,700 & Dec 15 2011 20:14:37 & Dec 15 2011 21:32:02 & 77.42 & 15.79 \\
+		\hline
+		5 & 161 & 14.12 & Stamford Court (near Stamford Road) & Orchard Station & 2,700 & Dec 15 2011 07:57:14 & Dec 15 2011 21:06:36 & 69.37 & 26.01 \\
+		\hline
+		6 & 0 & 4.16 & YMCA (next to Dhoby Ghaut Station) & Yishun Interchange & 31,900 & Dec 15 2011 20:48:23 & Dec 15 2011 23:17:43 & 149.33 & 105.38 \\
+		\hline
+		7 & 149 & 12.98 & Newton Station & N.A. & 200 & Dec 17 2011 11:54:52 & Dec 17 2011 12:07:45 & 12.88 & 4.51 \\
 		\hline
 	\end{tabular}
 \end{table*}
 
-\begin{figure*}[htb]
-	\centering
-	\includegraphics[width=6.5in]{190_2_speed}
-	\caption{Speed along Path of Bus Service 190}
-	\label{fig:190_2_speed}
-\end{figure*}
+
+% \begin{figure*}[htb]
+% 	\centering
+% 	\includegraphics[width=6.5in]{190_2_speed}
+% 	\caption{Speed along Path of Bus Service 190}
+% 	\label{fig:190_2_speed}
+% \end{figure*}
 
 \section{Conclusion}
 

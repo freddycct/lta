@@ -32,14 +32,21 @@ function main()
 	for i=1:top_1_percent
 		r1 = records[i]
 		r1.related_records = Array(Record, 0)
+
 		r1_origin, r1_destination = get_origin_destination_nodes(r1, bus_stops, bus_services)
 		for j=1:top_1_percent
 			if i == j
 				continue
 			end
+			
 			r2 = records[j]
+			if !isdefined(r2, :contain_records)
+				r2.contain_records = Array(Record, 0)
+			end
+
 			if is_inside(r1, r2, r1_origin, r1_destination, bus_stops, bus_services)
 				push!(r1.related_records, r2)
+				push!(r2.contain_records, r1)
 			end
 		end
 	end
