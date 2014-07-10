@@ -26,25 +26,21 @@
 
 \title{Detecting Flow Anomalies in Distributed Systems}
 
-% this is for IEEE template
 \author{
-	% \IEEEauthorblockN{Michael Shell}
-	% \IEEEauthorblockA{School of Electrical and\\Computer Engineering\\
-	% Georgia Institute of Technology\\
-	% Atlanta, Georgia 30332--0250\\
-	% Email: http://www.michaelshell.org/contact.html}
-	% \and
-	% \IEEEauthorblockN{Homer Simpson}
-	% \IEEEauthorblockA{Twentieth Century Fox\\
-	% Springfield, USA\\
-	% Email: homer@thesimpsons.com}
-	% \and
-	% \IEEEauthorblockN{James Kirk\\ and Montgomery Scott}
-	% \IEEEauthorblockA{Starfleet Academy\\
-	% San Francisco, California 96678-2391\\
-	% Telephone: (800) 555--1212\\
-	% Fax: (888) 555--1212}
-	Blind Submission
+	\IEEEauthorblockN{Freddy Chong Tat Chua}
+	\IEEEauthorblockA{Social Computing Group\\
+	HPLabs, Palo Alto, CA 94304, USA\\
+	freddy.chua@hp.com}
+	\and
+	\IEEEauthorblockN{Ee-Peng Lim}
+	\IEEEauthorblockA{School of Information Systems\\
+	Singapore Management University\\
+	eplim@smu.edu.sg}
+	\and
+	\IEEEauthorblockN{Bernardo A. Huberman}
+	\IEEEauthorblockA{Social Computing Group\\
+	HPLabs, Palo Alto, CA 94304, USA\\
+	bernardo.huberman@hp.com}
 }
 
 \maketitle
@@ -56,7 +52,7 @@ Deep within the networks of distributed systems often contain anomalies that aff
 \section{Introduction}
 \label{sec:intro}
 
-In our increasingly complex world, networks offer an abstract representation for organizing the relationships between entities of interest in distributed systems. The entities are represented as nodes while edges connecting pairs of nodes represent the existence of relationships between the entities. Examples of distributed systems that are pervasive in our lives are social networks \cite{Wu2004}, protein networks, computer networks \cite{Kind2009, Sengar2009}, transportation networks \cite{Fadlil2013, Yuan2013}, logistical networks \cite{Agovic2009}, neurological networks, organizational networks \cite{Mihm2010}, wireless sensor networks\footnote{Internet of Things}, electrical networks, etc.
+In our increasingly complex world, networks offer an abstract representation for organizing the relationships between entities of interest in distributed systems. The entities are represented as nodes while edges connecting pairs of nodes represent the existence of relationships between the entities. Examples of distributed systems that are pervasive in our lives are social networks \cite{Wu2004}, protein networks, computer networks \cite{Kind2009, Sengar2009}, transportation networks \cite{Fadlil2013, Yuan2013}, logistical networks \cite{Agovic2009}, neurological networks, organizational networks \cite{Mihm2010}, wireless sensor networks (Internet of Things), electrical networks, etc.
 
 In these distributed systems, a functional network that facilitates reliable and consistent flow of entities through the edges is necessary for the distributed system to achieve its objectives. However, it is inevitable that the building blocks of the distributed systems deteriorate non-uniformly over time, leading to occasional anomalous behavior in certain parts of the system. Anomalies in the system would disrupt normal operations, and prevent the distributed system from meeting its objectives in a timely manner.
 
@@ -348,7 +344,7 @@ Figure \ref{fig:convergence} shows the convergence of SSE with respect to the nu
 As observed in Figure \ref{fig:convergence}, the SGD algorithm decreases the SSE over multiple iterations with the Edge-based model having a lower SSE than Smoothed Edge-based model. This is due to the additional smoothing constraints we have imposed on the Smoothed Edge-based model. The change in SSE decreases as number of iterations increase, which suggests that the SGD algorithm converges for our two proposed models, resulting in marginally improvement in the SSE with increasing number of iterations.
 \begin{figure}[htb]
 	\centering
-	\includegraphics[width=3.5in]{convergence}
+	\includegraphics[width=3.3in]{convergence}
 	\caption{Stochastic Gradient Descent Convergence rate for Sum-of-Squares Error}
 	\label{fig:convergence}
 \end{figure}
@@ -494,57 +490,6 @@ and obtain the subset of tweets $\mathcal{T}_\mathcal{M}$. Table \ref{tbl:twitte
 	\label{fig:twitter_histograms}
 \end{figure}
 
-\begin{table*}[htb]
-	\centering
-	\caption{Examples of tweets from $\mathcal{T}_{\mathcal{K}}$, commenting on the traffic after railway system (MRT) breaks down}
-	\label{tbl:tweets}
-	\begin{tabular}{|r|p{4cm}|p{9.5cm}|p{2.1cm}|}
-		\hline
-		\# & URL & Content & Time GMT+8 \\
-		\hline
-		1 & \url{http://twitter.com/tickingbombs/status/131164834623524864} & Train breakdown at \textbf{Dover MRT}. Whats the fare hike for again? & 2011-11-01 7:25:08  \\
-		\hline
-		2 & \url{http://twitter.com/mrbrown/status/146756643298877440} & Circle Line breakdown pic \#smrt RT @hai\_ren: The crowd at \textbf{Paya Lebar}. \#SMRTruinslives \url{http://t.co/RGQwSp3s} & 2011-12-14 8:01:25 \\
-		\hline
-		3 & \url{http://twitter.com/mac_beno_l/status/147304462514520064} & Major MRT break down, causing MAJOR traffic jam along \textbf{Orchard road}. Feeling very sick :( & 2011-12-15 20:18:15 \\
-		\hline
-		4 & \url{http://twitter.com/true_joygiver/status/147319951831736320} & I'm a victim of the serious MRT breakdown! Stuck in \textbf{Somerset} 4 hours \& forced to miss a dinner gathering! =( & 2011-12-15 21:19:48 \\
-		\hline
-		5 & \url{http://twitter.com/ONGLSD/status/147323153243324418} & The train breakdown isn't just affecting SMRT's traffic, it's causing a major killer jam from \textbf{Stamford Rd} all the way to \textbf{Orchard Rd}. AVOID!! & 2011-12-15 21:32:31 \\
-		\hline
-		6 & \url{http://twitter.com/afiqahmauwan/status/147367254059782144}	& That MRT breakdown took me 2.5 hours to reach home from \textbf{dhoby ghaut} to \textbf{yishun}. & 2011-12-16 00:27:45 \\
-		\hline
-		7 & \url{http://twitter.com/aidah/status/147824290526535681} & MRT breakdown this morning between \textbf{Marina Bay} and \textbf{Newton MRT} \#fb \#north-south line. Frustrating. & 2011-12-17 6:43:51 \\
-		\hline
-	\end{tabular}
-\end{table*}
-
-\begin{table*}[htb]
-	%\small
-	\centering
-	\caption{Summary of Anomalies}
-	\label{tbl:anomalies}
-	\begin{tabular}{|r|r|r|p{2.3cm}|p{2.3cm}|p{1.2cm}|p{1.6cm}|p{1.6cm}|p{1.4cm}|p{1.4cm}|}
-		\hline
-		\# & $|R_r|$ & $\alpha_r$ & Origin & Destination & Distance (meters) & Time Boarded & Time Alighted & Observed (mins) & Expected (mins) \\
-		\hline
-		1 & 46 & 3.89 & N.A. & Dover Station & 2,900 & Nov 1 2011 08:04:37 & Nov 1 2011 08:23:34 & 18.95 & 9.11 \\
-		\hline
-		2 & 69 & 3.16 & Opp Trinity @ Paya Lebar & N.A & 600 & Dec 14 2011 08:43:35 & Dec 14 2011 08:49:57 &6.37 & 3.11\\
-		\hline
-		3 & 483 & 5.79 & Somerset Station & Orchard Station & 1,000 & Dec 15 2011 20:54:01 & Dec 15 2011 21:15:04 & 21.05 & 10.22 \\
-		\hline
-		4 & 181 & 25.27 & Stamford Court (near Stamford Road) & Somerset Station & 1,700 & Dec 15 2011 20:14:37 & Dec 15 2011 21:32:02 & 77.42 & 15.79 \\
-		\hline
-		5 & 161 & 14.12 & Stamford Court (near Stamford Road) & Orchard Station & 2,700 & Dec 15 2011 07:57:14 & Dec 15 2011 21:06:36 & 69.37 & 26.01 \\
-		\hline
-		6 & 0 & 4.16 & YMCA (next to Dhoby Ghaut Station) & Yishun Interchange & 31,900 & Dec 15 2011 20:48:23 & Dec 15 2011 23:17:43 & 149.33 & 105.38 \\
-		\hline
-		7 & 149 & 12.98 & Newton Station & N.A. & 200 & Dec 17 2011 11:54:52 & Dec 17 2011 12:07:45 & 12.88 & 4.51 \\
-		\hline
-	\end{tabular}
-\end{table*}
-
 % \begin{table*}[htb]
 % 	\centering
 % 	\caption{Examples of tweets from $\mathcal{T}_{\mathcal{K}}$, commenting on the traffic after railway system (MRT) breaks down}
@@ -553,19 +498,19 @@ and obtain the subset of tweets $\mathcal{T}_\mathcal{M}$. Table \ref{tbl:twitte
 % 		\hline
 % 		\# & URL & Content & Time GMT+8 \\
 % 		\hline
-% 		1 & \url{http://twitter.com/tickingbombs/status/131164834623524864} & Train breakdown at \textbf{DS}. Whats the fare hike for again? & 2011-11-01 7:25:08  \\
+% 		1 & \url{http://twitter.com/tickingbombs/status/131164834623524864} & Train breakdown at \textbf{Dover MRT}. Whats the fare hike for again? & 2011-11-01 7:25:08  \\
 % 		\hline
-% 		2 & \url{http://twitter.com/mrbrown/status/146756643298877440} & ... breakdown pic \#smrt RT @hai\_ren: The crowd at \textbf{PL}. \#SMRTruinslives \url{http://t.co/RGQwSp3s} & 2011-12-14 8:01:25 \\
+% 		2 & \url{http://twitter.com/mrbrown/status/146756643298877440} & Circle Line breakdown pic \#smrt RT @hai\_ren: The crowd at \textbf{Paya Lebar}. \#SMRTruinslives \url{http://t.co/RGQwSp3s} & 2011-12-14 8:01:25 \\
 % 		\hline
-% 		3 & \url{http://twitter.com/mac_beno_l/status/147304462514520064} & Major MRT break down, causing MAJOR traffic jam along \textbf{OR}. Feeling very sick :( & 2011-12-15 20:18:15 \\
+% 		3 & \url{http://twitter.com/mac_beno_l/status/147304462514520064} & Major MRT break down, causing MAJOR traffic jam along \textbf{Orchard road}. Feeling very sick :( & 2011-12-15 20:18:15 \\
 % 		\hline
-% 		4 & \url{http://twitter.com/true_joygiver/status/147319951831736320} & I'm a victim of the serious MRT breakdown! Stuck in \textbf{SS} 4 hours \& forced to miss a dinner gathering! =( & 2011-12-15 21:19:48 \\
+% 		4 & \url{http://twitter.com/true_joygiver/status/147319951831736320} & I'm a victim of the serious MRT breakdown! Stuck in \textbf{Somerset} 4 hours \& forced to miss a dinner gathering! =( & 2011-12-15 21:19:48 \\
 % 		\hline
-% 		5 & \url{http://twitter.com/ONGLSD/status/147323153243324418} & The train breakdown isn't just affecting SMRT's traffic, it's causing a major killer jam from \textbf{SR} all the way to \textbf{OR}. AVOID!! & 2011-12-15 21:32:31 \\
+% 		5 & \url{http://twitter.com/ONGLSD/status/147323153243324418} & The train breakdown isn't just affecting SMRT's traffic, it's causing a major killer jam from \textbf{Stamford Rd} all the way to \textbf{Orchard Rd}. AVOID!! & 2011-12-15 21:32:31 \\
 % 		\hline
-% 		6 & \url{http://twitter.com/afiqahmauwan/status/147367254059782144}	& That MRT breakdown took me 2.5 hours to reach home from \textbf{DG} to \textbf{YI}. & 2011-12-16 00:27:45 \\
+% 		6 & \url{http://twitter.com/afiqahmauwan/status/147367254059782144}	& That MRT breakdown took me 2.5 hours to reach home from \textbf{dhoby ghaut} to \textbf{yishun}. & 2011-12-16 00:27:45 \\
 % 		\hline
-% 		7 & \url{http://twitter.com/aidah/status/147824290526535681} & MRT breakdown this morning between \textbf{MB} and \textbf{NS} \#fb \#north-south line. Frustrating. & 2011-12-17 6:43:51 \\
+% 		7 & \url{http://twitter.com/aidah/status/147824290526535681} & MRT breakdown this morning between \textbf{Marina Bay} and \textbf{Newton MRT} \#fb \#north-south line. Frustrating. & 2011-12-17 6:43:51 \\
 % 		\hline
 % 	\end{tabular}
 % \end{table*}
@@ -579,22 +524,73 @@ and obtain the subset of tweets $\mathcal{T}_\mathcal{M}$. Table \ref{tbl:twitte
 % 		\hline
 % 		\# & $|R_r|$ & $\alpha_r$ & Origin & Destination & Distance (meters) & Time Boarded & Time Alighted & Observed (mins) & Expected (mins) \\
 % 		\hline
-% 		1 & 46 & 3.89 & N.A. & DS & 2,900 & Nov 1 2011 08:04:37 & Nov 1 2011 08:23:34 & 18.95 & 9.11 \\
+% 		1 & 46 & 3.89 & N.A. & Dover Station & 2,900 & Nov 1 2011 08:04:37 & Nov 1 2011 08:23:34 & 18.95 & 9.11 \\
 % 		\hline
-% 		2 & 69 & 3.16 & PL & N.A & 600 & Dec 14 2011 08:43:35 & Dec 14 2011 08:49:57 &6.37 & 3.11\\
+% 		2 & 69 & 3.16 & Opp Trinity @ Paya Lebar & N.A & 600 & Dec 14 2011 08:43:35 & Dec 14 2011 08:49:57 &6.37 & 3.11\\
 % 		\hline
-% 		3 & 483 & 5.79 & SS & OR & 1,000 & Dec 15 2011 20:54:01 & Dec 15 2011 21:15:04 & 21.05 & 10.22 \\
+% 		3 & 483 & 5.79 & Somerset Station & Orchard Station & 1,000 & Dec 15 2011 20:54:01 & Dec 15 2011 21:15:04 & 21.05 & 10.22 \\
 % 		\hline
-% 		4 & 181 & 25.27 & SR & SS & 1,700 & Dec 15 2011 20:14:37 & Dec 15 2011 21:32:02 & 77.42 & 15.79 \\
+% 		4 & 181 & 25.27 & Stamford Court (near Stamford Road) & Somerset Station & 1,700 & Dec 15 2011 20:14:37 & Dec 15 2011 21:32:02 & 77.42 & 15.79 \\
 % 		\hline
-% 		5 & 161 & 14.12 & SR & OR & 2,700 & Dec 15 2011 07:57:14 & Dec 15 2011 21:06:36 & 69.37 & 26.01 \\
+% 		5 & 161 & 14.12 & Stamford Court (near Stamford Road) & Orchard Station & 2,700 & Dec 15 2011 07:57:14 & Dec 15 2011 21:06:36 & 69.37 & 26.01 \\
 % 		\hline
-% 		6 & 0 & 4.16 & DG & YI & 31,900 & Dec 15 2011 20:48:23 & Dec 15 2011 23:17:43 & 149.33 & 105.38 \\
+% 		6 & 0 & 4.16 & YMCA (next to Dhoby Ghaut Station) & Yishun Interchange & 31,900 & Dec 15 2011 20:48:23 & Dec 15 2011 23:17:43 & 149.33 & 105.38 \\
 % 		\hline
-% 		7 & 149 & 12.98 & NS & N.A. & 200 & Dec 17 2011 11:54:52 & Dec 17 2011 12:07:45 & 12.88 & 4.51 \\
+% 		7 & 149 & 12.98 & Newton Station & N.A. & 200 & Dec 17 2011 11:54:52 & Dec 17 2011 12:07:45 & 12.88 & 4.51 \\
 % 		\hline
 % 	\end{tabular}
 % \end{table*}
+
+\begin{table*}[htb]
+	\centering
+	\caption{Examples of tweets from $\mathcal{T}_{\mathcal{K}}$, commenting on the traffic after railway system (MRT) breaks down}
+	\label{tbl:tweets}
+	\begin{tabular}{|r|p{4cm}|p{9.5cm}|p{2.1cm}|}
+		\hline
+		\# & URL & Content & Time GMT+8 \\
+		\hline
+		1 & \url{http://twitter.com/tickingbombs/status/131164834623524864} & Train breakdown at \textbf{DS}. Whats the fare hike for again? & 2011-11-01 7:25:08  \\
+		\hline
+		2 & \url{http://twitter.com/mrbrown/status/146756643298877440} & ... breakdown pic \#smrt RT @hai\_ren: The crowd at \textbf{PL}. \#SMRTruinslives \url{http://t.co/RGQwSp3s} & 2011-12-14 8:01:25 \\
+		\hline
+		3 & \url{http://twitter.com/mac_beno_l/status/147304462514520064} & Major MRT break down, causing MAJOR traffic jam along \textbf{OR}. Feeling very sick :( & 2011-12-15 20:18:15 \\
+		\hline
+		4 & \url{http://twitter.com/true_joygiver/status/147319951831736320} & I'm a victim of the serious MRT breakdown! Stuck in \textbf{SS} 4 hours \& forced to miss a dinner gathering! =( & 2011-12-15 21:19:48 \\
+		\hline
+		5 & \url{http://twitter.com/ONGLSD/status/147323153243324418} & The train breakdown isn't just affecting SMRT's traffic, it's causing a major killer jam from \textbf{SR} all the way to \textbf{OR}. AVOID!! & 2011-12-15 21:32:31 \\
+		\hline
+		6 & \url{http://twitter.com/afiqahmauwan/status/147367254059782144}	& That MRT breakdown took me 2.5 hours to reach home from \textbf{DG} to \textbf{YI}. & 2011-12-16 00:27:45 \\
+		\hline
+		7 & \url{http://twitter.com/aidah/status/147824290526535681} & MRT breakdown this morning between \textbf{MB} and \textbf{NS} \#fb \#north-south line. Frustrating. & 2011-12-17 6:43:51 \\
+		\hline
+	\end{tabular}
+\end{table*}
+
+\begin{table*}[htb]
+	%\small
+	\centering
+	\caption{Summary of Anomalies}
+	\label{tbl:anomalies}
+	\begin{tabular}{|r|r|r|p{2.3cm}|p{2.3cm}|p{1.2cm}|p{1.6cm}|p{1.6cm}|p{1.4cm}|p{1.4cm}|}
+		\hline
+		\# & $|R_r|$ & $\alpha_r$ & Origin & Destination & Distance (meters) & Time Boarded & Time Alighted & Observed (mins) & Expected (mins) \\
+		\hline
+		1 & 46 & 3.89 & N.A. & DS & 2,900 & Nov 1 2011 08:04:37 & Nov 1 2011 08:23:34 & 18.95 & 9.11 \\
+		\hline
+		2 & 69 & 3.16 & PL & N.A & 600 & Dec 14 2011 08:43:35 & Dec 14 2011 08:49:57 &6.37 & 3.11\\
+		\hline
+		3 & 483 & 5.79 & SS & OR & 1,000 & Dec 15 2011 20:54:01 & Dec 15 2011 21:15:04 & 21.05 & 10.22 \\
+		\hline
+		4 & 181 & 25.27 & SR & SS & 1,700 & Dec 15 2011 20:14:37 & Dec 15 2011 21:32:02 & 77.42 & 15.79 \\
+		\hline
+		5 & 161 & 14.12 & SR & OR & 2,700 & Dec 15 2011 07:57:14 & Dec 15 2011 21:06:36 & 69.37 & 26.01 \\
+		\hline
+		6 & 0 & 4.16 & DG & YI & 31,900 & Dec 15 2011 20:48:23 & Dec 15 2011 23:17:43 & 149.33 & 105.38 \\
+		\hline
+		7 & 149 & 12.98 & NS & N.A. & 200 & Dec 17 2011 11:54:52 & Dec 17 2011 12:07:45 & 12.88 & 4.51 \\
+		\hline
+	\end{tabular}
+\end{table*}
 
 Table \ref{tbl:tweets} shows examples of tweets that comment on the traffic conditions whenever the railway system breaks down, with Tweets \#3 and \#5 of Table \ref{tbl:tweets} showing passengers' feedback that the breakdown of railway system also affects the bus travel times. At the time of this writing, all the URLs as shown, link to the publicly available tweets on Twitter website. In each of these tweets, the railway stations affected by the breakdown that are mentioned by the users are highlighted in \textbf{bolded font}.
 
