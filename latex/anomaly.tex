@@ -46,7 +46,7 @@
 \maketitle
 
 \begin{abstract}
-Deep within the networks of distributed systems often contain anomalies that affect its efficiency and performance. These anomalies are difficult to detect because the distributed systems may not have sufficient sensors to monitor the flow of traffic within the interconnected nodes of the networks. Without early detection and making corrections, these anomalies may aggravate over time and could possibly cause disastrous outcomes in the system in the unforeseeable future. Using only coarse-grained information from the two end points of network flows, we propose a network transmission model and a localization algorithm, to detect the location of anomalies and rank them using a proposed metric within distributed systems. We evaluate our approach on passengers' records of an urbanized city's public transportation system and correlate our findings with passengers' postings on social media microblogs. Our experiments show that the metric derived using our localization algorithm gives a better ranking of anomalies as compared to standard deviation measures from statistical models. Our case studies also demonstrate that transportation events reported in social media microblogs matches the locations of our detect anomalies, suggesting that our algorithm performs well in locating the anomalies within distributed systems.
+Deep within the networks of distributed systems, one often finds anomalies that affect their efficiency and performance. These anomalies are difficult to detect because the distributed systems may not have sufficient sensors to monitor the flow of traffic within the interconnected nodes of the networks. Without early detection and making corrections, these anomalies may aggravate over time and could possibly cause disastrous outcomes in the system in the unforeseeable future. Using only coarse-grained information from the two end points of network flows, we propose a network transmission model and a localization algorithm, to detect the location of anomalies and rank them using a proposed metric within distributed systems. We evaluate our approach on passengers' records of an urbanized city's public transportation system and correlate our findings with passengers' postings on social media microblogs. Our experiments show that the metric derived using our localization algorithm gives a better ranking of anomalies as compared to standard deviation measures from statistical models. Our case studies also demonstrate that transportation events reported in social media microblogs matches the locations of our detect anomalies, suggesting that our algorithm performs well in locating the anomalies within distributed systems.
 \end{abstract}
 
 \section{Introduction}
@@ -467,7 +467,7 @@ The histogram in Figure \ref{fig:twitter_traffic_jam} appear to correlate better
 
 \subsubsection{Case studies of the location for the detected\\anomalies}
 
-In this final section of our evaluation on the detected anomalies, we describe the details of evaluating the location and time of our detected anomalies through qualitative comparison with the contents of the tweets. From Figure \ref{fig:twitter_traffic_jam}, we have marked December 15th and 17th of 2014 which shows significant spike in the number of tweets mentioning ``traffic jam(s)''. Based on prior knowledge, we are aware of the existence of an external event that causes the congestion on these two days. The external event is the breakdown of the railway system that caused temporary disruption to the railway services.
+In this final section of our evaluation on the detected anomalies, we describe the details of evaluating the location and time of our detected anomalies through qualitative comparison with the contents of the tweets. From Figure \ref{fig:twitter_traffic_jam}, we have marked December 15th and 17th of 2011 which shows significant spike in the number of tweets mentioning ``traffic jam(s)''. Based on prior knowledge, we are aware of the existence of an external event that causes the congestion on these two days. The external event is the breakdown of the railway system that caused temporary disruption to the railway services.
 
 The city is supported by two main transportation systems, the railway system (MRT\footnote{MRT is the acronym of the railway system and it stands for Mass Rapid Transit.}) and the public bus system. When the railway system breaks down, the remaining transportation options in the city has to bear the load of transporting the passengers. These other transportation options which include taxis and privately owned motorized vehicles share the well-connected road network with the public bus system. The sharing of physical road space causes delay in the speeds of bus during the breakdown of the railway system. 
 
@@ -489,57 +489,6 @@ and obtain the subset of tweets $\mathcal{T}_\mathcal{M}$. Table \ref{tbl:twitte
 	\caption{Histograms of tweets that mention ``mrt breakdown'' or ``mrt break(s) down''}
 	\label{fig:twitter_histograms}
 \end{figure}
-
-% \begin{table*}[htb]
-% 	\centering
-% 	\caption{Examples of tweets from $\mathcal{T}_{\mathcal{K}}$, commenting on the traffic after railway system (MRT) breaks down}
-% 	\label{tbl:tweets}
-% 	\begin{tabular}{|r|p{4cm}|p{9.5cm}|p{2.1cm}|}
-% 		\hline
-% 		\# & URL & Content & Time GMT+8 \\
-% 		\hline
-% 		1 & \url{http://twitter.com/tickingbombs/status/131164834623524864} & Train breakdown at \textbf{Dover MRT}. Whats the fare hike for again? & 2011-11-01 7:25:08  \\
-% 		\hline
-% 		2 & \url{http://twitter.com/mrbrown/status/146756643298877440} & Circle Line breakdown pic \#smrt RT @hai\_ren: The crowd at \textbf{Paya Lebar}. \#SMRTruinslives \url{http://t.co/RGQwSp3s} & 2011-12-14 8:01:25 \\
-% 		\hline
-% 		3 & \url{http://twitter.com/mac_beno_l/status/147304462514520064} & Major MRT break down, causing MAJOR traffic jam along \textbf{Orchard road}. Feeling very sick :( & 2011-12-15 20:18:15 \\
-% 		\hline
-% 		4 & \url{http://twitter.com/true_joygiver/status/147319951831736320} & I'm a victim of the serious MRT breakdown! Stuck in \textbf{Somerset} 4 hours \& forced to miss a dinner gathering! =( & 2011-12-15 21:19:48 \\
-% 		\hline
-% 		5 & \url{http://twitter.com/ONGLSD/status/147323153243324418} & The train breakdown isn't just affecting SMRT's traffic, it's causing a major killer jam from \textbf{Stamford Rd} all the way to \textbf{Orchard Rd}. AVOID!! & 2011-12-15 21:32:31 \\
-% 		\hline
-% 		6 & \url{http://twitter.com/afiqahmauwan/status/147367254059782144}	& That MRT breakdown took me 2.5 hours to reach home from \textbf{dhoby ghaut} to \textbf{yishun}. & 2011-12-16 00:27:45 \\
-% 		\hline
-% 		7 & \url{http://twitter.com/aidah/status/147824290526535681} & MRT breakdown this morning between \textbf{Marina Bay} and \textbf{Newton MRT} \#fb \#north-south line. Frustrating. & 2011-12-17 6:43:51 \\
-% 		\hline
-% 	\end{tabular}
-% \end{table*}
-
-% \begin{table*}[htb]
-% 	%\small
-% 	\centering
-% 	\caption{Summary of Anomalies}
-% 	\label{tbl:anomalies}
-% 	\begin{tabular}{|r|r|r|p{2.3cm}|p{2.3cm}|p{1.2cm}|p{1.6cm}|p{1.6cm}|p{1.4cm}|p{1.4cm}|}
-% 		\hline
-% 		\# & $|R_r|$ & $\alpha_r$ & Origin & Destination & Distance (meters) & Time Boarded & Time Alighted & Observed (mins) & Expected (mins) \\
-% 		\hline
-% 		1 & 46 & 3.89 & N.A. & Dover Station & 2,900 & Nov 1 2011 08:04:37 & Nov 1 2011 08:23:34 & 18.95 & 9.11 \\
-% 		\hline
-% 		2 & 69 & 3.16 & Opp Trinity @ Paya Lebar & N.A & 600 & Dec 14 2011 08:43:35 & Dec 14 2011 08:49:57 &6.37 & 3.11\\
-% 		\hline
-% 		3 & 483 & 5.79 & Somerset Station & Orchard Station & 1,000 & Dec 15 2011 20:54:01 & Dec 15 2011 21:15:04 & 21.05 & 10.22 \\
-% 		\hline
-% 		4 & 181 & 25.27 & Stamford Court (near Stamford Road) & Somerset Station & 1,700 & Dec 15 2011 20:14:37 & Dec 15 2011 21:32:02 & 77.42 & 15.79 \\
-% 		\hline
-% 		5 & 161 & 14.12 & Stamford Court (near Stamford Road) & Orchard Station & 2,700 & Dec 15 2011 07:57:14 & Dec 15 2011 21:06:36 & 69.37 & 26.01 \\
-% 		\hline
-% 		6 & 0 & 4.16 & YMCA (next to Dhoby Ghaut Station) & Yishun Interchange & 31,900 & Dec 15 2011 20:48:23 & Dec 15 2011 23:17:43 & 149.33 & 105.38 \\
-% 		\hline
-% 		7 & 149 & 12.98 & Newton Station & N.A. & 200 & Dec 17 2011 11:54:52 & Dec 17 2011 12:07:45 & 12.88 & 4.51 \\
-% 		\hline
-% 	\end{tabular}
-% \end{table*}
 
 \begin{table*}[htb]
 	\centering
