@@ -131,9 +131,9 @@ Liu et al. \cite{Liu2011} proposed the discovery of causal interactions among tr
 
 \cite{Ge2011,Zhang2011,Zhang2012} analyzed taxi GPS data to detect drivers who overcharge their passengers by deliberately taking the longer route to reach the destination. The general idea for finding these anomalous routes is to compare the route taken for each pickup and destination points and obtain a measure of how much it deviates from the usual routes.
 
-Chawla et al. \cite{Chawla2012} proposed an algorithm to detect anomaly based Pinciple Component Analysis (PCA). Chawla et al. \cite{Chawla2012} represent the traffic data into two matrices, 1) the link-path matrix and the 2) link-time matrix. Then using PCA, Chawla et al. \cite{Chawla2012} is able to factorize the matrices into eigenvectors with its respective eigenvalues. The eigenvectors corresponding to large eigenvalues represent the norm, while those eigenvectors corresponding to lower eigenvalues represent the anomalies. Using these anomalies, Chawla et al. \cite{Chawla2012} tested their method to see if they could determine the root cause on synthetically generated data sets.
+Chawla et al. \cite{Chawla2012} proposed an algorithm to detect anomaly based on Pinciple Component Analysis (PCA). Chawla et al. \cite{Chawla2012} represent the traffic data into two matrices, 1) the link-path matrix and the 2) link-time matrix. Then using PCA, Chawla et al. \cite{Chawla2012} is able to factorize the matrices into eigenvectors with its respective eigenvalues. The eigenvectors corresponding to large eigenvalues represent the norm, while those eigenvectors corresponding to lower eigenvalues represent the anomalies. Using these anomalies, Chawla et al. \cite{Chawla2012} tested their method to see if they could determine the root cause on synthetically generated data sets.
 
-All of these previous works \cite{Chawla2012, Ge2011, Liu2011, Pan2013, Zhang2011, Zhang2012} requires fine-grained sampling of GPS and time for anomaly detection and is limited only to spatial-temporal situations such as transportation networks. Our approach does not require GPS data and is made general for most forms of network traffic in distributed systems.
+All of these previous works \cite{Chawla2012, Ge2011, Liu2011, Pan2013, Zhang2011, Zhang2012} require fine-grained sampling of GPS and time for anomaly detection and is limited only to spatial-temporal situations such as transportation networks. Our approach does not require GPS data and is made general for most forms of network traffic in distributed systems.
 
 \section{Network Transmission Models}
 \label{sec:models}
@@ -179,12 +179,12 @@ To estimate the variance $\sigma^2$,
 \begin{align*}
 	\sigma^2 = \frac{ \sum_{r \in R} \left( \hat{t}_r - \sum_{ (i,j) \in p_r } \frac{d_{i,j}}{c_{i,j}} \right)^2}{\sum_{r \in R} d_r}
 \end{align*}
-To estimate the speed $c_{i,j}$ of every segment $s_{i,j}$ using the observed time $\hat{t}_r$ of each record $r$, we maximize the log likelihood from each $r$. The log likelihood as contributed by $r$ is given by,
+To estimate the speed $c_{i,j}$ of every segment $s_{i,j}$ using the observed time $\hat{t}_r$ of each record $r$, we \textbf{maximize} the log likelihood $\mathcal{L}_r$ from each $r$. The log likelihood $\mathcal{L}_r$ as contributed by $r$ is given by,
 \begin{align*}
 	\mathcal{L}_r &= \log \left( \frac{1}{\sqrt{2 \pi d_r \sigma^2 }} \right) - \frac{\left( \hat{t}_r - \sum_{ (i,j) \in p_r } \frac{d_{i,j}}{c_{i,j}} \right)^2}{2 d_r \sigma^2 } \\
 	&= - \frac{1}{2} \log \left( d_r \sigma^2 \right) - \frac{\left( \hat{t}_r - \sum_{ (i,j) \in p_r } \frac{d_{i,j}}{c_{i,j}} \right)^2}{2 d_r \sigma^2 }
 \end{align*}
-We add a log barrier penalty to prevent negative speeds,
+We add a log barrier penalty to prevent negative speeds. A larger $c_{i,j}$ increases the $\mathcal{L}^*_r$ term as given by the addition, which is encouraged since we are trying to maximize the log likelihood.
 \begin{align}
 	\label{eqn:objective1}
 	\mathcal{L}^*_r = \mathcal{L}_r + \tau \sum_{(i,j) \in p_r} \log c_{i,j}
@@ -203,7 +203,7 @@ There are several interesting properties with the partial derivative in Equation
 
 \subsection{Smoothed Edge-based Model}
 
-To avoid overfitting the model parameters to the observed data set, we add additional constraints to Equation \ref{eqn:objective1} that minimize the difference between the speeds of consecutive segments in a path. This constraint is based on the assumption that consecutive segments have related speeds.
+To avoid overfitting the model parameters to the observed data set, we add additional constraints to Equation \ref{eqn:objective1} that minimize the difference between the speeds of consecutive segments in a path. This constraint is based on the assumption that consecutive segments have related speeds. In the equation that follows, a larger difference between the speeds of two consecutive segments lowers the log likelihood as given by the subtraction, which is discouraged.
 \begin{align*}
 	\mathcal{L}^{**}_r = \mathcal{L}^*_r - \frac{\psi}{2} \sum_{(i,j) \in p_r} \left( c_{i,j} - c_{j,k} \right)^2
 \end{align*}
@@ -267,7 +267,7 @@ Based on the two definitions, the algorithm for localizing the anomalies in the 
 \section{Experiments}
 \label{sec:experiments}
 
-We first apply the models from Section \ref{sec:models} on the data set of a distributed system to test the generalization performance. The model that has the best generalization performance would have the lowest prediction error for unobserved data. We then select the best model to use for detection and localization of network anomalies in the distributed system by applying the algorithm as described in Section \ref{sec:localization}. To evaluate on the reliability of the detected and localized anomalies, we examine a set of tweets from Twitter of the same period to check whether users of the distributed system expressed their frustrations by tweeting (complaining) on Twitter.
+We first apply the models from Section \ref{sec:models} on the data set of a distributed system to test the generalization performance. The model that has the best generalization performance would have the lowest prediction error for unobserved data. We then select the best model to use for detection and localization of network anomalies in the distributed system by applying the algorithm as described in Section \ref{sec:localization}. To evaluate the reliability of the detected and localized anomalies, we examine a set of tweets from Twitter of the same period to check whether users of the distributed system expressed their frustrations by tweeting (complaining) on Twitter.
 
 \subsection{Data Description}
 
@@ -282,7 +282,7 @@ We evaluate our models on a data set that contains the passengers' travel record
 
 Each passenger carries a payment card containing a RFID chip. The RFID chip allows the companies to identify the passenger and charge the transportation fare to their account. The passengers boarding and alighting geo-locations are recorded for each travel trip in order to charge the appropriate amount based on the distance traveled. The time boarded and time alighted are also recorded, which makes it possible to calculate the time taken for the travel.
 
-Being a densely populated city, majority of the city's population commute via the PTS, instead of driving in privately owned vehicles. The data set thus represent an almost complete usage of a real and large-scale distributed system, which would allow us to utilize it for verifying our proposed models and algorithms.
+Being a densely populated city, majority of the city's population commute via the PTS, instead of driving in privately owned vehicles. The data set thus represents an almost complete usage of a real and large-scale distributed system, which would allow us to utilize it for verifying our proposed models and algorithms.
 
 We mentioned in Section \ref{sec:intro} that we wanted to detect non-critical anomalies because it is less noticeable than critical anomalies. The transportation network of bus routes would contain many of these non-critical anomalies because traffic in congested road segments can be diverted to other roads. 
 %On the other hand, anomalies in the railway system are easily detected because trains in the same direction travel on a single railway track. For the purpose of verifying our models and algorithms, we only focus on the bus records for the rest of this paper. 
@@ -334,14 +334,14 @@ We perform our initial analysis on three days of data, December 8th 2011, Decemb
 
 \subsection{Sum-of-Squares Error Convergence}
 
-We would first like to verify that the Stochastic Gradient Descent (SGD) algorithm converges for our proposed model in Section \ref{sec:models}. The SGD algorithm is supposed to reduce the error between the expected time given by the models and observed time as reflected in the records $r \in R$. The error for all records $r \in R$ is given by the Sum-of-Squares Error (SSE) as shown in Equation \ref{eqn:sum_of_squares}. A lower SSE value suggest a better fit of the model to the observed data.
+We would first like to verify that the Stochastic Gradient Descent (SGD) algorithm converges for our proposed model in Section \ref{sec:models}. The SGD algorithm is supposed to reduce the error between the expected time given by the models and observed time as reflected in the records $r \in R$. The error for all records $r \in R$ is given by the Sum-of-Squares Error (SSE) as shown in Equation \ref{eqn:sum_of_squares}. A lower SSE value suggests a better fit of the model to the observed data.
 \begin{align}
 	\label{eqn:sum_of_squares}
 	\text{Sum-of-Squares Error} = \sum_{r \in R} (t_r - \hat{t}_r)^2 
 \end{align}
 
 Figure \ref{fig:convergence} shows the convergence of SSE with respect to the number of iterations we ran for the SGD algorithm. %Each point (\textcolor{red}{red $\times$}/\textcolor{blue}{blue $\bullet$}) on Figure \ref{fig:convergence} gives the (SSE, time) of each iteration. 
-As observed in Figure \ref{fig:convergence}, the SGD algorithm decreases the SSE over multiple iterations with the Edge-based model having a lower SSE than Smoothed Edge-based model. This is due to the additional smoothing constraints we have imposed on the Smoothed Edge-based model. The change in SSE decreases as number of iterations increase, which suggests that the SGD algorithm converges for our two proposed models, resulting in marginally improvement in the SSE with increasing number of iterations.
+As observed in Figure \ref{fig:convergence}, the SGD algorithm decreases the SSE over multiple iterations with the Edge-based model having a lower SSE than Smoothed Edge-based model. This is due to the additional smoothing constraints we have imposed on the Smoothed Edge-based model. The change in SSE decreases as number of iterations increase, which suggests that the SGD algorithm converges for our two proposed models, resulting in marginal improvement in the SSE with increasing number of iterations.
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=3.3in]{convergence}
@@ -550,7 +550,7 @@ We use Table \ref{tbl:anomalies} to show examples of records that correspond in 
 \section{Conclusion}
 \label{sec:conclusion}
 
-We began our research with the purpose of finding non-critical anomalies in the networks of distributed systems. In most distributed systems, the data that can be obtained without the use of sophisticated instruments or internal sensors is often non-informative about the internal workings of the networks. That causes difficulties in detecting anomalies and further difficulties in finding the location of anomalies within the distributed system. To overcome these difficulties, we proposed the Edge-based network transmission model to infer the flow speeds of the edges within the networks of distributed systems. With the model, we are able to derive the expected time necessarily for entity to complete its flow. Using the records of entities flow with observed time that is significantly longer than expected, we apply our proposed localization algorithm to measure the relationship of each record to all other records with large deviations. The number of related records allows us to determine how important each record is to the traffic conditions of the network. By finding records that are highly related to other records and with the shortest travel path in the network, we are able to determine the location of the anomalies within the distributed system.
+We began our research with the purpose of finding non-critical anomalies in the networks of distributed systems. In most distributed systems, the data that can be obtained without the use of sophisticated instruments or internal sensors is often non-informative about the internal workings of the networks. That causes difficulties in detecting anomalies and further difficulties in finding the location of anomalies within the distributed system. To overcome these difficulties, we proposed the Edge-based network transmission model to infer the flow speeds of the edges within the networks of distributed systems. With the model, we are able to derive the expected time necessary for entity to complete its flow. Using the records of entities flow with observed time that is significantly longer than expected, we apply our proposed localization algorithm to measure the relationship of each record to all other records with large deviations. The number of related records allows us to determine how important each record is to the traffic conditions of the network. By finding records that are highly related to other records and with the shortest travel path in the network, we are able to determine the location of the anomalies within the distributed system.
 
 One major assumption that we had made in this work is that the knowledge of the exact path taken by the entity flow is known or can be easily inferred. While this is true for transportation systems, it may not be true for other kinds of distributed systems. One way to overcome this is to have an intermediate step to infer the path using a Markovian model. 
 
