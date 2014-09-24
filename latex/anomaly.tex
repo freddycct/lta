@@ -1,7 +1,6 @@
 \documentclass[conference]{IEEEtran.1.8}
 
 \usepackage{verbatim} %for \begin{comment} \end{comment}
-%\usepackage{subcaption}
 
 \usepackage{color} %for colored text
 \usepackage{url} %for URL in table that links to Twitter status
@@ -13,10 +12,8 @@
 \interdisplaylinepenalty=2500
 
 \newtheorem{definition}{Definition}
-%\newdef{definition}{Definition}
 
 \usepackage[dvips]{graphicx}
-%\usepackage{graphicx}
 \graphicspath{{./eps/}}
 \DeclareGraphicsExtensions{.eps}
 
@@ -60,7 +57,7 @@ While critical anomalies lead to catastrophic failures and cause major disruptio
 
 A more challenging \textbf{problem} which we address in our research, is to recognize the \emph{non-critical} anomalies that would result in a lower than optimal efficiency of a distributed system. Since the distributed system can continue to function without corrections to them, such non-critical anomalies are often \emph{ignored} and its \emph{location unknown} within the distributed system. But non-critical anomalies that are not corrected could aggravate over time into critical anomalies and cause catastrophic failures to the distributed system in the unforeseeable future. 
 
-Before proceeding further, we would use the Figures \ref{fig:travel_graph} and \ref{fig:7} to illustrate the problem. Figure \ref{fig:travel_graph} shows a small network of a distributed system where entities flow from nodes to nodes through the directed edges. The edges connecting nodes $\{a, b, c, d, e\}$ form a route for entities to flow between the nodes. We do not assume that $a$ and $e$ are always the origin and destination of every entity flow, i.e. entities within the distributed system could originate from or terminate at any of the intermediate nodes $\{b, c, d\}$. The \textcolor{red}{red $- ~ \cdot \rightarrow$} line indicates the possibility of an existing anomaly that would disrupt the regular flow of entities along this route.
+Before proceeding further, we would use the Figures \ref{fig:travel_graph} and \ref{fig:7} to illustrate the problem. Figure \ref{fig:travel_graph} shows a small network of a distributed system where entities flow from nodes to nodes through the directed edges. The edges connecting nodes $\{a, b, c, d, e\}$ form a route for entities to flow between the nodes. We do not assume that $a$ and $e$ are always the origin and destination of every entity flow, i.e. entities within the distributed system could originate from or terminate at any of the intermediate nodes $\{b, c, d\}$. The \textcolor{red}{dotted $- ~ \cdot \rightarrow$} line indicates the possibility of an existing anomaly that would disrupt the regular flow of entities along this route.
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=3.5in]{travel_graph}
@@ -91,7 +88,6 @@ We formally define our problem based on the assumption that the following record
 	\item Temporal: The time $t(x_r)$ when entity flow starts at the origin and the time $t(y_r)$ when entity flow ends at the destination.
 	\item Cost: The distance $d_r$ from $x_r$ to $y_r$ traveled by the entity, or the non-temporal cost incurred due to the entity flow.
 	\item The path $p_r$ taken by $r$. The path consists of the sequence of nodes that the entity visits for it to flow from node $x_r$ to node $y_r$. In situations where complete knowledge of the network or path is not known, it would still be possible to infer the path based on the distance traveled.
-%and intent of the information flow.
 \end{enumerate}
 A pair of consecutive nodes $i,j$ in path $p_r$, forms a segment $s_{i,j}$. We determine whether the observed amount of time $\hat{t}_r$, taken for entity flow in $p_r$ deviates significantly from the expected amount of time $t_r$. For all the records $r \in R$ with observed time that deviates significantly from the expected time, we locate the segments $s_{i,j} \in p_r$ that are likely to be the cause of the deviations. 
 
@@ -101,17 +97,11 @@ Our technical contribution consists of the proposal of a network transmission mo
 
 Building on the network transmission model, we further propose an algorithm that ranks the anomalous data in order of importance by measuring how much impact each anomalous data has on others. Then using the ranking, we can isolate the location of where the anomalies occur in the distributed system, listed in descending order of importance. We test our models and algorithms on the network data of a physical transportation system and verify the accuracy of the detected anomalies through case studies using social media data.
 
-%The inference is only possible if the set of records are diverse in their origins and destinations. We would elaborate the proposed model in greater detail in Section \ref{sec:model}
-
 We present an overview of prior work on anomalies detection in Section \ref{sec:related}. Section \ref{sec:models} describes the details of our proposed network transmission models as well as two baselines for comparison. Using the results of our proposed model, we utilize the algorithm as described in Section \ref{sec:localization} for locating the segments of where the anomalies might have occurred. Then we evaluate the performance of our proposed models and the localization algorithm in Section \ref{sec:experiments}. We conclude our work in Section \ref{sec:conclusion} and highlight certain possible extensions that can be made for this area of research.
 
 
 \section{Related Work}
 \label{sec:related}
-
-%There has been a wide body of work addressing the issues of anomaly detection in distributed systems. We give an overview here and explain how we distinguish our work.
-
-%Chandola et al. gave a list of common applications for anomaly detection; intrusion detection of computer networks, fraud detection in commercial activities, detection of illness in medical and health data, damage due to wear and tear in industrial machines, image processing of satellite imagery, anomalies in text data which includes most of the world wide web, and wireless sensor networks for detecting special events in the environment.
 
 \textbf{Overview of Anomaly Detection.} Chandola et al. \cite{Chandola2009} gave a comprehensive survey on the topic of anomaly detection for general scenarios. Chandola et al. defined an anomaly as a pattern that does not conform to expected normal behavior. But the notion of expected normal behavior depends on the application domains and types of input data. Chandola et al. surveyed a broad overview of various techniques used in anomaly detection; classification-based \cite{Stefano2000, Barbara2001}, nearest neighbor approach \cite{Otey2006}, clustering-based \cite{He2003}, statistical-based (including parametric \cite{Eskin2000} and non-parametric \cite{Chow2002}), information-theoretic-based \cite{Ando2007}, and spectral anomaly detection techniques \cite{Agovic2009}. Although our network transmission model can be classified as one of these methods, the second portion of our paper that measures the impact of anomalous data has not been used before. The kind of input data we used for our anomalies detection is also unique and contains inherent difficulties, which is addressed by our network transmission model.
 
@@ -196,7 +186,6 @@ where $\tau$ is the strength of the penalty. By taking partial derivative with r
 \end{align}
 The partial derivative allows us to perform Stochastic Gradient Descent (SGD) on parameters $c_{i,j}$ as follows,
 \begin{align*}
-	%\label{eqn:update}
 	c_{i,j} \leftarrow c_{i,j} + \eta \frac{\partial \mathcal{L}^*_r}{\partial c_{i,j}}
 \end{align*}
 There are several interesting properties with the partial derivative in Equation \ref{eqn:sgd_mean}. The variance in the denominator shows that the more uncertain we are, the lesser the gradient is, hence less changes to $c_{i,j}$. The smaller $c_{i,j}$ is, the second component in Equation \ref{eqn:sgd_mean} will compensate by adding positive value to prevent $c_{i,j}$ from entering the negative region.
@@ -273,20 +262,11 @@ We first apply the models from Section \ref{sec:models} on the data set of a dis
 
 We evaluate our models on a data set that contains the passengers' travel records on the Public Transportation System (PTS) of an urbanized city. The PTS consists of the railway system and the public bus system.
 
-%Singapore\footnote{http://en.wikipedia.org/wiki/Singapore}, a highly urbanized sovereign city-state located in Southeast Asia.
-%, operated by two public listed corporations. 
-%The PTS data set is provided by the city's transportation authority\footnote{http://en.wikipedia.org/wiki/Land\_Transport\_Authority} that monitors the transportation needs of the city for her economic activities.
-%\footnote{http://en.wikipedia.org/wiki/SMRT\_Corporation} 
-%\footnote{http://en.wikipedia.org/wiki/SBS\_Transit}
-%in Singapore 
-
 Each passenger carries a payment card containing a RFID chip. The RFID chip allows the companies to identify the passenger and charge the transportation fare to their account. The passengers boarding and alighting geo-locations are recorded for each travel trip in order to charge the appropriate amount based on the distance traveled. The time boarded and time alighted are also recorded, which makes it possible to calculate the time taken for the travel.
 
 Being a densely populated city, majority of the city's population commute via the PTS, instead of driving in privately owned vehicles. The data set thus represents an almost complete usage of a real and large-scale distributed system, which would allow us to utilize it for verifying our proposed models and algorithms.
 
-We mentioned in Section \ref{sec:intro} that we wanted to detect non-critical anomalies because it is less noticeable than critical anomalies. The transportation network of bus routes would contain many of these non-critical anomalies because traffic in congested road segments can be diverted to other roads. 
-%On the other hand, anomalies in the railway system are easily detected because trains in the same direction travel on a single railway track. For the purpose of verifying our models and algorithms, we only focus on the bus records for the rest of this paper. 
-Each record $r$ contains the following information of a passenger's journey:
+We mentioned in Section \ref{sec:intro} that we wanted to detect non-critical anomalies because it is less noticeable than critical anomalies. The transportation network of bus routes would contain many of these non-critical anomalies because traffic in congested road segments can be diverted to other roads. Each record $r$ contains the following information of a passenger's journey:
 \begin{enumerate}
 	\item Bus stop ID of boarding, $x_r$.
 	\item Bus stop ID of alighting, $y_r$.
@@ -307,8 +287,6 @@ Figure \ref{fig:trip_example} shows an example of three records for the \emph{sa
 	\label{fig:trip_example}
 \end{figure}
 Then by combining the inferred routes of various bus services, we would be able to obtain a transportation network as shown in Figure \ref{fig:travel_graph}.
-
-%Using the time information in the data set, our proposed models in Section \ref{sec:models} and the localization algorithm in Section \ref{sec:localization}, we would be able to obtain the edges in red, which represent the roads that contain anomalies, resulting in the longer than expected timings of bus arrivals at bus stops. %Because of the time information in the data set, we would have a continuous snapshot of the traffic graph at different times.
 
 \subsubsection{Statistics}
 
@@ -340,8 +318,7 @@ We would first like to verify that the Stochastic Gradient Descent (SGD) algorit
 	\text{Sum-of-Squares Error} = \sum_{r \in R} (t_r - \hat{t}_r)^2 
 \end{align}
 
-Figure \ref{fig:convergence} shows the convergence of SSE with respect to the number of iterations we ran for the SGD algorithm. %Each point (\textcolor{red}{red $\times$}/\textcolor{blue}{blue $\bullet$}) on Figure \ref{fig:convergence} gives the (SSE, time) of each iteration. 
-As observed in Figure \ref{fig:convergence}, the SGD algorithm decreases the SSE over multiple iterations with the Edge-based model having a lower SSE than Smoothed Edge-based model. This is due to the additional smoothing constraints we have imposed on the Smoothed Edge-based model. The change in SSE decreases as number of iterations increase, which suggests that the SGD algorithm converges for our two proposed models, resulting in marginal improvement in the SSE with increasing number of iterations.
+Figure \ref{fig:convergence} shows the convergence of SSE with respect to the number of iterations we ran for the SGD algorithm. As observed in Figure \ref{fig:convergence}, the SGD algorithm decreases the SSE over multiple iterations with the Edge-based model having a lower SSE than Smoothed Edge-based model. This is due to the additional smoothing constraints we have imposed on the Smoothed Edge-based model. The change in SSE decreases as number of iterations increase, which suggests that the SGD algorithm converges for our two proposed models, resulting in marginal improvement in the SSE with increasing number of iterations.
 \begin{figure}[htb]
 	\centering
 	\includegraphics[width=3.3in]{convergence}
@@ -412,8 +389,7 @@ The main objective which motivates our research is to detect and localize the ne
 
 We mentioned in Section \ref{sec:intro} that we focus on non-critical anomalies which are elusive and difficult to detect in real usage of distributed systems. As a result of this elusive property of non-critical anomalies, our detection and localization algorithm does not have sufficient labeled data to evaluate its accuracy in a quantitative manner. In fact, there would be no research problem to address if such anomalies are easily observed for us to perform our experiments.
 
-Fortunately, since we use the Public Transportation System (PTS) of an urbanized city, we are able to compare the detected anomalies with the tweets of the residents who commute in the city. We use the Twitter data set %that was formerly used to analyze political sentiments in Hoang and Lim \cite{Hoang2012}, 
-to perform a qualitative comparison of our detected anomalies with the tweets that comment on the traffic conditions. We use the Twitter data set $\mathcal{T}$, and the PTS records $R$ between the periods of November 1st 2011 and January 31st 2012 for comparison.
+Fortunately, since we use the Public Transportation System (PTS) of an urbanized city, we are able to compare the detected anomalies with the tweets of the residents who commute in the city. We use the Twitter data set that was formerly used to analyze political sentiments in Hoang and Lim \cite{Hoang2012}, to perform a qualitative comparison of our detected anomalies with the tweets that comment on the traffic conditions. We use the Twitter data set $\mathcal{T}$, and the PTS records $R$ between the periods of November 1st 2011 and January 31st 2012 for comparison.
 
 We described in Section \ref{sec:localization} that the detection algorithm first obtains the set of records $R_{\alpha > \delta}$, where each record $r \in R_{\alpha > \delta}$ has a larger observed travel time than the expected travel time, i.e. $\alpha_r > \delta$. We set $\delta$, the cut-off value of determining whether a record deviates significantly as the top 1\% of the ratio values $\alpha_r$, for all $r \in R$. The records $R_{\alpha > \delta}$ are then sorted in descending order of $|R_r|$, so that records $r \in R_{\alpha > \delta}$ with the most important path $p_r$ are ranked first. 
 
@@ -423,7 +399,6 @@ We evaluate the use of $|R_r|$ vs $\alpha_r$ as a ranking metric by comparing wi
 \begin{center}
 	$\mathcal{K}$ := \{ ``traffic'' $\land$ (``jam'' $\lor$ ``jams'') \}.
 \end{center}
-%The set of tweets with keywords $\mathcal{K}$ is denoted as $\mathcal{T}_{\mathcal{K}}$. 
 Table \ref{tbl:twitter} provides the statistics of the Twitter data $\mathcal{T}$ and the tweets $\mathcal{T}_{\mathcal{K}}$ with the keywords $K$ for each month. Table \ref{tbl:twitter} also show the number of tweets $\mathcal{T}_{\mathcal{M}}$ containing keywords $\mathcal{M}$, which we will elaborate in later part of this section.
 \begin{table}[htb]
 	\centering
@@ -516,7 +491,6 @@ and obtain the subset of tweets $\mathcal{T}_\mathcal{M}$. Table \ref{tbl:twitte
 \end{table*}
 
 \begin{table*}[htb]
-	%\small
 	\centering
 	\caption{Summary of Anomalies}
 	\label{tbl:anomalies}
@@ -541,9 +515,9 @@ and obtain the subset of tweets $\mathcal{T}_\mathcal{M}$. Table \ref{tbl:twitte
 	\end{tabular}
 \end{table*}
 
-Table \ref{tbl:tweets} shows examples of tweets that comment on the traffic conditions whenever the railway system breaks down, with Tweets \#3 and \#5 of Table \ref{tbl:tweets} showing passengers' feedback that the breakdown of railway system also affects the bus travel times. At the time of this writing, all the URLs as shown, link to the publicly available tweets on Twitter website. In each of these tweets, the railway stations affected by the breakdown that are mentioned by the users are highlighted in \textbf{bolded font}.
+Table \ref{tbl:tweets} shows examples of tweets that comment on the traffic conditions whenever the railway system breaks down, with Tweets \#3 and \#5 of Table \ref{tbl:tweets} showing passengers' feedback that the breakdown of railway system also affects the bus travel times. At the time of this writing, all the URLs as shown, link to the publicly available tweets on Twitter website. In each of these tweets, the railway stations affected by the breakdown that are mentioned by the users are highlighted in \textbf{bolded font}\footnote{Due to requests from our data providers, we have to anonymize the location names with their initials.}.
 
-Although we have the complete record of passengers for the three months listed, we do not have the complete set of tweets during this period. We also do not assume that Twitter is able to capture all the passengers feedback about the usage of the public bus system during this period of time. It is therefore not possible to obtain a quantitative correlation between the ranking of anomalies detected by our algorithm and the number of tweets mentioning the location of the congested areas. But from the content of tweets shown in Table \ref{tbl:tweets}, we can find specific records with ratio $\alpha_r$ that belong to the top 1\% and match the description of the tweets.
+Although we have the complete record of passengers for the three months listed, we do not have the complete set of tweets during this period. We also do not assume that Twitter is able to capture all the passengers' feedback about the usage of the public bus system during this period of time. It is therefore not possible to obtain a quantitative correlation between the ranking of anomalies detected by our algorithm and the number of tweets mentioning the location of the congested areas. But from the content of tweets shown in Table \ref{tbl:tweets}, we can find specific records with ratio $\alpha_r$ that belong to the top 1\% and match the description of the tweets.
 
 We use Table \ref{tbl:anomalies} to show examples of records that correspond in terms of location, date and time to the traffic congestions as mentioned by Twitter users in Table \ref{tbl:tweets}. Each record \# in Table \ref{tbl:anomalies} corresponds to the tweet \# in Table \ref{tbl:tweets}. One may notice that either the origin or destination for each record in Table \ref{tbl:anomalies} is related to the bolded location of the tweets in Table \ref{tbl:tweets}, while N.A. indicates that it is not related. The times of the record are also very close to the tweets and we could assume that passengers\footnote{Disclaimer: The passengers in the records of Table \ref{tbl:anomalies} are not the same people as the Twitter users of Table \ref{tbl:tweets}.} tweet about their frustration during or after the journey. The only exception is \#7 that has a huge difference in times because Dec 17 is a Saturday (non-working day) and passengers only commute later in the day. The records in Table \ref{tbl:anomalies} show that the observed time taken to reach the destination is much longer than the expect time. While these few examples do not necessarily cover all cases, it certainly shows that our detected anomalies could match with the complaints in Twitter or any other social media.
 
@@ -555,8 +529,6 @@ We began our research with the purpose of finding non-critical anomalies in the 
 One major assumption that we had made in this work is that the knowledge of the exact path taken by the entity flow is known or can be easily inferred. While this is true for transportation systems, it may not be true for other kinds of distributed systems. One way to overcome this is to have an intermediate step to infer the path using a Markovian model. 
 
 We make some final remarks about other possible improvements. The current models have not considered the notion of peak and off-peak usage of the traffic patterns in networks of distributed systems. During peak usage, the load is generally higher and could result in longer observed travel times. This issue can be easily addressed by using a mixture of Gaussian distributions to model the edge speeds. Another possible improvement is the algorithm for counting the ``contains'' and ``within'' relationships between records. Using concepts of transitivity, e.g. if record $a$ contains record $b$, and record $b$ contains record $c$, then record $a$ contains record $c$, one could save on the computation costs significantly.
-
-
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
