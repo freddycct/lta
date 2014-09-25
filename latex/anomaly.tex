@@ -530,6 +530,9 @@ One major assumption that we had made in this work is that the knowledge of the 
 
 We make some final remarks about other possible improvements. The current models have not considered the notion of peak and off-peak usage of the traffic patterns in networks of distributed systems. During peak usage, the load is generally higher and could result in longer observed travel times. This issue can be easily addressed by using a mixture of Gaussian distributions to model the edge speeds. Another possible improvement is the algorithm for counting the ``contains'' and ``within'' relationships between records. Using concepts of transitivity, e.g. if record $a$ contains record $b$, and record $b$ contains record $c$, then record $a$ contains record $c$, one could save on the computation costs significantly.
 
+\section*{Acknowledgment}
+We would like to thank the Land Transport Authority (LTA) of Singapore for sharing with us the EZLink dataset.
+
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 
